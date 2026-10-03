@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Panel de pedidos | Frassmotti</title>
+<link rel="icon" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><script src="js/config.js"></script><script src="js/secret.js"></script></head>
+<body><main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
+<div class="pt-4 flex items-center justify-between"><h1 class="serif text-4xl">Panel de pedidos</h1><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a></div>
+<div class="card p-5 space-y-3"><p class="font-semibold text-gray-900">Paso 1: pega el pedido que te llegó por WhatsApp</p>
+<textarea id="order" rows="5" class="input" placeholder="Pega aquí el mensaje completo del cliente. Se llenará todo solo."></textarea></div>
+<div class="card p-5 space-y-4"><p class="font-semibold text-gray-900">Paso 2: revisa los datos</p>
+<div><label class="label" for="plantilla">Plantilla</label><select id="plantilla" class="input"></select></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="nombre">Para</label><input id="nombre" class="input" maxlength="24"></div><div><label class="label" for="de">De parte de</label><input id="de" class="input" maxlength="24"></div></div>
+<div><label class="label" for="frase">Frase</label><input id="frase" class="input" maxlength="70"></div>
+<div><label class="label" for="color">Color de acento</label><select id="color" class="input"><option value="">Según plantilla</option><option value="rosa">Rosa</option><option value="noche">Noche</option><option value="ambar">Ámbar</option></select></div>
+<div><label class="label" for="secreto">Mensaje secreto (opcional)</label><textarea id="secreto" rows="2" maxlength="240" class="input"></textarea></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista</label><input id="pista" class="input" maxlength="60"></div></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="qLock">Cerradura: pregunta</label><input id="qLock" class="input" maxlength="80"></div><div><label class="label" for="aLock">Cerradura: respuesta</label><input id="aLock" class="input" maxlength="30"></div></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label></div>
+<div><label class="label" for="foto">Foto (opcional): la que el cliente te envió por WhatsApp</label><input id="foto" type="file" accept="image/*" class="input"><p class="text-xs text-gray-600 mt-1">Con foto el link queda más largo. Sin foto, es corto.</p></div>
+<div id="mvRow" class="hidden"><label class="label" for="motivo">Motivo (imagen)</label><select id="motivo" class="input"></select></div>
+<div data-feat="voz"><label class="label" for="voz">Nota de voz (audio que envió el cliente)</label><input id="voz" type="file" accept="audio/*" class="input"><p id="vozInfo" class="text-xs text-gray-600 mt-1">Máximo unos 15 segundos para que el link no sea enorme.</p></div>
+<div data-feat="grupo"><label class="label" for="aportes">Aportes del grupo (pega los mensajes de los amigos)</label><textarea id="aportes" rows="4" class="input" placeholder="Pega aquí los mensajes que contienen 'Aporte: ...'"></textarea></div>
+<div id="pinRow" class="hidden"><label class="label" for="pin">PIN de administrador</label><input id="pin" type="password" class="input"></div></div>
+<button id="go" class="btn btn-accent w-full text-lg">Generar link de la tarjeta</button><p id="msg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p>
+<div id="res" class="card p-5 hidden space-y-3"><p class="font-semibold text-gray-900">Paso 3: envía el link al cliente</p><textarea id="out" rows="3" class="input" readonly></textarea><p id="len" class="text-xs text-gray-600"></p>
+<div><label class="label" for="cli">WhatsApp del cliente</label><input id="cli" class="input" inputmode="tel" placeholder="7XXXXXXX"></div>
+<div class="grid grid-cols-3 gap-2"><button id="cp" class="btn btn-ghost text-sm">Copiar</button><a id="ver" target="_blank" class="btn btn-ghost text-sm">Ver</a><button id="wa" class="btn btn-dark text-sm">WhatsApp</button></div></div></main>
+<script>
+const $=id=>document.getElementById(id),v=id=>$(id).value;let thumb=null;
+$('plantilla').innerHTML=TV.TODAS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+if(TV.REQUIRE_PAYMENT){$('pinRow').classList.remove('hidden');$('pin').value=sessionStorage.getItem('tv_pin')||''}
+/* Lee el mensaje de pedido y devuelve los campos */
+function parseOrder(text){const g=k=>{const m=text.match(new RegExp('^'+k+':\\s*"?(.*?)"?\\s*$','mi'));const r=m?m[1].trim():'';return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)?'':r};
+ return{plantilla:g('Plantilla'),nombre:g('Para'),de:g('De parte de'),frase:g('Frase'),color:g('Color'),secreto:g('Mensaje secreto'),clave:g('Palabra clave'),pista:g('Pista'),tel:g('Mi WhatsApp'),qLock:g('Pregunta cerradura'),aLock:g('Respuesta cerradura'),abre:g('Abre el'),ofi:g('Modo oficina')}}
+$('order').addEventListener('input',()=>{const o=parseOrder(v('order'));if(o.plantilla&&TV.TODAS.some(t=>t.id===o.plantilla))$('plantilla').value=o.plantilla;
+ ['nombre','de','frase','secreto','clave','pista','qLock','aLock'].forEach(k=>$(k).value=o[k]);$('abre').value=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(o.abre)?o.abre:'';$('ofi').checked=/^s[ií]$/i.test(o.ofi);$('color').value=['rosa','noche','ambar'].includes(o.color)?o.color:'';$('cli').value=o.tel.replace(/\D/g,'')});
+$('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas'),m=Math.min(i.width,i.height);c.width=c.height=112;c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,112,112);thumb=c.toDataURL('image/jpeg',.5)};i.src=r.result};r.readAsDataURL(f)};
+$('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre'),24);if(!nombre){$('msg').textContent='Falta el nombre de quien recibe.';return}
+ const T=TV.find(v('plantilla')),sec=clean(v('secreto'),240),clave=clean(v('clave'),20).trim(),pl={};
+ const p=new URLSearchParams({nombre,frase:clean(v('frase'),70)||T.frase,color:v('color'),t:T.id,de:clean(v('de'),24)});
+ if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);pl.h=clean(v('pista'),60)}else pl.m=sec}
+ let link=location.href.replace(/admin\.html.*$/,'')+'r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
+ if(TV.REQUIRE_PAYMENT){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
+  if(!r.ok){$('msg').textContent=d.error||'Error al firmar';return}sessionStorage.setItem('tv_pin',v('pin'));link=d.link}catch(e){$('msg').textContent='No se pudo contactar /api/sign (ver README).';return}}
+ $('out').value=link;$('ver').href=link;$('len').textContent='Largo del link: '+link.length+' caracteres'+(thumb?' (incluye foto)':'');$('res').classList.remove('hidden');$('res').scrollIntoView({behavior:'smooth'})};
+/* v11: cerradura con pregunta (respuesta cifrada), cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
+async function extras(p,pl){const ql=clean(v('qLock'),80).trim(),al=clean(v('aLock'),30).trim(),ab=v('abre');
+ if(!!ql!==!!al)return 'La cerradura necesita pregunta Y respuesta.';
+ if(ql){if(!(window.crypto&&crypto.subtle))return 'La cerradura necesita HTTPS (o localhost).';pl.q=ql;pl.qk=await TVS.enc('ok',TVS.fold(al))}
+ if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(ab))p.set('abre',ab);
+ if($('ofi').checked)p.set('of','1');return ''}
+$('cp').onclick=()=>{navigator.clipboard.writeText($('out').value);$('cp').textContent='Copiado'};
+$('wa').onclick=()=>{let n=v('cli').replace(/\D/g,'');if(n.length<=8)n='591'+n;open('https://wa.me/'+n+'?text='+encodeURIComponent('Tu tarjeta FRASSMOTTI está lista. Ábrela y compártela:\n'+$('out').value),'_blank')};
+</script><script>
+/* v12: motivo, nota de voz y aportes de grupo */
+document.querySelectorAll('[data-feat]').forEach(e=>{if(!TV.on(e.dataset.feat))e.classList.add('hidden')});
+const mv=()=>{const T=TV.find(v('plantilla'));$('mvRow').classList.toggle('hidden',!T.imgs);$('motivo').innerHTML=T.imgs?T.imgs.map((s,i)=>`<option value="${i}">Motivo ${i+1}</option>`).join(''):''};
+$('plantilla').addEventListener('change',mv);mv();
+$('order').addEventListener('input',()=>{mv();const m=(v('order').match(/^Motivo:\s*(\d)/mi)||[])[1];if(m&&$('motivo').options[m-1])$('motivo').value=m-1});
+$('voz').addEventListener('change',e=>{window.__voz=null;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{window.__voz=r.result;$('vozInfo').textContent='Audio: '+Math.round(r.result.length/1024)+' KB dentro del link'+(r.result.length>90000?' (muy grande: pide un audio más corto)':'')};r.readAsDataURL(f)});
+async function nuevas(p,pl,T){if(T.imgs&&v('motivo'))p.set('v',v('motivo'));if(TV.on('voz')&&window.__voz)pl.a=window.__voz;
+ if(TV.on('grupo')){const g=[...v('aportes').matchAll(/Aporte:\s*(\S+)/g)].map(m=>TVS.unpack(m[1])).filter(x=>x&&x.n).slice(0,12);if(g.length)pl.g=g}}
+</script></body></html>

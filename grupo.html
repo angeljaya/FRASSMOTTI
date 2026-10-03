@@ -1,0 +1,15 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Suma tu mensaje | Frassmotti</title><link rel="icon" href="favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><script src="js/config.js"></script><script src="js/secret.js"></script>
+<script>if(!TV.on('grupo'))location.replace('index.html')</script></head>
+<body><main class="max-w-md mx-auto p-6 space-y-5"><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a>
+<h1 class="serif text-4xl">Suma tu mensaje a la tarjeta de <span id="para"></span></h1><p class="text-gray-600">Deja tu nombre, una frase y tu foto. Irán dentro de la tarjeta final.</p>
+<div><label class="label" for="n">Tu nombre</label><input id="n" class="input" maxlength="24"></div>
+<div><label class="label" for="f">Tu frase</label><input id="f" class="input" maxlength="120"></div>
+<div><label class="label" for="foto">Tu foto (opcional)</label><input id="foto" type="file" accept="image/*" class="input"></div>
+<button id="go" class="btn btn-accent w-full text-lg">Enviar mi aporte por WhatsApp</button><p id="msg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p></main>
+<script>
+const $=id=>document.getElementById(id),q=new URLSearchParams(location.search),c=clean(q.get('c'),30),para=clean(q.get('para'),24)||'tu amigo/a';let thumb=null;$('para').textContent=para;
+$('foto').onchange=e=>{thumb=null;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const k=document.createElement('canvas'),m=Math.min(i.width,i.height);k.width=k.height=56;k.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,56,56);thumb=k.toDataURL('image/jpeg',.45)};i.src=r.result};r.readAsDataURL(f)};
+$('go').onclick=()=>{const n=clean($('n').value,24),f=clean($('f').value,120);if(!n||!f){$('msg').textContent='Escribe tu nombre y tu frase.';return}
+ open(TV.wa(['*APORTE DE GRUPO*','Grupo: '+c,'Para: '+para,'De: '+n,'Frase: "'+f+'"','Aporte: '+TVS.pack({n,f,p:thumb||undefined})].join('\n')),'_blank')};
+</script></body></html>
