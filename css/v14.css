@@ -1,0 +1,105 @@
+/* ===== FRASSMOTTI v14 · tarjeta, formulario y confirmación (se carga DESPUÉS de styles.css y carta.css) ===== */
+
+/* --- Tipografías elegibles (3 estilos) y título editable --- */
+.scrapbook-title{font-family:var(--f-title,'Kalam',cursive);font-size:var(--f-ts,62px);line-height:1.08;max-width:98%;text-align:center;overflow-wrap:anywhere}
+.handwritten-msg,.photo-cap{font-family:var(--f-msg,'Caveat',cursive)}
+.photo-cap{font-size:calc(var(--f-ms,30px)*.86)}
+
+/* --- Fondo con degradado + decoración temática --- */
+.carta-bg{background:var(--card-bg)}
+.deco-layer{position:absolute;inset:0;pointer-events:none;opacity:.2;z-index:0}
+.deco-layer span{position:absolute;line-height:1;filter:saturate(.9)}
+
+/* --- Marcos de la foto (los elige solo el diseño según género + ocasión) --- */
+.photo-frame.mk-dorado{border:3px solid var(--gold-primary);box-shadow:0 0 0 5px color-mix(in srgb,var(--gold-primary) 28%,transparent),0 8px 20px rgba(0,0,0,.2)}
+.photo-frame.mk-cinta::before{content:'';position:absolute;top:-13px;left:50%;width:86px;height:25px;transform:translateX(-50%) rotate(-3deg);background:color-mix(in srgb,var(--card-accent) 40%,#fff);opacity:.82;box-shadow:0 2px 4px rgba(0,0,0,.18);z-index:7}
+.photo-frame.mk-floral{border-radius:16px;outline:2px dashed var(--card-accent);outline-offset:-7px}.photo-frame.mk-floral .photo-img{border-radius:10px}
+.photo-frame.mk-festivo{transform:rotate(-1.5deg);border:2px dashed var(--card-accent);border-radius:10px;box-shadow:0 0 0 5px #fff,0 0 0 7px var(--card-accent),0 10px 22px rgba(0,0,0,.22)}
+.photo-frame.mk-sobrio{transform:none;border:1px solid #1f2937;padding:8px 8px 28px}
+
+/* --- Tamaños de tarjeta --- */
+.carta-content.tam-2 .photo-img{height:150px}.carta-content.tam-3 .photo-img{height:112px}
+.carta-content.tam-2 .photo-frame,.carta-content.tam-3 .photo-frame{margin-bottom:12px;padding-bottom:26px}
+.carta-content.tam-2 .card-actions,.carta-content.tam-3 .card-actions{margin-top:10px}
+.carta-content.tam-2 .scrapbook-title,.carta-content.tam-3 .scrapbook-title{margin-top:0}
+.msg-box{width:94%;position:relative;z-index:3;margin-top:4px}
+.msg-slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;background:rgba(255,255,255,.84);border-radius:10px;-webkit-overflow-scrolling:touch}
+.msg-slides::-webkit-scrollbar{display:none}
+.msg-slide{flex:0 0 100%;scroll-snap-align:start;box-sizing:border-box;padding:10px 14px;height:176px;overflow:auto}
+.msg-slide p{margin:0;font-family:var(--f-msg,'Caveat',cursive);font-size:max(15px,calc(var(--f-ms,30px)*.68));line-height:1.2;font-weight:700;color:#000;white-space:pre-line;text-align:center}
+.book{position:relative;height:236px;border-radius:4px 10px 10px 4px;background:#fffdf6;border-left:6px solid var(--card-accent);box-shadow:inset 9px 0 14px -9px rgba(0,0,0,.35),0 8px 16px rgba(0,0,0,.25);perspective:1000px}
+.bk-pg{position:absolute;inset:0;transform-origin:left center;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px 10px 10px 2px;background:repeating-linear-gradient(#fffdf6,#fffdf6 23px,#ebe4d2 24px);transition:transform .75s cubic-bezier(.5,0,.2,1),opacity .2s .5s;cursor:pointer}
+.bk-pg.flip{transform:rotateY(-165deg);opacity:0;pointer-events:none}
+.bk-in{box-sizing:border-box;height:100%;padding:8px 14px 22px 14px;overflow:auto}
+.bk-in p{margin:0;font-family:var(--f-msg,'Caveat',cursive);font-size:max(14px,calc(var(--f-ms,30px)*.62));line-height:24px;font-weight:600;color:#111;white-space:pre-line;text-align:left}
+.bk-num{position:absolute;right:12px;bottom:3px;font:600 11px 'Outfit',sans-serif;color:#8a8472}
+.msg-nav{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:6px}
+.msg-btn{width:30px;height:30px;border-radius:50%;border:0;background:var(--card-accent);color:#fff;font-size:20px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0 0 3px}
+.msg-btn:disabled{opacity:.3;cursor:default}
+.msg-mid{min-width:64px;text-align:center;font:700 12px 'Outfit',sans-serif;color:#222}
+.msg-mid i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#b9b9b9;margin:0 3px;transition:background .2s,transform .2s}.msg-mid i.on{background:var(--card-accent);transform:scale(1.3)}
+.msg-hint{margin:3px 0 0;text-align:center;font:600 11px 'Outfit',sans-serif;color:#444}
+
+/* --- Barra de acciones de la tarjeta: limpia y táctil en celular --- */
+body.carta-page #dock{position:fixed;top:auto;z-index:100;box-shadow:none;background:rgba(10,12,18,.8);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.dock{left:10px;right:10px;margin:0 auto;max-width:600px;gap:4px;flex-wrap:nowrap;justify-content:space-between;padding:7px;background:rgba(10,12,18,.78);border:1px solid rgba(255,255,255,.16);border-radius:24px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);overflow-x:auto;scrollbar-width:none;bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.dock::-webkit-scrollbar{display:none}
+.dock .pill{flex:1 0 auto;flex-direction:column;gap:3px;height:auto;min-width:54px;padding:8px 8px;border:0;background:transparent;font-size:11px;line-height:1.1;text-align:center;white-space:normal;border-radius:16px}
+.dock .pill:hover{background:rgba(255,255,255,.14);transform:none}.dock .pill svg{width:20px;height:20px}
+.dock .pill-accent{background:var(--gold-primary);color:#111}.dock .pill-accent:hover{background:var(--gold-primary);filter:brightness(1.08)}
+@media (max-width:420px){.dock .pill{min-width:48px;padding:7px 5px;font-size:10px}.dock .pill svg{width:19px;height:19px}}
+
+/* --- Formulario de personalizar --- */
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{padding:.8rem 1rem;border:2px solid #e5e5e3;border-radius:16px;background:#fff;font-weight:600;cursor:pointer;transition:all .2s}
+.seg button[aria-pressed=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,#fff);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 14%,transparent)}
+.opt{display:flex;flex-direction:column;gap:2px;text-align:left;padding:.85rem 1rem;border:2px solid #e5e5e3;border-radius:18px;background:#fff;cursor:pointer;transition:all .2s;width:100%}
+.opt[aria-pressed=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 8%,#fff);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 13%,transparent)}
+.opt b{font-weight:600}.opt small{color:#57534e;font-size:.8rem;line-height:1.3}.opt .tag{font-size:.7rem;font-weight:600;color:var(--c);text-transform:uppercase;letter-spacing:.06em}
+.sw{width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #d6d3d1;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.sw[aria-pressed=true]{box-shadow:0 0 0 3px #111827;transform:scale(1.1)}
+.fchip{padding:.7rem .9rem;border:2px solid #e5e5e3;border-radius:16px;background:#fff;cursor:pointer;text-align:center;line-height:1.1;transition:all .2s}
+.fchip[aria-pressed=true]{border-color:var(--c);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 14%,transparent)}
+.fchip span{display:block;font-size:1.5rem;margin-bottom:3px}.fchip small{font:500 .72rem 'Outfit',sans-serif;color:#57534e}
+.dchip{padding:.5rem .8rem;border:2px solid #e5e5e3;border-radius:999px;background:#fff;font-size:.85rem;font-weight:500;cursor:pointer}
+.dchip[aria-pressed=true]{border-color:var(--c);background:color-mix(in srgb,var(--c) 10%,#fff)}
+.wc{font-size:.8rem;color:#57534e}.wc.over{color:#b91c1c;font-weight:600}
+.pg-thumb{width:84px;height:62px;object-fit:cover;border-radius:10px;border:1px solid #e5e5e3}
+
+/* --- Recortador de foto --- */
+.crop-area{position:relative;width:100%;overflow:hidden;border-radius:14px;background:#0b0b0d;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.crop-area:active{cursor:grabbing}
+.crop-area img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
+.crop-area::after{content:'';position:absolute;inset:0;pointer-events:none;border:2px solid rgba(255,255,255,.85);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 66.6%/100% 1px no-repeat}
+.crop-area.bw img{filter:grayscale(1) contrast(1.15) brightness(1.05)}
+input[type=range].zoom{width:100%;accent-color:var(--c)}
+
+/* Vista previa en el celular: respeta los 3 tamaños */
+#phone .carta-content{padding-top:18px}
+
+.pv-seal{position:absolute;left:50%;bottom:9px;transform:translateX(-50%);width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 35%,var(--wl),var(--wd));box-shadow:0 4px 10px rgba(0,0,0,.5),inset 0 2px 4px rgba(255,255,255,.35);z-index:5}
+.pv-seal span{font:900 17px Cinzel,Georgia,serif;color:var(--gold-primary);text-shadow:0 1px 2px rgba(0,0,0,.7)}
+
+/* La carta abierta sube según su altura (tarjetas 2 y 3 son más altas) */
+.escena.abierto .carta-3d{transform:translateY(calc(-240px - var(--lift,0px))) translateZ(100px) scale(1) rotateX(-2deg)}
+
+/* ===== v15 · Plantillas de fondo integradas (las 12 imágenes de Mujer, Halloween, Navidad y Todos Santos) =====
+   La imagen es la TEXTURA de la tarjeta, no una foto: se funde con el degradado de la ocasión/color,
+   se desvanece hacia el centro (donde van foto, título y mensaje) y deja los marcos y flores por encima. */
+.tpl-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;border-radius:inherit}
+.tpl-layer>span{position:absolute;inset:0;display:block}
+.tpl-img{background:var(--tpl) var(--tpl-y,50%) 50%/cover no-repeat;opacity:var(--tpl-op,.32);filter:saturate(.85) contrast(.95);mix-blend-mode:multiply;
+ -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.78) 16%,rgba(0,0,0,.32) 42%,rgba(0,0,0,.22) 60%,rgba(0,0,0,.7) 86%,#000 100%);
+ mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.78) 16%,rgba(0,0,0,.32) 42%,rgba(0,0,0,.22) 60%,rgba(0,0,0,.7) 86%,#000 100%)}
+/* tinte: la textura toma el color elegido (Azul, Rojo, Negro, Violeta, Amarillo) */
+.tpl-tint{background:linear-gradient(160deg,var(--card-accent),transparent 75%);opacity:.16;mix-blend-mode:soft-light}
+/* velo: aclara el centro y suaviza los bordes para que el texto negro y los marcos se lean siempre */
+.tpl-veil{background:radial-gradient(ellipse 82% 50% at 50% 54%,rgba(255,255,255,.66),rgba(255,255,255,.18) 62%,transparent 80%),linear-gradient(180deg,rgba(255,255,255,.14),transparent 24%,transparent 78%,rgba(255,255,255,.2))}
+.carta-bg.con-plantilla .deco-layer{opacity:.12}   /* los emojis de esquina bajan para no competir con la textura */
+.carta-bg.con-plantilla .bg-text-pattern{opacity:.035}
+
+/* miniatura del selector: muestra el efecto real sobre el fondo de la tarjeta, con una polaroid de ejemplo */
+.tpl-thumb{position:relative;display:block;width:100%;aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:var(--card-bg)}
+.tpl-thumb .tpl-layer{z-index:0}
+.tpl-mock{position:absolute;left:22%;right:22%;top:30%;height:34%;background:#fff;border-radius:2px;box-shadow:0 3px 8px rgba(0,0,0,.22);transform:rotate(-2deg);z-index:1}
+.tpl-mock::after{content:'';position:absolute;inset:7% 7% 20% 7%;background:linear-gradient(135deg,#d6d3d1,#a8a29e);border-radius:1px}

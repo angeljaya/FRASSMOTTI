@@ -2,7 +2,7 @@
 
 ## 1. Imágenes que debes colocar (carpeta `assets/`)
 - **Tu QR de Yape:** `assets/qr-pago.png` (PNG cuadrado, mínimo 600 px). Aparece en el pago y el cliente puede descargarlo. Si falta, el checkout muestra un aviso con enlace a tu WhatsApp.
-- **12 imágenes de fechas especiales** en `assets/plantillas/` (formato .jpg, 800x600 px, menos de 200 KB):
+- **12 imágenes de fechas especiales** directamente en `assets/` (formato .jpg, 800x600 px, menos de 200 KB):
 
 | Fecha | Archivos |
 |---|---|
@@ -12,7 +12,7 @@
 | Navidad | `navidad-1.jpg`, `-2.jpg`, `-3.jpg` |
 
 ## 2. Qué se muestra al cliente (archivo `js/config.js`)
-- Fechas especiales: ocultas por defecto. En la línea `const _esp=...` cambia `activo:false` a `activo:true` (todas) o agrega `activo:true` a la que quieras.
+- Fechas especiales: habilitadas (Día de la Mujer, Halloween, Todos los Santos, Navidad). Para ocultar una, agrega `activo:false` a esa plantilla en `js/config.js`.
 - Funciones: `TV.FUNCIONES={redactor:false,grupo:false,voz:false}`. Cambia a `true` lo que quieras mostrar.
 - Edición física (llaveros, collares, manillas): lista `TV.FISICOS`. Puedes agregar `precio:25` para mostrar "Desde 25 Bs" o `activo:false` para ocultar uno.
 - Para probar lo oculto, agrega `?dev=1` a la dirección (solo para pruebas).

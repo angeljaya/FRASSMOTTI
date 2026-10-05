@@ -8,7 +8,7 @@ if(typeof PL==='undefined'||typeof TV==='undefined')return;
 /* ====== Ajustes que puedes tocar ====== */
 const BLOW={low:140,ratio:2,ms:350};      // Soplar: volumen mínimo en graves, proporción graves/agudos y duración (ms)
 const SHAKE={force:30,hits:2,cool:1500};  // Agitar: fuerza del sacudón, sacudidas seguidas y pausa entre efectos (ms)
-const EMO={'cumple-divertido':['🎉','🎂','🎈'],amor:['❤️','💖','🌹'],gracias:['🌻','🙏','✨'],aniversario:['💍','🥂','💫'],mama:['🌷','💐','💜']};
+const EMO={'cumple-divertido':['🎉','🎂','🎈'],amor:['❤️','💖','🌹'],gracias:['🌻','🙏','✨'],aniversario:['💍','🥂','💫'],mama:['🌷','💐','💜'],papa:['⭐','🏆','💙'],'mujer-boliviana':['🌸','🌺','💜'],halloween:['🎃','🦇','👻'],difuntos:['🌼','🕯️','🧡'],navidad:['🎄','❄️','⭐']};
 
 const el=id=>document.getElementById(id),QS=new URLSearchParams(location.search);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));

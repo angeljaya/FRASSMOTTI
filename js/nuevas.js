@@ -13,8 +13,8 @@ if(g('pay')&&g('frase')){
   g('fgen').onclick=()=>{g('frase').value=pick(FR[g('fcat').value].frases,'f');fire()};
   g('fpoem').onclick=()=>{g('secreto').value=pick(FR[g('fcat').value].poemas,'p');fire()}}
  /* 2) Motivos: 3 imágenes por fecha especial */
- {const box=document.createElement('div');box.className='hidden';box.innerHTML='<span class="label">Motivo (elige una imagen)</span><div class="grid grid-cols-3 gap-3" id="mvG"></div>';g('frase').closest('div').insertAdjacentElement('afterend',box);window.MOTIVO=0;
-  const build=()=>{box.classList.toggle('hidden',!T.imgs);if(T.imgs)g('mvG').innerHTML=T.imgs.map((s,i)=>`<button type="button" class="pick p-1" data-mv="${i}" aria-pressed="${i===MOTIVO}"><img src="${s}" alt="Motivo ${i+1}" class="w-full aspect-[4/3] object-cover rounded-[16px]" onerror="this.parentNode.style.opacity=.35"></button>`).join('')};
+ {const box=document.createElement('div');box.className='hidden';box.innerHTML='<span class="label">Plantilla de fondo (elige una textura)</span><div class="grid grid-cols-3 gap-3" id="mvG"></div>';g('frase').closest('div').insertAdjacentElement('afterend',box);window.MOTIVO=0;
+  const build=()=>{box.classList.toggle('hidden',!T.imgs);if(T.imgs)g('mvG').innerHTML=T.imgs.map((s,i)=>`<button type="button" class="pick p-1" data-mv="${i}" aria-pressed="${i===MOTIVO}" aria-label="Plantilla ${i+1}"><span class="tpl-thumb con-plantilla"><span class="tpl-layer">${TD.tplHTML(T,i)}</span><i class="tpl-mock"></i></span></button>`).join('')};
   box.addEventListener('click',e=>{const b=e.target.closest('[data-mv]');if(b){window.MOTIVO=+b.dataset.mv;build();fire()}});g('ocasion').addEventListener('change',()=>{window.MOTIVO=0;build();fire()});
   g('pvAv').onerror=function(){this.onerror=null;this.src=TV.avatar(1,'Amigo')};build()}
  /* 3) Nota de voz real (micrófono, 10 s, baja tasa para que el link no sea enorme) */

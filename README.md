@@ -58,3 +58,25 @@ Ver INSTRUCCIONES_INSTALACION.md. Interruptores en js/config.js (TV.FUNCIONES y 
 
 ## v13
 Marca FRASSMOTTI, edición física en index, QR descargable y comprobante en el checkout. Ver INSTRUCCIONES_INSTALACION.md.
+
+## Fase 2 · Parte A (diseño y estructura de la tarjeta)
+- **Género + ocasión (obligatorio):** `personalizar.html` pide "mujer / hombre"; el selector de ocasión y los diseños se filtran solos (`TV.SOLO`, `TV.DISENOS` en `js/config.js`). Mamá y Día de la Mujer son solo para mujer; Papá (nuevo) solo para hombre.
+- **Diseño automático:** flores, marco de la foto y decoración cambian según género + ocasión (`js/diseno.js`). El cliente puede cambiarlo entre los que cuadran.
+- **Fondos con degradado:** uno por ocasión (`TV.FONDOS`). Si el cliente elige un color, el fondo y las letras toman ese color.
+- **Colores:** Azul, Rojo, Negro, Violeta y Amarillo (`TV.PALETA`). Los links antiguos (rosa/noche/ámbar) siguen funcionando.
+- **Tipografías:** 3 estilos (`TV.FUENTES`): Scrapbook, Elegante y Moderna.
+- **Título y palabra en círculos editables:** el título se ajusta solo para no romper el diseño.
+- **Sello de cera:** inicial elegible (por defecto, la de quien recibe).
+- **Foto:** opcional; a color o blanco y negro; ajuste de encuadre (arrastrar + zoom) con la proporción real del espacio (`js/foto.js`).
+- **3 tamaños:** Tarjeta 1 Postal (~50 palabras), 2 Deslizante (~150) y 3 Tipo libro (200-300+, pasa páginas) (`js/mensaje.js`, `TV.TAMANOS`). El mensaje largo viaja cifrado en el link (`PL.x`).
+- **Fechas especiales habilitadas:** Día de la Mujer Boliviana, Halloween, Todos los Santos y Navidad (`activo:true`); sus 12 imágenes se leen de `assets/<fecha>-1..3.jpg`.
+- **Panel admin:** lee los campos nuevos del pedido (género, diseño, tamaño, tipografía, título, palabra, sello, mensaje completo, color y modo de foto).
+- Estilos nuevos en `css/v14.css`. La portada (Fase 1: `index.html`, `css/hero.css`, `js/fx.js`) no se tocó.
+
+## v15 · Plantillas de fondo integradas
+Las 12 imágenes de Día de la Mujer, Halloween, Navidad y Todos Santos ya no son la foto de la tarjeta: son la textura del fondo.
+- Capas (css/v14.css, sección v15): imagen con máscara degradada + tinte del color elegido + velo central para que se lea el texto. Los marcos y flores van por encima, igual que antes.
+- La foto de la tarjeta es solo la que sube el cliente (o el avatar por defecto).
+- Opacidad y encuadre por imagen en `TV.TPL` (js/config.js). Una ocasión nueva solo necesita `_esp({...})` y sus 3 imágenes `assets/<id>-1..3.jpg`.
+- En personalizar.html el selector muestra miniaturas con el efecto real. El pedido de WhatsApp sigue enviando `Motivo: N` (admin.html no cambia).
+- La imagen para historias también funde la plantilla.

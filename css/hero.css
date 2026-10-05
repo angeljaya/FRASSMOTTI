@@ -1,0 +1,43 @@
+/* FASE 1 · Hero oscuro orgánico + logo FRASSMOTTI (archivo nuevo; no altera styles.css) */
+.hero{position:relative;isolation:isolate;overflow:hidden;color:#f5f4f0;border-radius:0 0 44px 44px;background:radial-gradient(120% 85% at 72% 18%,#1d2331 0%,#11151d 46%,#06080c 100%)}
+/* texturas naturales: grano fino + vetas de pizarra */
+.hero::before,.hero::after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none}
+.hero::before{opacity:.55;mix-blend-mode:overlay;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E")}
+.hero::after{opacity:.35;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='600'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.004 .02' numOctaves='5' seed='7'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E") center/cover}
+.hero-bg{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.hero-bg i{position:absolute;border-radius:50%;filter:blur(70px);animation:drift 16s ease-in-out infinite alternate}
+.hero-bg .g1{width:520px;height:520px;right:4%;top:6%;background:radial-gradient(circle,rgba(212,175,55,.22),transparent 70%)}
+.hero-bg .g2{width:460px;height:460px;left:-6%;bottom:-8%;background:radial-gradient(circle,rgba(139,0,0,.3),transparent 70%);animation-delay:-6s}
+@keyframes drift{to{transform:translate(-40px,30px) scale(1.12)}}
+/* entrada fade-in con desplazamiento hacia arriba */
+.hx{opacity:0;transform:translateY(30px);animation:hxIn 1.1s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--d,0s)}
+@keyframes hxIn{to{opacity:1;transform:none}}
+.hero .chip{background:rgba(212,175,55,.12);color:#f2d675;border:1px solid rgba(212,175,55,.35)}
+.hero h1{color:#f5f4f0;text-shadow:0 2px 30px rgba(0,0,0,.5)}
+.gold-t{background:linear-gradient(100deg,#b8892a,#ffe29f 35%,#d4af37 60%,#ff9a6b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-p{color:#a9b1c0}
+.hero .btn-ghost{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.22);color:#f5f4f0;backdrop-filter:blur(6px)}
+.hero .btn-ghost:hover{background:rgba(255,255,255,.14)}
+/* header sobre el hero */
+.hero-header{position:absolute;left:0;right:0;top:0;z-index:30;max-width:72rem;margin:0 auto;color:#f5f4f0}
+.hero-header .btn-dark{background:linear-gradient(135deg,#ffe29f,#d4af37 55%,#8a640f);color:#1a1205;font-weight:600}
+.hero-header .btn-ghost{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);color:#f5f4f0}
+/* LOGO: sello de cera + letras en pan de oro */
+.logo{display:flex;align-items:center;gap:.7rem;text-decoration:none}
+.logo__seal{width:46px;height:46px;flex:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.65));animation:sealGlow 4s ease-in-out infinite}
+.logo__word{font-family:Cinzel,'Instrument Serif',serif;font-weight:900;font-size:1.35rem;letter-spacing:.2em;line-height:1;background:linear-gradient(100deg,#8a640f 0%,#ffe29f 22%,#d4af37 40%,#fff6d6 50%,#d4af37 60%,#8a640f 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 3px rgba(0,0,0,.75));animation:foil 5s linear infinite}
+@media(min-width:640px){.logo__seal{width:54px;height:54px}.logo__word{font-size:1.75rem}}
+@keyframes foil{to{background-position:-250% 0}}
+@keyframes sealGlow{50%{filter:drop-shadow(0 6px 10px rgba(0,0,0,.65)) drop-shadow(0 0 14px rgba(212,175,55,.45))}}
+/* respaldo CSS de la tarjeta (sin WebGL): misma estructura que la carta real */
+.hc{position:relative;width:min(250px,62vw);aspect-ratio:.655;display:flex;flex-direction:column;align-items:center;padding:14px 14px 0;background:#f5f4f0;border-radius:6px;box-shadow:0 40px 80px -20px #000;transform:rotate(-3deg);animation:hcFall 1.6s cubic-bezier(.3,1.4,.5,1) both,hcFloat 6s 1.6s ease-in-out infinite}
+.hc b{font:700 46px/1 Kalam,cursive;color:#b31010;transform:rotate(-6deg);text-shadow:2px 2px 0 #fff}
+.hcl{display:flex;gap:4px;margin:2px 0 -8px;position:relative;z-index:2}
+.hcl span{width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;font:900 13px Outfit,sans-serif;color:#111;box-shadow:-1px 3px 4px rgba(0,0,0,.25)}
+.hc .ph{width:84%;background:#fff;padding:7px 7px 24px;transform:rotate(2deg);box-shadow:0 8px 20px rgba(0,0,0,.25);position:relative}
+.hc .ph i{display:block;height:128px;background:linear-gradient(160deg,#a8a8a8,#2b2b2b)}
+.hc .ph em{position:absolute;left:0;right:0;bottom:2px;text-align:center;font:700 18px Caveat,cursive;color:#111}
+.hc p{margin:auto 0 18px;font:700 22px/1.1 Caveat,cursive;color:#000;transform:rotate(-3deg)}
+.hc .ws{position:absolute;right:-8px;top:66%;width:50px;height:50px;border-radius:48% 52% 55% 45%;background:radial-gradient(circle at 35% 35%,#ad1422,#6e000a 70%,#420005);display:grid;place-items:center;font:900 20px Cinzel,serif;color:#e6c35c;text-decoration:none;box-shadow:0 8px 18px rgba(0,0,0,.55),inset 0 2px 4px rgba(255,255,255,.35)}
+@keyframes hcFall{from{transform:translateY(-170%) rotate(-20deg);opacity:0}}
+@keyframes hcFloat{50%{transform:translateY(-12px) rotate(-1deg)}}

@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FAFAF9"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script><script src="../js/tw.js"></script><link rel="stylesheet" href="../css/styles.css">
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="theme-color" content="#080a0f">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="theme-color" content="#080a0f">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script></head>
 <body class="carta-page"><div class="bg-glow"></div>
 <header class="topbar"><a href="../index.html" class="pill"><i data-lucide="arrow-left"></i>Volver a la tienda</a><button class="pill" id="btnSound" aria-label="Sonido"><i data-lucide="volume-2"></i><span>Sonido</span></button></header>
@@ -73,18 +73,24 @@
 /* Lee ?nombre&frase&color&t y el #payload cifrado (foto, secreto, pista) */
 const q=new URLSearchParams(location.search),$=id=>document.getElementById(id),PL=TVS.unpack(location.hash.slice(1));
 const T=TV.find(q.get('t')),nombre=clean(q.get('nombre'),24)||'Alguien especial',frase=clean(q.get('frase'),70)||T.frase,col=TV.COLORS[q.get('color')]||T.K.ac,de=clean(q.get('de'),24);
-/* Título script + palabra en círculos según la plantilla (se puede forzar con ?titulo=&palabra=) */
-const TH={'cumple-divertido':['Feliz','CUMPLE'],amor:['Te','QUIERO'],gracias:['Muchas','GRACIAS'],aniversario:['Juntos','SIEMPRE'],mama:['Para','MAMÁ']},th=TH[T.id]||TH['cumple-divertido'];
-const tit=clean(q.get('titulo'),14)||th[0],pal=(clean(q.get('palabra'),9)||th[1]).toUpperCase().slice(0,9);
-TV.applyTheme(T,col);document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href='../personalizar.html?plantilla='+T.id;
-$('tituloTxt').textContent=tit;$('monogramTxt').textContent=nombre.charAt(0).toUpperCase();$('cap').textContent=nombre+(de?' · de '+de:'');
+/* v14: mensaje largo (viaja en el payload), tamaño 1/2/3, género, diseño, tipografía, color de fondo, inicial del sello */
+const msgLargo=PL.x?clean(PL.x,2600).trim():'',msgTxt=msgLargo||frase,tam=TV.tam(q.get('tam')).id,gen=q.get('g')==='h'?'h':'m';
+/* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
+const tit=clean(q.get('titulo'),14)||T.ti,pal=(clean(q.get('palabra'),9)||T.pa).toUpperCase().slice(0,9);
+const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.get('fu'),v:+q.get('v')||0});
+document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href='../personalizar.html?plantilla='+T.id;
+const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
+$('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
 for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
 [...pal].forEach((ch,i)=>{const d=document.createElement('div');d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.transform=`translateY(${i%2?8:0}px) rotate(${(Math.random()*20-10).toFixed(1)}deg)`;$('letrasCumple').append(d)});
 document.querySelectorAll('.circle-letter').forEach(d=>{const z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));d.style.width=d.style.height=z+'px';d.style.fontSize=Math.round(z*.57)+'px'});
-const hasPhoto=PL.p&&PL.p.startsWith('data:image/');$('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:((T.imgs&&TV.asset(T.imgs[+q.get('v')||0]))||TV.avatar(+q.get('avatar')||1,nombre));$('av').classList.toggle('color',!hasPhoto);
+const hasPhoto=PL.p&&PL.p.startsWith('data:image/');
+$('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:TV.avatar(+q.get('avatar')||1,nombre);$('av').classList.toggle('color',!hasPhoto||q.get('fo')==='c');
+TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
+const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
 const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
 const boom=()=>confetti({particleCount:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
-let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;new Typed('#typed',{strings:[frase],typeSpeed:42,showCursor:false,contentType:'text'})};
+let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
 if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
 $('btnSound').onclick=()=>{soundEnabled=!soundEnabled;$('btnSound').innerHTML='<i data-lucide="'+(soundEnabled?'volume-2':'volume-x')+'"></i><span>'+(soundEnabled?'Sonido':'Mudo')+'</span>';lucide.createIcons()};
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
@@ -101,10 +107,11 @@ const DEMO=q.get('ej')==='1'&&nombre==='Carla'&&!location.hash;let PAID=!TV.REQU
 const LOCK='Se activa al confirmar el pago';
 /* Descargar como imagen (formato historia 1080x1920) */
 $('img').onclick=async()=>{if(!PAID){toast(LOCK);return}try{const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,W,H);
- g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect(90,380,900,1080,64);x.fill();
+ g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect(90,380,900,1080,64);x.fill();
  await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,640,170,0,7);x.clip();x.fillStyle='#fff';x.fill();x.drawImage(i,370,470,340,340);x.restore();res()};i.onerror=res;i.src=$('av').src});
  x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';x.fillText('UNA TARJETITA PARA',540,900);x.fillStyle='#111827';x.font='130px "Instrument Serif",serif';x.fillText(nombre,540,1040);
- x.font='54px Outfit,sans-serif';x.fillStyle='#374151';let ln='',y=1150;for(const w of frase.split(' ')){if(x.measureText(ln+w).width>760){x.fillText(ln.trim(),540,y);y+=70;ln=''}ln+=w+' '}x.fillText(ln.trim(),540,y);
+ x.font='54px Outfit,sans-serif';x.fillStyle='#374151';let ln='',y=1150;for(const w of msgTxt.split(' ').slice(0,38)){if(x.measureText(ln+w).width>760){x.fillText(ln.trim(),540,y);y+=70;ln=''}ln+=w+' '}x.fillText(ln.trim(),540,y);
  x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,1700);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,1765)}
  c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tarjetita-'+nombre+'.png';a.click()})}catch(e){toast('No se pudo generar la imagen')}};
 /* Secreto con candado */

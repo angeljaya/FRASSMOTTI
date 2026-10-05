@@ -13,6 +13,11 @@ const cp=g('comp'),info=g('compInfo');
 cp.addEventListener('change',()=>{const f=cp.files[0];info.textContent='';if(!f)return;if(!f.type.startsWith('image/')||f.size>10*1048576){cp.value='';info.textContent='Sube una imagen (captura) de hasta 10 MB.';return}info.textContent='Adjunto: '+f.name});
 window.sinComprobante=()=>{if(cp.files[0])return false;toast('Adjunta la captura de tu comprobante de Yape');cp.focus();return true};
 window.enviarPedido=async t=>{const f=cp.files[0],full=t+'\nComprobante: '+f.name;
- try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:full});toast('Elige WhatsApp y el contacto FRASSMOTTI (+591 '+TV.WHATSAPP.slice(3)+')');return}}catch(e){if(e&&e.name==='AbortError')return}
- window.open(TV.wa(full),'_blank');toast('Adjunta la captura de tu comprobante en el chat')};
+ /* v14: devuelve true si el pedido salió (menú Compartir o chat abierto) y false si el cliente canceló */
+ let ph=null;try{ph=window.fotoParaEnviar?await window.fotoParaEnviar():null}catch(e){}
+ const sets=ph?[[f,ph],[f]]:[[f]];
+ for(const files of sets){try{if(navigator.canShare&&navigator.canShare({files})){await navigator.share({files,text:full});toast('Elige WhatsApp y el contacto FRASSMOTTI (+591 '+TV.WHATSAPP.slice(3)+')');return true}}catch(e){if(e&&e.name==='AbortError')return false}}
+ /* Sin menú Compartir: abre el chat con el texto; si el pedido es muy largo, se copia para pegarlo */
+ if(TV.wa(full).length>7000){try{await navigator.clipboard.writeText(full)}catch(e){}window.open(TV.wa('Hola! Mi pedido FRASSMOTTI es largo: lo pego en el siguiente mensaje.'),'_blank');toast('Copiamos tu pedido completo: pégalo en el chat y adjunta tu comprobante'+(ph?' y tu foto':''));return true}
+ window.open(TV.wa(full),'_blank');toast('Adjunta la captura de tu comprobante'+(ph?' y tu foto':'')+' en el chat');return true};
 })();

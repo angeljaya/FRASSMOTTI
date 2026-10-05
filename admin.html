@@ -9,11 +9,16 @@
 <div><label class="label" for="plantilla">Plantilla</label><select id="plantilla" class="input"></select></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="nombre">Para</label><input id="nombre" class="input" maxlength="24"></div><div><label class="label" for="de">De parte de</label><input id="de" class="input" maxlength="24"></div></div>
 <div><label class="label" for="frase">Frase</label><input id="frase" class="input" maxlength="70"></div>
-<div><label class="label" for="color">Color de acento</label><select id="color" class="input"><option value="">Según plantilla</option><option value="rosa">Rosa</option><option value="noche">Noche</option><option value="ambar">Ámbar</option></select></div>
+<div><label class="label" for="color">Color de acento</label><select id="color" class="input"><option value="">Según plantilla</option><option value="azul">Azul</option><option value="rojo">Rojo</option><option value="negro">Negro</option><option value="violeta">Violeta</option><option value="amarillo">Amarillo</option><option value="rosa">Rosa (antiguo)</option><option value="noche">Noche (antiguo)</option><option value="ambar">Ámbar (antiguo)</option></select></div>
 <div><label class="label" for="secreto">Mensaje secreto (opcional)</label><textarea id="secreto" rows="2" maxlength="240" class="input"></textarea></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista</label><input id="pista" class="input" maxlength="60"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="qLock">Cerradura: pregunta</label><input id="qLock" class="input" maxlength="80"></div><div><label class="label" for="aLock">Cerradura: respuesta</label><input id="aLock" class="input" maxlength="30"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label></div>
+<div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="gen">Para</label><select id="gen" class="input"><option value="m">Mujer</option><option value="h">Hombre</option></select></div><div><label class="label" for="tam">Tamaño</label><select id="tam" class="input"><option value="1">1 · Postal</option><option value="2">2 · Deslizante</option><option value="3">3 · Tipo libro</option></select></div><div><label class="label" for="fu">Tipografía</label><select id="fu" class="input"></select></div></div>
+<div><label class="label" for="dis">Diseño (flores y marco)</label><select id="dis" class="input"></select></div>
+<div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="titulo">Título</label><input id="titulo" class="input" maxlength="14"></div><div><label class="label" for="palabra">Palabra en círculos</label><input id="palabra" class="input" maxlength="9"></div><div><label class="label" for="sello">Inicial del sello</label><input id="sello" class="input" maxlength="1"></div></div>
+<div><label class="label" for="mensaje">Mensaje completo (tarjeta 2 y 3; en la 1 puede ir igual que la frase)</label><textarea id="mensaje" rows="4" maxlength="2600" class="input"></textarea></div>
+<div><label class="label" for="fo">Foto</label><select id="fo" class="input"><option value="">Blanco y negro</option><option value="c">A color</option></select></div>
 <div><label class="label" for="foto">Foto (opcional): la que el cliente te envió por WhatsApp</label><input id="foto" type="file" accept="image/*" class="input"><p class="text-xs text-gray-600 mt-1">Con foto el link queda más largo. Sin foto, es corto.</p></div>
 <div id="mvRow" class="hidden"><label class="label" for="motivo">Motivo (imagen)</label><select id="motivo" class="input"></select></div>
 <div data-feat="voz"><label class="label" for="voz">Nota de voz (audio que envió el cliente)</label><input id="voz" type="file" accept="audio/*" class="input"><p id="vozInfo" class="text-xs text-gray-600 mt-1">Máximo unos 15 segundos para que el link no sea enorme.</p></div>
@@ -58,4 +63,33 @@ $('order').addEventListener('input',()=>{mv();const m=(v('order').match(/^Motivo
 $('voz').addEventListener('change',e=>{window.__voz=null;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{window.__voz=r.result;$('vozInfo').textContent='Audio: '+Math.round(r.result.length/1024)+' KB dentro del link'+(r.result.length>90000?' (muy grande: pide un audio más corto)':'')};r.readAsDataURL(f)});
 async function nuevas(p,pl,T){if(T.imgs&&v('motivo'))p.set('v',v('motivo'));if(TV.on('voz')&&window.__voz)pl.a=window.__voz;
  if(TV.on('grupo')){const g=[...v('aportes').matchAll(/Aporte:\s*(\S+)/g)].map(m=>TVS.unpack(m[1])).filter(x=>x&&x.n).slice(0,12);if(g.length)pl.g=g}}
+</script><script>
+/* v14: género, diseño, tamaño, tipografía, título/palabra, sello, mensaje largo y 3 pistas */
+(function(){
+const FU=TV.FUENTES;$('fu').innerHTML=FU.map(f=>`<option value="${f.id}">${f.n}</option>`).join('');
+const loadDis=()=>{$('dis').innerHTML=TV.DISENOS.map(d=>`<option value="${d.id}">${d.n}</option>`).join('')};loadDis();
+const pick=(id,val,ok)=>{if(ok)$(id).value=val};
+/* ajusta las pistas y las lee del pedido */
+const get=(t,k)=>{const m=t.match(new RegExp('^'+k+':\\s*"?(.*?)"?\\s*$','mi'));const r=m?m[1].trim():'';return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)?'':r};
+$('order').addEventListener('input',()=>{const t=v('order');
+ const g=get(t,'Género'),d=get(t,'Diseño'),tam=get(t,'Tamaño'),fu=get(t,'Tipografía'),msg=get(t,'Mensaje \\(\\d+ palabras\\)').replace(/\s*¶\s*/g,'\n'),col=get(t,'Color');
+ $('gen').value=/^hombre$/i.test(g)?'h':'m';
+ pick('dis',d,TV.DISENOS.some(x=>x.id===d));if(!TV.DISENOS.some(x=>x.id===d)){const l=TV.disenos($('gen').value,v('plantilla'));if(l[0])$('dis').value=l[0].id}
+ pick('tam',tam,['1','2','3'].includes(tam));$('tam').value=['1','2','3'].includes(tam)?tam:'1';pick('fu',fu,FU.some(x=>x.id===fu));
+ $('titulo').value=get(t,'Título');$('palabra').value=get(t,'Palabra');$('sello').value=get(t,'Inicial del sello').slice(0,1);
+ $('mensaje').value=msg;
+ if(col&&Object.keys(TV.COLORS).includes(col))$('color').value=col;
+ const enc=get(t,'Encuadre foto');$('fo').value=/modo=color/.test(enc)?'c':'';});
+/* miniatura de la foto con la proporción del espacio de la tarjeta (según el tamaño elegido) */
+const PH={1:200,2:150,3:112};
+$('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{
+ const W=170,H=Math.round(W*PH[+$('tam').value||1]/235),c=document.createElement('canvas');c.width=W;c.height=H;const a=W/H;let sw=i.width,sh=i.width/a;if(sh>i.height){sh=i.height;sw=i.height*a}
+ c.getContext('2d').drawImage(i,(i.width-sw)/2,(i.height-sh)/2,sw,sh,0,0,W,H);thumb=c.toDataURL('image/jpeg',.55)};i.src=r.result};r.readAsDataURL(f)};
+/* parámetros del link y payload */
+const _n=nuevas;nuevas=async(p,pl,T)=>{await _n(p,pl,T);
+ p.set('g',v('gen'));p.set('d',v('dis'));p.set('tam',v('tam'));p.set('fu',v('fu'));
+ const ti=clean(v('titulo'),14).trim(),pa=clean(v('palabra'),9).trim(),se=clean(v('sello'),1).trim(),fo=v('fo');
+ if(ti)p.set('titulo',ti);if(pa)p.set('palabra',pa);if(se)p.set('sello',se);if(fo)p.set('fo',fo);
+ const m=clean(v('mensaje'),2600).trim();if(m&&(+v('tam')>1||m.length>70))pl.x=m;}
+})();
 </script></body></html>
