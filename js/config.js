@@ -43,6 +43,9 @@ const TV={
 /* ===== 2. INTERRUPTORES: true = visible para el cliente ===== */
 TV.FUNCIONES={redactor:false,grupo:false,voz:false};
 
+/* ===== TUTORIAL "Tu regalo paso a paso" (index.html, sección #tutorial). activo:false lo oculta. entrega: texto opcional, ej. '3 a 5 días hábiles' (vacío = no se muestra) ===== */
+TV.TUTORIAL={activo:true,entrega:''};
+
 /* ===== EDICIÓN FÍSICA (sección de index.html). activo:false la oculta; precio:123 muestra "Desde 123 Bs" ===== */
 TV.FISICOS=[
  {id:'llavero',name:'Llavero acrílico',d:'Acrílico transparente con tu QR grabado. Va contigo a todas partes.',activo:true},

@@ -1,6 +1,7 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Panel de pedidos | Frassmotti</title>
 <link rel="icon" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><script src="js/config.js"></script><script src="js/secret.js"></script></head>
+<script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet">
+<script src="js/config.js"></script><script src="js/secret.js"></script><script src="js/diseno.js"></script><script src="js/exportar.js"></script></head>
 <body><main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
 <div class="pt-4 flex items-center justify-between"><h1 class="serif text-4xl">Panel de pedidos</h1><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a></div>
 <div class="card p-5 space-y-3"><p class="font-semibold text-gray-900">Paso 1: pega el pedido que te llegó por WhatsApp</p>
@@ -11,7 +12,8 @@
 <div><label class="label" for="frase">Frase</label><input id="frase" class="input" maxlength="70"></div>
 <div><label class="label" for="color">Color de acento</label><select id="color" class="input"><option value="">Según plantilla</option><option value="azul">Azul</option><option value="rojo">Rojo</option><option value="negro">Negro</option><option value="violeta">Violeta</option><option value="amarillo">Amarillo</option><option value="rosa">Rosa (antiguo)</option><option value="noche">Noche (antiguo)</option><option value="ambar">Ámbar (antiguo)</option></select></div>
 <div><label class="label" for="secreto">Mensaje secreto (opcional)</label><textarea id="secreto" rows="2" maxlength="240" class="input"></textarea></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista</label><input id="pista" class="input" maxlength="60"></div></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista 1</label><input id="pista" class="input" maxlength="60"></div></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="pista2">Pista 2 (opcional)</label><input id="pista2" class="input" maxlength="60"></div><div><label class="label" for="pista3">Pista 3 (opcional)</label><input id="pista3" class="input" maxlength="60"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="qLock">Cerradura: pregunta</label><input id="qLock" class="input" maxlength="80"></div><div><label class="label" for="aLock">Cerradura: respuesta</label><input id="aLock" class="input" maxlength="30"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label></div>
 <div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="gen">Para</label><select id="gen" class="input"><option value="m">Mujer</option><option value="h">Hombre</option></select></div><div><label class="label" for="tam">Tamaño</label><select id="tam" class="input"><option value="1">1 · Postal</option><option value="2">2 · Deslizante</option><option value="3">3 · Tipo libro</option></select></div><div><label class="label" for="fu">Tipografía</label><select id="fu" class="input"></select></div></div>
@@ -27,7 +29,17 @@
 <button id="go" class="btn btn-accent w-full text-lg">Generar link de la tarjeta</button><p id="msg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p>
 <div id="res" class="card p-5 hidden space-y-3"><p class="font-semibold text-gray-900">Paso 3: envía el link al cliente</p><textarea id="out" rows="3" class="input" readonly></textarea><p id="len" class="text-xs text-gray-600"></p>
 <div><label class="label" for="cli">WhatsApp del cliente</label><input id="cli" class="input" inputmode="tel" placeholder="7XXXXXXX"></div>
-<div class="grid grid-cols-3 gap-2"><button id="cp" class="btn btn-ghost text-sm">Copiar</button><a id="ver" target="_blank" class="btn btn-ghost text-sm">Ver</a><button id="wa" class="btn btn-dark text-sm">WhatsApp</button></div></div></main>
+<div class="grid grid-cols-3 gap-2"><button id="cp" class="btn btn-ghost text-sm">Copiar</button><a id="ver" target="_blank" class="btn btn-ghost text-sm">Ver</a><button id="wa" class="btn btn-dark text-sm">WhatsApp</button></div></div><div id="xCard" class="card p-5 space-y-4"><div class="flex items-center justify-between gap-3"><p class="font-semibold text-gray-900">Paso 4: descargar la tarjeta terminada</p><span class="text-xs font-semibold uppercase tracking-wide text-gray-600 border border-gray-300 rounded-full px-3 py-1">Solo vendedor</span></div>
+<div id="xLock" class="space-y-3"><p class="text-sm text-gray-600">Escribe tu PIN de administrador para habilitar la descarga en alta resolución. Esta sección no existe en la tienda ni en la tarjeta del cliente.</p>
+<div class="flex gap-2"><input id="xPin" type="password" class="input" placeholder="PIN de administrador" autocomplete="off"><button id="xUnlock" type="button" class="btn btn-dark text-sm">Desbloquear</button></div><p id="xLockMsg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p></div>
+<div id="xPanel" class="space-y-4" hidden style="display:none"><div class="flex items-center justify-between gap-3"><p id="xModo" class="text-xs text-gray-600"></p><button id="xCerrar" type="button" class="text-xs underline text-gray-700">Bloquear</button></div>
+<p class="text-sm text-gray-600">Usa los datos del Paso 2 (y la foto que subiste). Incluye el mensaje completo, la plantilla de fondo, las flores y el marco.</p>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="xQ">Calidad</label><select id="xQ" class="input"><option value="3">Normal (1020 px de ancho)</option><option value="4" selected>Alta (1360 px)</option><option value="6">Máxima (2040 px, para imprimir)</option></select></div>
+<label class="flex items-center gap-3 text-sm pt-6"><input id="xMarca" type="checkbox" class="w-5 h-5"><span>Incluir marca "Hecha con FRASSMOTTI"</span></label></div>
+<div class="grid grid-cols-3 gap-2"><button id="xPng" data-x type="button" class="btn btn-dark text-sm">PNG</button><button id="xJpg" data-x type="button" class="btn btn-dark text-sm">JPG</button><button id="xPdf" data-x type="button" class="btn btn-dark text-sm">PDF</button></div>
+<button id="xVer" data-x type="button" class="btn btn-ghost w-full text-sm">Ver vista previa</button><p id="xMsg" class="text-sm text-gray-600 min-h-[1.25rem]" role="status"></p>
+<img id="xPrev" alt="Vista previa de la tarjeta" class="w-full max-w-xs mx-auto rounded-xl border border-gray-200" hidden style="display:none"></div></div>
+</main>
 <script>
 const $=id=>document.getElementById(id),v=id=>$(id).value;let thumb=null;
 $('plantilla').innerHTML=TV.TODAS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
@@ -41,7 +53,7 @@ $('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r
 $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre'),24);if(!nombre){$('msg').textContent='Falta el nombre de quien recibe.';return}
  const T=TV.find(v('plantilla')),sec=clean(v('secreto'),240),clave=clean(v('clave'),20).trim(),pl={};
  const p=new URLSearchParams({nombre,frase:clean(v('frase'),70)||T.frase,color:v('color'),t:T.id,de:clean(v('de'),24)});
- if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);pl.h=clean(v('pista'),60)}else pl.m=sec}
+ if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);const hh=['pista','pista2','pista3'].map(i=>clean(v(i),60).trim()).filter(Boolean);if(hh.length)pl.h=hh.length>1?hh:hh[0]}else pl.m=sec}
  let link=location.href.replace(/admin\.html.*$/,'')+'r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
  if(TV.REQUIRE_PAYMENT){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
   if(!r.ok){$('msg').textContent=d.error||'Error al firmar';return}sessionStorage.setItem('tv_pin',v('pin'));link=d.link}catch(e){$('msg').textContent='No se pudo contactar /api/sign (ver README).';return}}
@@ -76,6 +88,7 @@ $('order').addEventListener('input',()=>{const t=v('order');
  $('gen').value=/^hombre$/i.test(g)?'h':'m';
  pick('dis',d,TV.DISENOS.some(x=>x.id===d));if(!TV.DISENOS.some(x=>x.id===d)){const l=TV.disenos($('gen').value,v('plantilla'));if(l[0])$('dis').value=l[0].id}
  pick('tam',tam,['1','2','3'].includes(tam));$('tam').value=['1','2','3'].includes(tam)?tam:'1';pick('fu',fu,FU.some(x=>x.id===fu));
+ $('pista2').value=get(t,'Pista 2');$('pista3').value=get(t,'Pista 3');
  $('titulo').value=get(t,'Título');$('palabra').value=get(t,'Palabra');$('sello').value=get(t,'Inicial del sello').slice(0,1);
  $('mensaje').value=msg;
  if(col&&Object.keys(TV.COLORS).includes(col))$('color').value=col;

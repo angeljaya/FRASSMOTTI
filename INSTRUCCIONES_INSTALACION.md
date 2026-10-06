@@ -34,3 +34,17 @@ WhatsApp no permite adjuntar archivos desde un enlace, así que:
 - **En celular compatible:** al enviar, se abre el menú Compartir con el texto del pedido y la captura juntos. El cliente elige WhatsApp y el contacto FRASSMOTTI.
 - **En computadora u otro equipo:** se abre el chat con el texto del pedido y el cliente adjunta la captura manualmente.
 El checkout no deja enviar sin captura. Foto y nota de voz también se envían por el chat.
+
+## 6. Descargar la tarjeta terminada (solo tú)
+1. En Cloudflare Pages > Settings > Variables and Secrets debe existir `ADMIN_PIN` (la misma que ya usas para firmar). Vuelve a desplegar con `npx wrangler pages deploy . --project-name frassmotti` o con Git (arrastrar y soltar NO ejecuta Functions).
+2. Abre `/admin.html`, pega el pedido y sube la foto del cliente (Paso 2).
+3. En **Paso 4** escribe tu PIN, elige la calidad y toca PNG, JPG o PDF.
+Si ves "Falta la función /api/admin", el despliegue no incluyó `functions/`. En `localhost` no pide PIN.
+
+## 7. Tutorial "paso a paso" (index.html)
+- Se ve solo, sin configurar nada. Está debajo de la sección "Edición física".
+- **Tiempo de entrega:** en `js/config.js` busca `TV.TUTORIAL` y escribe, por ejemplo, `entrega:'3 a 5 días hábiles'`. Aparece en el paso 7. Déjalo vacío si prefieres no prometer plazos.
+- **Ocultarlo:** `TV.TUTORIAL={activo:false,...}`.
+- **Cambiar textos:** abre `js/tutorial.js` y edita la lista `PASOS` (cada paso tiene `t` título, `feel` frase emocional, `p` explicación y `tip` consejo).
+- **Revisa que los pasos 5 a 7 coincidan con tu forma real de trabajar** (por ejemplo, cómo coordinas la entrega a domicilio) y ajústalos si cambia.
+- Probar en tu computadora: `python3 -m http.server 8000` y abre `http://localhost:8000/#tutorial`.

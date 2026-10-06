@@ -79,5 +79,5 @@ function apply(root,o){const d=TV.diseno(o.dis,o.g||'m',o.t.id);theme(o.t,o.col,
 
 /* El título editable se encoge solo si es largo, para que la tipografía nunca se desarme */
 function titleFit(el,text){const base=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--f-ts'))||62;el.style.fontSize=Math.round(base*Math.min(1,9.5/Math.max((text||'').length,1)))+'px'}
-return{FLOR,MINI,theme,decorate,template,tplHTML,apply,titleFit};
+return{FLOR,MINI,MINI_DE,theme,decorate,template,tplHTML,apply,titleFit};
 })();
