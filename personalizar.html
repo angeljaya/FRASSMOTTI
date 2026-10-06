@@ -85,17 +85,31 @@
   <div><label class="label" for="sello">Inicial del sello de cera</label><input id="sello" class="input !w-24 text-center text-xl uppercase" maxlength="1" placeholder="C" aria-describedby="selloH"><p id="selloH" class="text-xs text-gray-600 mt-1">Es la letra que aparece en el sello del sobre. Si la dejas vacía, usamos la inicial de quien recibe.</p></div>
  </section>
 
- <fieldset class="card p-6 space-y-4"><legend class="sr-only">Regalo secreto</legend>
-  <h3 class="serif text-2xl flex items-center gap-2"><i data-lucide="lock" class="w-5 h-5 text-accent"></i>Adivina el secreto</h3>
-  <div><label class="label" for="secreto">Mensaje secreto</label><textarea id="secreto" rows="3" maxlength="240" class="input" placeholder="Lo que solo verá quien adivine la clave"></textarea></div>
-  <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20" placeholder="Opcional"></div>
-  <div><label class="label" for="pista">Pista</label><input id="pista" class="input" maxlength="60" placeholder="Nuestro primer viaje"></div></div></fieldset>
- <fieldset class="card p-6 space-y-4"><legend class="sr-only">Extras mágicos</legend>
-  <h3 class="serif text-2xl flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>Extras mágicos <span class="text-sm text-gray-500 font-normal">(opcional)</span></h3>
-  <div><label class="label" for="qLock">Cerradura: pregunta antes de abrir el sobre</label><input id="qLock" class="input" maxlength="80" placeholder="¿Dónde nos conocimos?"></div>
-  <div><label class="label" for="aLock">Respuesta de la cerradura</label><input id="aLock" class="input" maxlength="30" placeholder="Solo quien acierte podrá abrir el sobre"></div>
-  <div><label class="label" for="abre">Cápsula del tiempo: no se puede abrir antes de</label><input id="abre" type="datetime-local" class="input"><p class="text-xs text-gray-600 mt-1">Perfecta para cumpleaños sorpresa: la tarjeta queda sellada hasta esa fecha y hora.</p></div>
-  <label class="flex items-start gap-3 text-sm text-gray-700"><input id="ofi" type="checkbox" class="w-5 h-5 mt-0.5"><span><b>Modo oficina:</b> la tarjeta se abre disfrazada de hoja de Excel, ideal para leerla en el trabajo sin que se note.</span></label></fieldset>
+<fieldset class="card p-6 space-y-4" id="secCard"><legend class="sr-only">Adivina el secreto</legend>
+  <label class="flex items-start gap-3 cursor-pointer" for="secOn"><input id="secOn" type="checkbox" class="w-5 h-5 mt-1 flex-none" aria-controls="secBox"><span><span class="serif text-2xl flex items-center gap-2"><i data-lucide="lock" class="w-5 h-5 text-accent"></i>Adivina el secreto <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></span><span class="block text-sm text-gray-600 mt-1">Un mensaje escondido bajo candado: solo lo lee quien adivine la palabra secreta.</span></span></label>
+  <div id="secBox" class="space-y-4" hidden>
+   <div><label class="label" for="secreto">Mensaje secreto</label><textarea id="secreto" rows="3" maxlength="240" class="input" placeholder="Lo que solo verá quien adivine la palabra secreta"></textarea></div>
+   <div><label class="label" for="clave">Palabra secreta (la que abre el candado)</label><input id="clave" class="input" maxlength="20" placeholder="Ej: Paris" autocomplete="off"><p class="text-xs text-gray-600 mt-1">No importan las mayúsculas. Si la dejas vacía, el mensaje se verá sin candado.</p></div>
+   <div><span class="label">Pistas (hasta 3)</span><div class="space-y-2">
+    <input id="pista" class="input" maxlength="60" placeholder="Pista 1: Nuestro primer viaje" aria-label="Pista 1"><input id="pista2" class="input" maxlength="60" placeholder="Pista 2 (opcional): empieza con P" aria-label="Pista 2"><input id="pista3" class="input" maxlength="60" placeholder="Pista 3 (opcional): la ciudad del amor" aria-label="Pista 3"></div>
+    <p class="text-xs text-gray-600 mt-1">Se muestra la primera y quien la recibe puede pedir las otras, o aparecen solas al fallar.</p></div>
+   <div class="border-t border-gray-200 pt-4 space-y-3"><p class="text-sm font-semibold text-gray-900 flex items-center gap-2"><i data-lucide="key-round" class="w-4 h-4 text-accent"></i>Candado en el sobre <span class="font-normal text-gray-500">(opcional)</span></p>
+    <p class="text-xs text-gray-600 -mt-1">Antes de romper el sello, la persona debe responder una pregunta. Déjalo vacío si no lo quieres.</p>
+    <div><label class="label" for="qLock">Pregunta</label><input id="qLock" class="input" maxlength="80" placeholder="¿Dónde nos conocimos?"></div>
+    <div><label class="label" for="aLock">Respuesta</label><input id="aLock" class="input" maxlength="30" placeholder="Solo quien acierte podrá abrir el sobre" autocomplete="off"></div></div>
+  </div></fieldset>
+
+ <fieldset class="card p-6 space-y-4" id="capCard"><legend class="sr-only">Cápsula del tiempo</legend>
+  <label class="flex items-start gap-3 cursor-pointer" for="capOn"><input id="capOn" type="checkbox" class="w-5 h-5 mt-1 flex-none" aria-controls="capBox"><span><span class="serif text-2xl flex items-center gap-2"><i data-lucide="hourglass" class="w-5 h-5 text-accent"></i>Cápsula del tiempo <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></span><span class="block text-sm text-gray-600 mt-1">Programa cuándo se puede abrir tu regalo digital. Hasta esa fecha la tarjeta queda sellada y muestra una cuenta regresiva.</span></span></label>
+  <div id="capBox" class="space-y-3" hidden>
+   <div><label class="label" for="abre">Fecha y hora de entrega</label><input id="abre" type="datetime-local" class="input"></div>
+   <div class="flex flex-wrap gap-2" id="capQuick" aria-label="Fechas rápidas"></div>
+   <p id="capTxt" class="text-sm font-medium text-gray-800 min-h-[1.25rem]" role="status"></p>
+   <p class="text-xs text-gray-600">Perfecta para cumpleaños y sorpresas. La hora es la del dispositivo de quien abre la tarjeta. Si no eliges fecha, la tarjeta se abre apenas la reciba.</p>
+  </div></fieldset>
+
+ <fieldset class="card p-6 space-y-4"><legend class="sr-only">Modo oficina</legend>
+  <label class="flex items-start gap-3 text-sm text-gray-700"><input id="ofi" type="checkbox" class="w-5 h-5 mt-0.5"><span><b>Modo oficina</b> <span class="text-gray-500">(opcional)</span>: la tarjeta se abre disfrazada de hoja de Excel, ideal para leerla en el trabajo sin que se note.</span></label></fieldset>
 
  <section class="space-y-4" aria-labelledby="h5s"><h2 id="h5s" class="serif text-2xl">5. Cómo la quieres recibir</h2>
   <div><label class="label" for="formato">Formato</label><select id="formato" class="input"></select><p class="text-xs text-gray-600 mt-1">Llaveros, collares y manillas con QR: el precio se confirma por WhatsApp.</p></div>
@@ -108,7 +122,8 @@
 <div id="mSecret" class="modal"><div id="sCard" class="card p-7 w-full max-w-sm text-center relative">
  <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
  <div id="sLock"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3>
-  <p id="sHint" class="text-gray-600 text-sm mt-2"></p>
+  <p id="sHint" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p>
+  <button type="button" id="sMore" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button>
   <input id="sGuess" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off">
   <p id="sErr" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p>
   <button id="sTry" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
@@ -129,5 +144,5 @@
  <h3 class="serif text-3xl">Paga por Yape</h3><p class="text-gray-600 text-sm mt-1">Monto: <b>Bs <span class="price"></span></b></p>
  <div id="qrBox" class="flex justify-center my-5"></div><a id="qrDl" href="assets/qr-pago.png" download="qr-pago-frassmotti.png" class="btn btn-ghost text-sm w-full mb-4"><i data-lucide="download" class="w-4 h-4"></i>Descargar QR</a>
  <ol class="text-sm text-gray-600 text-left list-decimal pl-5 space-y-1"><li>Escanea el QR con Yape y paga.</li><li>Guarda la captura del comprobante.</li><li>Adjunta la captura abajo y toca el botón: se abre WhatsApp con tu pedido. Si subiste foto o audio, envíalos también en el chat.</li></ol>
- <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de Yape</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a></div></div>
+ <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de Yape</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a><a href="index.html#tutorial" class="block text-sm text-gray-600 underline mt-2">Ver el paso a paso de mi pedido</a></div></div>
 <div id="toast" class="toast" role="status"></div><script src="js/secret.js"></script><script src="js/personalizar.js"></script><script src="js/nuevas.js"></script><script src="js/pago.js"></script></body></html>
