@@ -1,21 +1,20 @@
 export async function onRequestPost(context) {
   try {
-    const { request, env } = context;
-    const body = await request.json();
+    const datos = await context.request.json();
     
-    // Generar ID aleatorio de 6 caracteres
-    const id = Math.random().toString(36).substring(2, 8);
+    // Genera un ID corto de 6 letras/números (ej. A5F9K2)
+    const id = Math.random().toString(36).substring(2, 8).toUpperCase();
     
-    // Guardar en Cloudflare KV
-    await env.TARJETAS_KV.put(id, JSON.stringify(body));
-
+    // Guarda los datos en tu base de datos KV
+    await context.env.TARJETAS_KV.put(id, JSON.stringify(datos));
+    
     return new Response(JSON.stringify({ success: true, id: id }), {
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      headers: { "Content-Type": "application/json" }
     });
   } catch (error) {
     return new Response(JSON.stringify({ success: false, error: error.message }), { 
       status: 500,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
+      headers: { "Content-Type": "application/json" }
     });
   }
 }
