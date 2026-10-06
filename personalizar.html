@@ -145,4 +145,11 @@
  <div id="qrBox" class="flex justify-center my-5"></div><a id="qrDl" href="assets/qr-pago.png" download="qr-pago-frassmotti.png" class="btn btn-ghost text-sm w-full mb-4"><i data-lucide="download" class="w-4 h-4"></i>Descargar QR</a>
  <ol class="text-sm text-gray-600 text-left list-decimal pl-5 space-y-1"><li>Escanea el QR con Yape y paga.</li><li>Guarda la captura del comprobante.</li><li>Adjunta la captura abajo y toca el botón: se abre WhatsApp con tu pedido. Si subiste foto o audio, envíalos también en el chat.</li></ol>
  <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de Yape</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a><a href="index.html#tutorial" class="block text-sm text-gray-600 underline mt-2">Ver el paso a paso de mi pedido</a></div></div>
+<!-- ENVÍO CON ÉXITO (se muestra al enviar el comprobante de Yape) -->
+<div id="okEnvio" class="ok-wrap" role="dialog" aria-modal="true" aria-labelledby="okT"><div class="ok-box">
+ <div class="ok-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+ <span class="ok-3d" id="okT">¡Envío con éxito!</span>
+ <p class="ok-sub">Tu pedido ya va camino a nuestro WhatsApp. Estás por regalar algo que nadie más tendrá: algo hecho solo para esa persona.</p>
+ <div class="ok-next"><b>¿Qué sigue?</b><br>1. Verificamos tu pago de Yape.<br>2. Preparamos tu tarjeta con todo lo que elegiste.<br>3. Te escribimos por WhatsApp con tu link mágico.</div>
+ <div class="ok-btns"><a id="okWa" class="btn ok-wa hidden" target="_blank" rel="noopener">Abrir WhatsApp con mi pedido</a><button type="button" id="okCerrar" class="btn btn-accent">Perfecto, gracias</button><a href="index.html" class="btn ok-home">Volver al inicio</a></div></div></div>
 <div id="toast" class="toast" role="status"></div><script src="js/secret.js"></script><script src="js/personalizar.js"></script><script src="js/nuevas.js"></script><script src="js/pago.js"></script></body></html>

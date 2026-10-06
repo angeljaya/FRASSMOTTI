@@ -100,6 +100,18 @@ Dos secciones nuevas en `personalizar.html`, cada una con su interruptor. Apagad
 - **Borrador:** los interruptores y las 3 pistas se guardan en el borrador; los borradores viejos con secreto o fecha encienden su interruptor solos.
 - **Archivos tocados:** `personalizar.html`, `js/personalizar.js`, `r/tarjeta.html`, `admin.html`. La lógica de la cápsula y del candado del sobre (`js/extras.js`) no cambió.
 
+## Experiencia de pago Yape: "¡Envío con éxito!"
+- Al tocar "Ya pagué, enviar pedido" con el comprobante adjunto y completarse el envío (menú Compartir de WhatsApp, o chat abierto), aparece un aviso a pantalla completa: **¡Envío con éxito!** en verde grande con efecto 3D, check animado, confeti y vibración corta.
+- No aparece si falta el comprobante ni si el cliente cancela el menú Compartir.
+- Si el navegador bloquea la ventana de WhatsApp, el aviso muestra un botón "Abrir WhatsApp con mi pedido".
+- Respeta "reducir movimiento" del sistema. Archivos: `personalizar.html` (#okEnvio), `css/v14.css` (bloque .ok-*), `js/personalizar.js` (exito) y `js/pago.js` (waAbrir).
+
+## Ejemplo en vivo (móvil) y menú "Hacer la mía"
+- **Menú:** "Elegir mi tarjetita" (portada) y "Ver tarjetitas" (cabecera) ahora dicen **Hacer la mía**; en la tarjeta, el botón "Crear la mía" también.
+- **Ejemplo en vivo** (`r/tarjeta.html?...&ej=1`): sin trivia; en su lugar, un **secreto con candado** de demostración (palabra de ejemplo: *mariposa*, 3 pistas, funciona sin cifrado ni https). El botón "Secreto" late para invitar a tocarlo y el modal indica "Ejemplo en vivo". Tras 3 fallos se revela la palabra del ejemplo.
+- **Responsivo:** se corrigió el desborde horizontal que ensanchaba la página en celulares (resplandor `.bg-glow`), la barra de acciones cabe completa desde 320 px, la barra superior queda con iconos en pantallas chicas y la carta se ajusta en celular horizontal sin tapar las barras. Estilos en `css/v14.css` (bloque "Ejemplo en vivo y tarjeta").
+- Las tarjetas reales de clientes no cambian (mantienen su botón Trivia y su Secreto solo si el cliente lo activó).
+
 ## v18 · Tutorial interactivo "Tu regalo, de tu idea a sus manos"
 Sección deslizable en `index.html` (ancla `#tutorial`, justo debajo de "Edición física") que explica en **8 pasos** el recorrido completo: elegir la ocasión → personalizar (foto, secreto, cápsula) → elegir formato → pagar por Yape → pedido y link por WhatsApp → preparación del accesorio con QR → llegada a casa → el momento de la entrega.
 - **Deslizable:** carrusel con scroll-snap (se desliza con el dedo), flechas, puntos, barra de progreso y teclado (← → Inicio Fin). La altura se ajusta a cada paso.
@@ -110,3 +122,16 @@ Sección deslizable en `index.html` (ancla `#tutorial`, justo debajo de "Edició
 - **Accesos:** botón "Ver el paso a paso, hasta tu casa" en Edición física y enlace "Ver el paso a paso de mi pedido" en el cuadro de pago de `personalizar.html`.
 - **Accesibilidad:** región con carrusel anotado, aviso de paso para lectores de pantalla, solo el paso visible es enfocable.
 - **Archivos nuevos:** `js/tutorial.js`, `css/tutorial.css`. **Cambios mínimos:** `index.html`, `personalizar.html` (un enlace) y `js/config.js` (la línea `TV.TUTORIAL`). Si borras `js/tutorial.js`, el sitio queda como en la v17.
+
+## v20 · Links cortos con Cloudflare KV (`tarjeta.html?id=XXXXXXXX`)
+Antes el link llevaba todo (datos y foto en Base64) y medía varios miles de caracteres, imposible de usar bien en un QR. Ahora los datos se guardan en KV y el link mide unos 50 caracteres.
+- **Cómo funciona:** `admin.html` envía a `/api/card` exactamente lo que antes iba en la URL (`qs` = la parte después del `?`, `h` = el payload cifrado con foto, secreto, pistas y audio). La función genera un id aleatorio de 8 caracteres y lo guarda en el KV `CARDS`. `r/tarjeta.html?id=...` lo lee y sigue con la misma lógica de siempre; el resto del código no cambió.
+- **Seguridad:** solo se puede guardar con tu `ADMIN_PIN` (verificado en el servidor). Leer es público, pero el id es aleatorio e imposible de adivinar. El secreto sigue cifrado con su palabra: ni KV lo ve. Una tarjeta que está en KV se considera pagada, por eso no necesita firma.
+- **Si KV falla** (no está configurado, sin PIN en el servidor o sin conexión), `admin.html` avisa y entrega el link largo de siempre, así nunca te quedas sin poder entregar. Un PIN incorrecto sí se rechaza.
+- **Apagarlo:** `TV.SHORT_LINKS:false` en `js/config.js` devuelve el comportamiento anterior. Los links largos ya entregados siguen funcionando siempre.
+- **Archivos nuevos:** `functions/api/card.js`, `wrangler.toml`. **Cambios mínimos:** `js/config.js` (1 línea), `admin.html`, `r/tarjeta.html` (3 líneas más un bloque de carga) y `js/extras.js` (1 línea, para `?abre=` y `?of=`).
+- **Nota técnica:** la tarjeta lee el id con una petición síncrona a propósito, para que `q`, `PL` y `extras.js` no cambien. Son unos milisegundos y el navegador puede mostrar un aviso de "deprecated" en la consola; es inofensivo.
+
+## Corrección (v20)
+- **Vista previa de plantillas en `personalizar.html`:** las imágenes de fondo de las fechas especiales se pedían a `/css/assets/...` (404) porque la ruta, pasada como variable CSS, se resolvía contra la hoja de estilos y no contra la página. Ahora `js/diseno.js` entrega una ruta absoluta (1 línea en `tplHTML`). La tarjeta final ya funcionaba.
+

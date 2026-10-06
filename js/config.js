@@ -5,6 +5,7 @@ const TV={
   WHATSAPP:'59165153083',      // Tu número con código de país (sin +)
   PRECIO:50,
   REQUIRE_PAYMENT:false,        // true = la tarjeta solo se activa con link firmado desde admin.html (requiere Functions)
+  SHORT_LINKS:true,             // v20: link corto con Cloudflare KV (tarjeta.html?id=XXXX). Pide ADMIN_PIN + KV 'CARDS'. false = link largo de siempre
   WATERMARK:true,               // v11: marca de agua viral al pie de la tarjeta (false = sin marca)
   QR_IMAGE:'assets/qr-pago.png',                 // Ej: '/assets/qr-pago.png'. Vacío = QR placeholder CSS
   MUSIC:'',                    // Ej: '/assets/musica.mp3' (mp3 libre de derechos)

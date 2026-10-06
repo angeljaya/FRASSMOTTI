@@ -103,3 +103,47 @@ input[type=range].zoom{width:100%;accent-color:var(--c)}
 .tpl-thumb .tpl-layer{z-index:0}
 .tpl-mock{position:absolute;left:22%;right:22%;top:30%;height:34%;background:#fff;border-radius:2px;box-shadow:0 3px 8px rgba(0,0,0,.22);transform:rotate(-2deg);z-index:1}
 .tpl-mock::after{content:'';position:absolute;inset:7% 7% 20% 7%;background:linear-gradient(135deg,#d6d3d1,#a8a29e);border-radius:1px}
+
+
+/* ===== Confirmación épica de envío: "¡Envío con éxito!" en verde grande con efecto 3D ===== */
+.ok-wrap{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;perspective:900px;background:radial-gradient(circle at 50% 38%,rgba(34,197,94,.42),rgba(4,22,12,.94) 70%);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ok-wrap.open{display:flex}
+.ok-box{text-align:center;transform-style:preserve-3d;width:100%;max-width:420px;margin:auto;animation:okIn 1s cubic-bezier(.2,1.15,.3,1) both}
+.ok-check{width:116px;height:116px;margin:0 auto 20px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 34% 28%,#bbf7d0,#22c55e 55%,#14532d);box-shadow:0 22px 44px -10px rgba(34,197,94,.85),inset 0 -10px 16px rgba(0,0,0,.28),inset 0 8px 12px rgba(255,255,255,.55);transform:translateZ(70px);animation:okPop .9s .35s cubic-bezier(.2,1.5,.3,1) both}
+.ok-check svg{width:60px;height:60px;stroke:#fff;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 3px 3px rgba(0,0,0,.35));stroke-dasharray:60;stroke-dashoffset:60;animation:okDraw .6s .9s ease-out forwards}
+.ok-3d{display:block;font:900 clamp(42px,13vw,84px)/1.02 'Outfit',system-ui,sans-serif;letter-spacing:-.03em;color:#4ade80;transform:rotateX(16deg);transform-origin:50% 100%;
+ text-shadow:0 1px 0 #22c55e,0 2px 0 #16a34a,0 3px 0 #16a34a,0 4px 0 #15803d,0 5px 0 #15803d,0 6px 0 #166534,0 7px 0 #166534,0 8px 0 #14532d,0 9px 0 #14532d,0 18px 18px rgba(0,0,0,.5),0 0 46px rgba(74,222,128,.6);animation:ok3d 3.4s ease-in-out 1.1s infinite}
+.ok-sub{margin-top:18px;color:#d1fae5;font-size:1.05rem;line-height:1.5}
+.ok-next{margin:16px auto 0;padding:12px 14px;border-radius:18px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#ecfdf5;font-size:.9rem;text-align:left;line-height:1.45}
+.ok-btns{display:grid;gap:8px;margin-top:20px}.ok-btns .btn{width:100%}
+.ok-wa{background:#25D366;color:#fff}.ok-wa.hidden{display:none}
+.ok-home{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35)}
+@keyframes okIn{from{opacity:0;transform:scale(.4) rotateX(50deg) translateZ(-240px)}to{opacity:1;transform:none}}
+@keyframes okPop{from{opacity:0;transform:translateZ(70px) scale(.2)}to{opacity:1;transform:translateZ(70px) scale(1)}}
+@keyframes okDraw{to{stroke-dashoffset:0}}
+@keyframes ok3d{0%,100%{transform:rotateX(16deg) rotateY(-9deg)}50%{transform:rotateX(9deg) rotateY(9deg)}}
+@media (prefers-reduced-motion:reduce){.ok-box,.ok-check,.ok-check svg,.ok-3d{animation:none!important}.ok-check svg{stroke-dashoffset:0}.ok-3d{transform:none}}
+
+
+/* ===== Ejemplo en vivo y tarjeta · 100% responsivos en celular ===== */
+/* El resplandor de fondo ya no es más ancho que la pantalla (eso ensanchaba la página en celulares) */
+.bg-glow{position:fixed;inset:0;width:auto;height:auto;transform:none;overflow:hidden;background:radial-gradient(circle 300px at 50% 50%,color-mix(in srgb,var(--gold-primary) 16%,transparent) 0%,transparent 100%)}
+html,body.carta-page{max-width:100%;overflow-x:hidden}
+/* Barra superior: en pantallas chicas los botones de la derecha quedan solo con su icono (no se salen) */
+.topbar{gap:8px}.topbar .pill{flex:0 1 auto;min-width:0}
+@media (max-width:440px){.topbar{padding:10px 10px}.topbar button.pill{font-size:0;gap:0;padding:0;width:38px;justify-content:center}.topbar a.pill{padding:0 11px;font-size:12px}}
+/* Barra de acciones: todos los botones caben en pantallas desde 320 px, con letra legible y táctil */
+.dock{width:auto;box-sizing:border-box}
+.dock .pill{flex:1 1 0;min-width:0;overflow:hidden}
+@media (max-width:420px){.dock{left:8px;right:8px;padding:6px 4px;gap:2px}.dock .pill{padding:7px 2px;font-size:10px;letter-spacing:-.1px}}
+@media (max-width:350px){.dock .pill{font-size:9.5px}.dock .pill svg{width:17px;height:17px}}
+/* Teléfono horizontal o pantallas muy bajas: la carta se achica para no tapar la barra */
+@media (max-height:500px){.escena-wrapper{transform:translateY(calc(50vh - 304.5px)) scale(.42)!important;transform:translateY(calc(50dvh - 304.5px)) scale(.42)!important}.topbar{padding:6px 10px}}
+@media (max-height:385px){.escena-wrapper{transform:translateY(calc(50vh - 305.3px)) scale(.38)!important;transform:translateY(calc(50dvh - 305.3px)) scale(.38)!important}}
+@media (max-height:345px){.escena-wrapper{transform:translateY(calc(50vh - 306.2px)) scale(.34)!important;transform:translateY(calc(50dvh - 306.2px)) scale(.34)!important}}
+/* Demo del secreto: el botón "Secreto" late para invitar a tocarlo */
+@keyframes demoPulse{0%{box-shadow:0 0 0 0 rgba(212,175,55,.75)}70%{box-shadow:0 0 0 12px rgba(212,175,55,0)}100%{box-shadow:0 0 0 0 rgba(212,175,55,0)}}
+#dock.show #bSec.demo-pulse{animation:demoPulse 1.6s infinite;background:var(--gold-primary);color:#111}
+.demo-note{display:inline-block;margin-top:6px;padding:.2rem .7rem;border-radius:999px;background:#fef3c7;color:#78350f;font-size:.72rem;font-weight:600}
+.demo-note[hidden]{display:none}
+@media (prefers-reduced-motion:reduce){#dock.show #bSec.demo-pulse{animation:none}}

@@ -10,7 +10,7 @@ const BLOW={low:140,ratio:2,ms:350};      // Soplar: volumen mínimo en graves, 
 const SHAKE={force:30,hits:2,cool:1500};  // Agitar: fuerza del sacudón, sacudidas seguidas y pausa entre efectos (ms)
 const EMO={'cumple-divertido':['🎉','🎂','🎈'],amor:['❤️','💖','🌹'],gracias:['🌻','🙏','✨'],aniversario:['💍','🥂','💫'],mama:['🌷','💐','💜'],papa:['⭐','🏆','💙'],'mujer-boliviana':['🌸','🌺','💜'],halloween:['🎃','🦇','👻'],difuntos:['🌼','🕯️','🧡'],navidad:['🎄','❄️','⭐']};
 
-const el=id=>document.getElementById(id),QS=new URLSearchParams(location.search);
+const el=id=>document.getElementById(id),QS=new URLSearchParams(window.__CARD?window.__CARD.qs:location.search);
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const icons=()=>{try{window.lucide&&lucide.createIcons()}catch(e){}};
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};

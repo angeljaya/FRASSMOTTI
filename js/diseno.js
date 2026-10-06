@@ -68,7 +68,7 @@ function decorate(root,t,d){
 /* v15 · Plantilla de fondo integrada: la imagen de la ocasión NO es una foto, es la textura de la tarjeta.
    Capas (de abajo hacia arriba): imagen con máscara degradada + tinte del color elegido + velo central para que el texto siempre se lea. */
 function tplHTML(t,i){const p=TV.tpl(t,i);if(!p)return '';
- return `<span class="tpl-img" style="--tpl:url('${encodeURI(p.src)}');--tpl-op:${p.op};--tpl-y:${p.y}%"></span><span class="tpl-tint"></span><span class="tpl-veil"></span>`}
+ return `<span class="tpl-img" style="--tpl:url('${new URL(encodeURI(p.src),document.baseURI).href}');--tpl-op:${p.op};--tpl-y:${p.y}%"></span><span class="tpl-tint"></span><span class="tpl-veil"></span>`}
 function template(root,t,i){
  const bg=root.querySelector('.carta-bg');if(!bg)return;const key=t.id+'|'+(+i||0);if(bg._tk===key)return;bg._tk=key;
  let l=bg.querySelector(':scope>.tpl-layer');if(l)l.remove();

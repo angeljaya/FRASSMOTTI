@@ -6,8 +6,8 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script></head>
 <body class="carta-page"><div class="bg-glow"></div>
 <header class="topbar"><a href="../index.html" class="pill"><i data-lucide="arrow-left"></i>Volver a la tienda</a><button class="pill" id="btnSound" aria-label="Sonido"><i data-lucide="volume-2"></i><span>Sonido</span></button></header>
-<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="bTri"><i data-lucide="help-circle"></i>Trivia</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button><a class="pill pill-accent" id="cr"><i data-lucide="plus"></i>Crear la mía</a></nav>
-<div id="pv" class="hidden">Cargando tarjeta...</div>
+<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="bTri"><i data-lucide="help-circle"></i>Trivia</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button><a class="pill pill-accent" id="cr"><i data-lucide="plus"></i>Hacer la mía</a></nav>
+<div id="pv" class="hidden">Vista previa: se activa al confirmar el pago</div>
 <div class="viewport-3d"><div class="escena-wrapper"><div class="escena" id="escena"><div class="sobre-3d" id="sobre">
         <div class="env-back textura-papel"></div>
 <div class="carta-3d" id="carta"><div class="carta-bg textura-papel"><div class="bg-text-pattern" id="pat"></div></div>
@@ -63,233 +63,85 @@
 </div></div>
 <p class="hint-text" id="hint"><i data-lucide="hand"></i> Rompe el sello</p></div></div>
 <div id="mS" class="modal" role="dialog" aria-modal="true"><div id="sC" class="card p-7 w-full max-w-sm text-center relative"><button class="absolute top-4 right-4 text-gray-500" id="x" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
-<div id="sL"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
+<div id="sL"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
 <div id="sO" class="hidden"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div></div>
 
 <div id="mT" class="modal" role="dialog" aria-modal="true"><div class="card p-7 w-full max-w-sm relative"><button class="absolute top-4 right-4 text-gray-500" data-x aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button><p class="eyebrow">Trivia</p><h2 id="q" class="serif text-2xl mt-1"></h2><div id="o" class="grid gap-2 mt-4"></div><p id="r" class="text-sm text-gray-600 mt-3 min-h-[1.25rem]"></p></div></div>
 <div id="toast" class="toast" role="status"></div>
-<script src="../js/tarjeta.js"></script>
+<script src="../js/carta.js"></script>
 <script>
-(async () => {
-  const urlParams = new URLSearchParams(location.search);
-  const id = urlParams.get('id');
-
-  if (!id) {
-    alert("No se encontró ninguna tarjeta en este enlace.");
-    return;
-  }
-
-  try {
-    // 1. Consultar a tu Cloudflare Worker para obtener los datos usando el ID
-    const respuesta = await fetch(`https://frassmotti.angelyujra97-7.workers.dev?id=${id}`);
-    
-    if (!respuesta.ok) {
-      throw new Error("La tarjeta no existe o ya expiró.");
-    }
-
-    const PL = await respuesta.json();
-
-    // 2. Extraer y procesar los datos devueltos por KV
-    const q = new URLSearchParams();
-    q.set('t', PL.plantilla || 'amor');
-    q.set('g', PL.genero || 'm');
-    q.set('d', PL.diseno || '');
-    if (PL.color) q.set('color', PL.color);
-    q.set('fu', PL.fuente || 'scrap');
-    q.set('tam', PL.tamano || 1);
-
-    const T = TV.find(q.get('t'));
-    const nombre = clean(PL.nombre, 24) || 'Alguien especial';
-    const frase = clean(PL.frase, 70) || T.frase;
-    const col = TV.COLORS[q.get('color')] || T.K.ac;
-    const de = clean(PL.deParte, 24);
-    
-    const msgLargo = PL.frase ? clean(PL.frase, 2600).trim() : '';
-    const msgTxt = msgLargo || frase;
-    const tam = TV.tam(q.get('tam')).id;
-    const gen = q.get('g') === 'h' ? 'h' : 'm';
-    
-    const tit = clean(PL.titulo, 14) || T.ti;
-    const pal = (clean(PL.palabra, 9) || T.pa).toUpperCase().slice(0, 9);
-    
-    TD.apply(document, { t: T, g: gen, dis: q.get('d'), col: q.get('color'), fu: q.get('fu'), v: 0 });
-    document.title = 'Una tarjeta para ' + nombre + ' | Frassmotti';
-    $('cr').href = '../personalizar.html?plantilla=' + T.id;
-    
-    const selloL = (clean(PL.sello, 1) || nombre).charAt(0).toUpperCase();
-    $('tituloTxt').textContent = tit;
-    TD.titleFit($('tituloTxt'), tit);$('monogramTxt').textContent = selloL;
-    $('cap').textContent = nombre + (de ? ' · de ' + de : '');
-    
-    for (let i = 0; i < 12; i++) {
-      const s = document.createElement('span');
-      s.textContent = (tit + ' ' + pal).toUpperCase();
-      $('pat').append(s);
-    }
-    
-    [...pal].forEach((ch, i) => {
-      const d = document.createElement('div');
-      d.className = 'circle-letter' + (i === 0 || i === Math.floor(pal.length / 1.5) ? ' red' : '');
-      d.textContent = ch;
-      d.style.transform = `translateY(${i % 2 ? 8 : 0}px) rotate(${(Math.random() * 20 - 10).toFixed(1)}deg)`;
-      $('letrasCumple').append(d);
-    });
-    
-    document.querySelectorAll('.circle-letter').forEach(d => {
-      const z = Math.min(42, Math.floor((300 - (pal.length - 1) * 5) / pal.length));
-      d.style.width = d.style.height = z + 'px';
-      d.style.fontSize = Math.round(z * .57) + 'px';
-    });
-
-    const hasPhoto = PL.foto && PL.foto.startsWith('data:image/');
-    $('av').onerror = function() { this.onerror = null; this.src = TV.avatar(1, nombre); };$('av').src = hasPhoto ? PL.foto : TV.avatar(1, nombre);
-    $('av').classList.toggle('color', !hasPhoto || PL.bw !== false);
-    
-    TM.mount($('fraseTxt'), msgTxt, tam, { keepText: true });
-    
-    const lift = () => $('carta').style.setProperty('--lift', Math.max(0,$('carta').offsetHeight - 520) + 'px');
-    lift();
-    addEventListener('load', lift);
-    document.fonts && document.fonts.ready.then(lift);
-
-    const toast = m => { $('toast').textContent = m; $('toast').classList.add('show'); setTimeout(() =>$('toast').classList.remove('show'), 2600); };
-    const boom = () => confetti({ particleCount: 120, spread: 90, origin: { y: .6 }, colors: ['#d4af37', '#fff1b0', '#cc1111', '#ffffff', '#000000'], ticks: 220, disableForReducedMotion: true });
-    
-    let estado = 'cerrado', typedOk = false;
-    const startTyped = () => { if (typedOk) return; typedOk = true; (tam === 1 ? new Typed('#typed', { strings: [msgTxt], typeSpeed: msgTxt.length > 140 ? 14 : 42, showCursor: false, contentType: 'text' }) : 0); };
-
-    if (TV.MUSIC) {
-      const a = new Audio(TV.MUSIC);
-      a.loop = true;
-      $('mus').hidden = false;
-      $('mus').onclick = () => { a.paused ? a.play() : a.pause(); };
-      window.__mus = a;
-    }
-
-    let soundEnabled = true;
-    $('btnSound').onclick = () => {
-      soundEnabled = !soundEnabled;
-      $('btnSound').innerHTML = '<i data-lucide="' + (soundEnabled ? 'volume-2' : 'volume-x') + '"></i><span>' + (soundEnabled ? 'Sonido' : 'Mudo') + '</span>';
-      lucide.createIcons();
-    };
-
-    document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m || e.target.closest('[data-x]')) m.classList.remove('open'); }));
-
-    window.abrirCarta = function() {
-      if (estado === 'abierto') return;
-      estado = 'abierto';
-      playWaxCrackSound();
-      setTimeout(() => { escena.classList.add('abierto'); playPaperSlideSound(); }, 150);
-      setTimeout(() => { playChimeSound(); boom(); startTyped(); $('dock').classList.add('show'); window.__mus && window.__mus.play().catch(() => {}); }, 1000);
-      navigator.vibrate && navigator.vibrate([30, 40, 30]);
-    };
-
-    function cerrarCarta(e) {
-      if (e) e.stopPropagation();
-      if (estado === 'cerrado') return;
-      estado = 'cerrado';
-      escena.classList.remove('abierto');
-      $('dock').classList.remove('show');
-      playPaperSlideSound();
-    }
-
-    $('hide').onclick = cerrarCarta;
-    $('cel').onclick = e => { e.stopPropagation(); boom(); };
-    $('bTri').onclick = () =>$('mT').classList.add('open');
-
-    // Manejo de Secreto / Candado
-    if (PL.secreto || PL.clave) {
-      $('bSec').hidden = false;
-    }
-    
-    let tries = 0;
-    const HINTS = [].concat(PL.pistas || []).map(x => clean(x, 60).trim()).filter(Boolean);
-    let hs = 1;
-    
-    const paintH = () => {
-      $('sH').textContent = HINTS.length ? HINTS.slice(0, hs).map((h, i) => (HINTS.length > 1 ? 'Pista ' + (i + 1) + ': ' : 'Pista: ') + h).join('\n') : 'Piensa en lo que los une...';
-      $('sP').hidden = hs >= HINTS.length;
-    };
-    
-    $('sP').onclick = () => { hs++; paintH(); };
-    
-    const reveal = m => {
-      $('sL').classList.add('hidden');
-      $('sO').classList.remove('hidden');$('sM').textContent = m;
-      boom();
-      TVS.chime();
-    };
-
-    $('bSec').onclick = () => {
-      $('sG').value = '';$('sE').textContent = '';
-      $('sO').classList.add('hidden');$('mS').classList.add('open');
-      if (!PL.clave) {
-        reveal(PL.secreto);
-        return;
-      }
-      $('sL').classList.remove('hidden');
-      hs = 1;
-      paintH();
-      setTimeout(() => $('sG').focus(), 150);
-    };
-
-    async function guess() {
-      const g = $('sG').value.trim().toLowerCase();
-      const claveReal = (PL.clave || '').trim().toLowerCase();
-      
-      if (g && g === claveReal) {
-        reveal(PL.secreto);
-        return;
-      }
-      
-      tries++;
-      const more = hs < HINTS.length;
-      if (more) { hs++; paintH(); }
-      $('sE').textContent = (tries >= 2 ? 'Sigue intentando, lee bien la pista.' : 'Esa no es la clave. Intenta otra vez.') + (more ? ' Te damos otra pista.' : '');
-      const c = $('sC');
-      c.classList.remove('shake');
-      void c.offsetWidth;
-      c.classList.add('shake');
-      $('sG').value = '';$('sG').focus();
-    }
-
-    $('sT').onclick = guess;
-    $('sG').onkeydown = e => { if (e.key === 'Enter') guess(); };
-    $('x').onclick = () =>$('mS').classList.remove('open');
-    $('mS').onclick = e => { if (e.target.id === 'mS')$('mS').classList.remove('open'); };
-
-    // Trivia
-    $('q').textContent = T.q.replaceAll('{n}', nombre);
-    let answered = false;
-    T.o.forEach((x, i) => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'pick';
-      b.textContent = x.replaceAll('{n}', nombre);
-      b.onclick = () => {
-        if (answered) return;
-        answered = true;
-        [...$('o').children].forEach((y, j) => { y.disabled = true; if (j === T.ok) y.classList.add('ok'); });
-        if (i !== T.ok) b.classList.add('bad');
-        $('r').textContent = i === T.ok ? 'Correcto. Esa es la respuesta.' : 'Casi. Pero tú ya sabes la verdad.';
-        if (i === T.ok) boom();
-      };
-      $('o').append(b);
-    });
-
-    $('sv').onclick = async () => {
-      try {
-        if (navigator.share) await navigator.share({ title: 'tarjeta FRASSMOTTI', text: 'Mira mi tarjetita para ' + nombre, url: location.href });
-        else { await navigator.clipboard.writeText(location.href); toast('Link copiado'); }
-      } catch (e) {}
-    };
-
-    lucide.createIcons();
-
-  } catch (error) {
-    console.error(error);
-    alert("No se pudo cargar la tarjeta. Es posible que el enlace haya expirado o sea incorrecto.");
-  }
-})();
+/* v20 · Link corto ?id=XXXX: trae de KV (/api/card) lo que antes venía en la URL. El resto del código lo lee igual que siempre.
+   (Petición síncrona a propósito: así q, PL y extras.js no cambian ni un carácter.) */
+(function(){const id=new URLSearchParams(location.search).get('id');if(!id)return;
+ try{const x=new XMLHttpRequest();x.open('GET','/api/card?id='+encodeURIComponent(id),false);x.send();if(x.status!==200)throw 0;const d=JSON.parse(x.responseText);window.__CARD={qs:d.qs||'',h:d.h||''}}
+ catch(e){document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Outfit,system-ui,sans-serif;color:#374151"><p>Esta tarjeta no existe o ya no está disponible.<br>Pide que te envíen el link de nuevo.</p></div>';window.stop()}})();
 </script>
+<script>
+/* Lee ?nombre&frase&color&t y el #payload cifrado (foto, secreto, pista) */
+const q=new URLSearchParams(window.__CARD?window.__CARD.qs:location.search),$=id=>document.getElementById(id),PL=TVS.unpack(window.__CARD?window.__CARD.h:location.hash.slice(1));
+const T=TV.find(q.get('t')),nombre=clean(q.get('nombre'),24)||'Alguien especial',frase=clean(q.get('frase'),70)||T.frase,col=TV.COLORS[q.get('color')]||T.K.ac,de=clean(q.get('de'),24);
+/* v14: mensaje largo (viaja en el payload), tamaño 1/2/3, género, diseño, tipografía, color de fondo, inicial del sello */
+const msgLargo=PL.x?clean(PL.x,2600).trim():'',msgTxt=msgLargo||frase,tam=TV.tam(q.get('tam')).id,gen=q.get('g')==='h'?'h':'m';
+/* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
+const tit=clean(q.get('titulo'),14)||T.ti,pal=(clean(q.get('palabra'),9)||T.pa).toUpperCase().slice(0,9);
+const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.get('fu'),v:+q.get('v')||0});
+document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href='../personalizar.html?plantilla='+T.id;
+const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
+$('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
+for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
+[...pal].forEach((ch,i)=>{const d=document.createElement('div');d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.transform=`translateY(${i%2?8:0}px) rotate(${(Math.random()*20-10).toFixed(1)}deg)`;$('letrasCumple').append(d)});
+document.querySelectorAll('.circle-letter').forEach(d=>{const z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));d.style.width=d.style.height=z+'px';d.style.fontSize=Math.round(z*.57)+'px'});
+const hasPhoto=PL.p&&PL.p.startsWith('data:image/');
+$('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:TV.avatar(+q.get('avatar')||1,nombre);$('av').classList.toggle('color',!hasPhoto||q.get('fo')==='c');
+TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
+const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
+const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
+const boom=()=>confetti({particleCount:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
+let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
+if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
+$('btnSound').onclick=()=>{soundEnabled=!soundEnabled;$('btnSound').innerHTML='<i data-lucide="'+(soundEnabled?'volume-2':'volume-x')+'"></i><span>'+(soundEnabled?'Sonido':'Mudo')+'</span>';lucide.createIcons()};
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
+/* Sello, sobre y carta (animaciones y sonidos del diseño original) */
+function abrirCarta(){if(estado==='abierto')return;estado='abierto';playWaxCrackSound();setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
+ setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.__mus&&window.__mus.play().catch(()=>{})},1000);navigator.vibrate&&navigator.vibrate([30,40,30])}
+function cerrarCarta(e){if(e)e.stopPropagation();if(estado==='cerrado')return;estado='cerrado';escena.classList.remove('abierto');$('dock').classList.remove('show');playPaperSlideSound()}
+$('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom()};$('bTri').onclick=()=>$('mT').classList.add('open');
+/* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
+const DEMO=q.get('ej')==='1'&&nombre==='Carla'&&!location.hash;let PAID=!TV.REQUIRE_PAYMENT||DEMO||!!window.__CARD;   /* DEMO: solo el ejemplo exacto de la tienda */
+(async()=>{if(PAID)return;try{const u=new URL(location.href),sig=u.searchParams.get('sig');if(!sig)throw 0;u.searchParams.delete('sig');
+ const r=await fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:u.searchParams.toString()+'#'+u.hash.slice(1),sig})});PAID=(await r.json()).ok===true}catch(e){PAID=false}
+ $('pv').classList.toggle('hidden',PAID)})();
+const LOCK='Se activa al confirmar el pago';
+/* Descargar como imagen (formato historia 1080x1920) */
+$('img').onclick=async()=>{if(!PAID){toast(LOCK);return}try{const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,W,H);
+ g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect(90,380,900,1080,64);x.fill();
+ await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,640,170,0,7);x.clip();x.fillStyle='#fff';x.fill();x.drawImage(i,370,470,340,340);x.restore();res()};i.onerror=res;i.src=$('av').src});
+ x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';x.fillText('UNA TARJETITA PARA',540,900);x.fillStyle='#111827';x.font='130px "Instrument Serif",serif';x.fillText(nombre,540,1040);
+ x.font='54px Outfit,sans-serif';x.fillStyle='#374151';let ln='',y=1150;for(const w of msgTxt.split(' ').slice(0,38)){if(x.measureText(ln+w).width>760){x.fillText(ln.trim(),540,y);y+=70;ln=''}ln+=w+' '}x.fillText(ln.trim(),540,y);
+ x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,1700);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,1765)}
+ c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tarjetita-'+nombre+'.png';a.click()})}catch(e){toast('No se pudo generar la imagen')}};
+/* Secreto con candado */
+/* Ejemplo en vivo: en lugar de la trivia se demuestra el secreto con candado (palabra de ejemplo: mariposa) */
+const DEMO_KEY='mariposa',DEMO_MSG='Este es un secreto que solo ve quien adivina la palabra. Aquí puede ir un chisme, una confesión o ese mensaje que no cabe en la tarjeta. 💛';
+const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+if(DEMO){PL.s='demo';PL.h=['Empieza con la letra «M»','Tiene 8 letras','Tiene alas de colores y vuela de flor en flor'];$('bTri').hidden=true;$('sDemo').hidden=false;$('bSec').classList.add('demo-pulse')}
+if(PL.s||PL.m||PL.a)$('bSec').hidden=false;let tries=0;
+/* v17: hasta 3 pistas (PL.h = texto o lista). Se muestra la 1ª; el destinatario pide las otras o aparecen al fallar */
+const HINTS=[].concat(PL.h||[]).map(x=>clean(x,60).trim()).filter(Boolean).slice(0,TV.PISTAS_MAX||3);let hs=1;
+const paintH=()=>{$('sH').textContent=HINTS.length?HINTS.slice(0,hs).map((h,i)=>(HINTS.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'Piensa en lo que los une...';$('sP').hidden=hs>=HINTS.length};
+$('sP').onclick=()=>{hs++;paintH()};
+const reveal=m=>{$('sL').classList.add('hidden');$('sO').classList.remove('hidden');$('sM').textContent=m;boom();TVS.chime();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
+$('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';$('sO').classList.add('hidden');$('mS').classList.add('open');
+ if(PL.m||(!PL.s&&PL.a)){reveal(PL.m?clean(PL.m,240):'Escucha este mensaje de voz.');return}$('sL').classList.remove('hidden');hs=1;paintH();setTimeout(()=>$('sG').focus(),150)};
+async function guess(){const g=$('sG').value;if(!g.trim())return;const m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g);if(m!==null){reveal(m);return}
+ tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pista.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');const c=$('sC');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');$('sG').value='';$('sG').focus()}
+$('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
+/* Trivia con respuesta correcta/incorrecta bien marcada */
+$('q').textContent=T.q.replaceAll('{n}',nombre);let answered=false;
+T.o.forEach((x,i)=>{const b=document.createElement('button');b.type='button';b.className='pick';b.textContent=x.replaceAll('{n}',nombre);
+ b.onclick=()=>{if(answered)return;answered=true;[...$('o').children].forEach((y,j)=>{y.disabled=true;if(j===T.ok)y.classList.add('ok')});if(i!==T.ok)b.classList.add('bad');
+  $('r').textContent=i===T.ok?'Correcto. Esa es la respuesta.':'Casi. Pero tú ya sabes la verdad.';if(i===T.ok)boom()};$('o').append(b)});
+$('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
+lucide.createIcons();</script>
 <script src="../js/extras.js"></script><script src="../js/nuevas.js"></script></body></html>
