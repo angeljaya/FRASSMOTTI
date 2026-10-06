@@ -1,6 +1,0 @@
-name = "frassmotti"
-compatibility_date = "2026-01-01"
-
-[[kv_namespaces]]
-binding = "TARJETAS_KV"
-id = "0de7eb1a1d6a4002aa36358fc04836ad"
