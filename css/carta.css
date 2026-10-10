@@ -327,8 +327,17 @@ body.carta-page{background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2)
 .dock.show{opacity:1;transform:none;pointer-events:auto}
 .modal{color:#111827}.modal .card{background:#fff;color:#111827;border:1px solid #e5e7eb}.modal h2,.modal h3{color:#111827}
 .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#475569;font-weight:600}
+.modal #sE{color:#b91c1c;font-weight:600}.modal #sH{color:#475569}.modal #sM{color:#0f172a;font-size:1.05rem}
+.modal .input{color:#0f172a;background:#fff;border-color:#94a3b8}.modal .btn-dark{background:#0f172a;color:#fff}
+
+/* .pick: botones de opción (panel Agitar/Soplar y selector de plantillas de fondo). Se conservan; solo se quitó el uso de la trivia */
 .modal .pick{display:block;width:100%;text-align:left;padding:.95rem 1.1rem;border:2px solid #cbd5e1;background:#f8fafc;color:#0f172a;font-weight:500;font-size:1rem;border-radius:16px}
 .modal .pick:hover:not(:disabled){border-color:var(--card-accent);background:#fff}.modal .pick:disabled{cursor:default}
-.modal .pick.ok{border-color:#15803d;background:#dcfce7;color:#14532d}.modal .pick.bad{border-color:#b91c1c;background:#fee2e2;color:#7f1d1d}
-.modal #r{font-weight:600;color:#0f172a}.modal #sE{color:#b91c1c;font-weight:600}.modal #sH{color:#475569}.modal #sM{color:#0f172a;font-size:1.05rem}
-.modal .input{color:#0f172a;background:#fff;border-color:#94a3b8}.modal .btn-dark{background:#0f172a;color:#fff}
+
+/* v21: los stickers (rosas, tulipanes, girasoles, estrellas...) quedan DETRÁS de los nombres.
+   "Nombre de quien la recibe · de [De parte de]" vive en .photo-cap: se sube por encima de cualquier sticker
+   (!important por si otra hoja de estilos lo pisa) y lleva un halo blanco para leerse aunque pase una flor por detrás. */
+.photo-frame .sticker{z-index:3!important;pointer-events:none}
+.photo-frame .photo-cap{z-index:20!important;pointer-events:none;
+  text-shadow:0 0 3px #fff,0 0 6px #fff,0 0 10px #fff}
+.photo-frame .sticker-flowers{width:112px;bottom:-46px;right:-26px}

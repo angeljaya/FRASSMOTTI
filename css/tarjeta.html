@@ -1,0 +1,143 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FAFAF9"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script src="../js/tw.js"></script><link rel="stylesheet" href="../css/styles.css">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="theme-color" content="#080a0f">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script></head>
+<body class="carta-page"><div class="bg-glow"></div>
+<header class="topbar"><a href="../index.html" class="pill"><i data-lucide="arrow-left"></i>Volver a la tienda</a><button class="pill" id="btnSound" aria-label="Sonido"><i data-lucide="volume-2"></i><span>Sonido</span></button></header>
+<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button><a class="pill pill-accent" id="cr"><i data-lucide="plus"></i>Hacer la mía</a></nav>
+<div id="pv" class="hidden">Vista previa: se activa al confirmar el pago</div>
+<div class="viewport-3d"><div class="escena-wrapper"><div class="escena" id="escena"><div class="sobre-3d" id="sobre">
+        <div class="env-back textura-papel"></div>
+<div class="carta-3d" id="carta"><div class="carta-bg textura-papel"><div class="bg-text-pattern" id="pat"></div></div>
+<div class="carta-content"><h1 class="scrapbook-title" id="tituloTxt"></h1><div class="letters-container" id="letrasCumple"></div>
+<div class="photo-frame">              <svg class="sticker sticker-star-1" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#b0b0b0"/>
+                    <stop offset="100%" stop-color="#505050"/>
+                  </linearGradient>
+                </defs>
+                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
+              </svg>
+
+<img id="av" class="photo-img" alt="Foto"><p class="photo-cap" id="cap"></p>
+              <svg class="sticker sticker-flowers" viewBox="0 0 150 150">
+                 <path d="M70 140 Q80 100 60 70 M75 140 Q90 100 110 80" fill="none" stroke="#d4af37" stroke-width="6" stroke-linecap="round"/>
+                 <path d="M70 130 Q50 100 70 100 Q80 120 70 130 Z" fill="#d4af37"/>
+                 <g transform="translate(55,65) scale(0.8) rotate(-10)">
+                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff4d4d" stroke="#b31010" stroke-width="1"/>
+                   <circle cx="0" cy="0" r="10" fill="#800000"/>
+                   <circle cx="0" cy="0" r="5" fill="#330000"/>
+                 </g>
+                 <g transform="translate(105,75) scale(0.6) rotate(15)">
+                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff6666" stroke="#b31010" stroke-width="1"/>
+                   <circle cx="0" cy="0" r="10" fill="#800000"/>
+                   <circle cx="0" cy="0" r="5" fill="#330000"/>
+                 </g>
+              </svg>
+              
+              <svg class="sticker sticker-star-2" viewBox="0 0 100 100">
+                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
+              </svg></div>
+<p class="handwritten-msg" id="fraseTxt"><span id="typed"></span></p>
+<div class="card-actions"><button class="btn-card btn-card-secondary" id="hide"><i data-lucide="mail"></i>Ocultar</button><button class="btn-card btn-card-primary" id="cel"><i data-lucide="sparkles"></i>Celebrar</button></div></div></div>
+        <div class="env-pocket">
+          <div class="flap-side izq textura-papel"></div>
+          <div class="flap-side der textura-papel"></div>
+          <div class="flap-bottom textura-papel"></div>
+        </div>
+
+        <div class="env-flap-top" id="flapTop">
+          <div class="env-flap-bg textura-papel"></div>
+          <div class="sello-container" id="selloWrap" onclick="abrirCarta()">
+            <div class="sello-wax">
+              <div class="sello-inner">
+                <span class="sello-monogram" id="monogramTxt">C</span>
+              </div>
+            </div>
+          </div>
+        </div>
+</div></div>
+<p class="hint-text" id="hint"><i data-lucide="hand"></i> Rompe el sello</p></div></div>
+<div id="mS" class="modal" role="dialog" aria-modal="true"><div id="sC" class="card p-7 w-full max-w-sm text-center relative"><button class="absolute top-4 right-4 text-gray-500" id="x" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
+<div id="sL"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
+<div id="sO" class="hidden"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div></div>
+
+<div id="toast" class="toast" role="status"></div>
+<script src="../js/carta.js"></script>
+<script>
+/* v20 · Link corto ?id=XXXX: trae de KV (/api/card) lo que antes venía en la URL. El resto del código lo lee igual que siempre.
+   (Petición síncrona a propósito: así q, PL y extras.js no cambian ni un carácter.) */
+(function(){const id=new URLSearchParams(location.search).get('id');if(!id)return;
+ try{const x=new XMLHttpRequest();x.open('GET','/api/card?id='+encodeURIComponent(id),false);x.send();if(x.status!==200)throw 0;const d=JSON.parse(x.responseText);window.__CARD={qs:d.qs||'',h:d.h||''}}
+ catch(e){document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Outfit,system-ui,sans-serif;color:#374151"><p>Esta tarjeta no existe o ya no está disponible.<br>Pide que te envíen el link de nuevo.</p></div>';window.stop()}})();
+</script>
+<script>
+/* Lee ?nombre&frase&color&t y el #payload cifrado (foto, secreto, pista) */
+const q=new URLSearchParams(window.__CARD?window.__CARD.qs:location.search),$=id=>document.getElementById(id),PL=TVS.unpack(window.__CARD?window.__CARD.h:location.hash.slice(1));
+/* El sobre siempre abre libre: se ignora cualquier pregunta/candado de sobre que traigan tarjetas ya creadas (PL.q / PL.qk). El secreto (PL.s, PL.h) NO se toca. */
+if(PL.q||PL.qk){delete PL.q;delete PL.qk;if(window.__CARD)window.__CARD.h=TVS.pack(PL)}
+const T=TV.find(q.get('t')),nombre=clean(q.get('nombre'),24)||'Alguien especial',frase=clean(q.get('frase'),70)||T.frase,col=TV.COLORS[q.get('color')]||T.K.ac,de=clean(q.get('de'),24);
+/* v14: mensaje largo (viaja en el payload), tamaño 1/2/3, género, diseño, tipografía, color de fondo, inicial del sello */
+const msgLargo=PL.x?clean(PL.x,2600).trim():'',msgTxt=msgLargo||frase,tam=TV.tam(q.get('tam')).id,gen=q.get('g')==='h'?'h':'m';
+/* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
+const tit=clean(q.get('titulo'),14)||T.ti,pal=(clean(q.get('palabra'),9)||T.pa).toUpperCase().slice(0,9);
+const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.get('fu'),v:+q.get('v')||0});
+document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href='../personalizar.html?plantilla='+T.id;
+const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
+$('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
+for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
+[...pal].forEach((ch,i)=>{const d=document.createElement('div');d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.transform=`translateY(${i%2?8:0}px) rotate(${(Math.random()*20-10).toFixed(1)}deg)`;$('letrasCumple').append(d)});
+document.querySelectorAll('.circle-letter').forEach(d=>{const z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));d.style.width=d.style.height=z+'px';d.style.fontSize=Math.round(z*.57)+'px'});
+const hasPhoto=PL.p&&PL.p.startsWith('data:image/');
+$('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:TV.avatar(+q.get('avatar')||1,nombre);$('av').classList.toggle('color',!hasPhoto||q.get('fo')==='c');
+TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
+const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
+const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
+const boom=()=>confetti({particleCount:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
+let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
+if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
+$('btnSound').onclick=()=>{soundEnabled=!soundEnabled;$('btnSound').innerHTML='<i data-lucide="'+(soundEnabled?'volume-2':'volume-x')+'"></i><span>'+(soundEnabled?'Sonido':'Mudo')+'</span>';lucide.createIcons()};
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
+/* Sello, sobre y carta (animaciones y sonidos del diseño original) */
+function abrirCarta(){if(estado==='abierto')return;estado='abierto';playWaxCrackSound();setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
+ setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.__mus&&window.__mus.play().catch(()=>{})},1000);navigator.vibrate&&navigator.vibrate([30,40,30])}
+function cerrarCarta(e){if(e)e.stopPropagation();if(estado==='cerrado')return;estado='cerrado';escena.classList.remove('abierto');$('dock').classList.remove('show');playPaperSlideSound()}
+$('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom()};
+/* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
+const DEMO=q.get('ej')==='1'&&nombre==='Carla'&&!location.hash;let PAID=!TV.REQUIRE_PAYMENT||DEMO||!!window.__CARD;   /* DEMO: solo el ejemplo exacto de la tienda */
+(async()=>{if(PAID)return;try{const u=new URL(location.href),sig=u.searchParams.get('sig');if(!sig)throw 0;u.searchParams.delete('sig');
+ const r=await fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:u.searchParams.toString()+'#'+u.hash.slice(1),sig})});PAID=(await r.json()).ok===true}catch(e){PAID=false}
+ $('pv').classList.toggle('hidden',PAID)})();
+const LOCK='Se activa al confirmar el pago';
+/* Descargar como imagen (formato historia 1080x1920) */
+$('img').onclick=async()=>{if(!PAID){toast(LOCK);return}try{const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,W,H);
+ g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect(90,380,900,1080,64);x.fill();
+ await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,640,170,0,7);x.clip();x.fillStyle='#fff';x.fill();x.drawImage(i,370,470,340,340);x.restore();res()};i.onerror=res;i.src=$('av').src});
+ x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';x.fillText('UNA TARJETITA PARA',540,900);x.fillStyle='#111827';x.font='130px "Instrument Serif",serif';x.fillText(nombre,540,1040);
+ x.font='54px Outfit,sans-serif';x.fillStyle='#374151';let ln='',y=1150;for(const w of msgTxt.split(' ').slice(0,38)){if(x.measureText(ln+w).width>760){x.fillText(ln.trim(),540,y);y+=70;ln=''}ln+=w+' '}x.fillText(ln.trim(),540,y);
+ x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,1700);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,1765)}
+ c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tarjetita-'+nombre+'.png';a.click()})}catch(e){toast('No se pudo generar la imagen')}};
+/* Secreto con candado */
+/* Ejemplo en vivo: se demuestra el secreto con candado (palabra de ejemplo: mariposa) */
+const DEMO_KEY='mariposa',DEMO_MSG='Este es un secreto que solo ve quien adivina la palabra. Aquí puede ir un chisme, una confesión o ese mensaje que no cabe en la tarjeta. 💛';
+const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
+if(DEMO){PL.s='demo';PL.h=['Empieza con la letra «M»','Tiene 8 letras','Tiene alas de colores y vuela de flor en flor'];$('sDemo').hidden=false;$('bSec').classList.add('demo-pulse')}
+if(PL.s||PL.m||PL.a)$('bSec').hidden=false;let tries=0;
+/* v17: hasta 3 pistas (PL.h = texto o lista). Se muestra la 1ª; el destinatario pide las otras o aparecen al fallar */
+const HINTS=[].concat(PL.h||[]).map(x=>clean(x,60).trim()).filter(Boolean).slice(0,TV.PISTAS_MAX||3);let hs=1;
+const paintH=()=>{$('sH').textContent=HINTS.length?HINTS.slice(0,hs).map((h,i)=>(HINTS.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'Piensa en lo que los une...';$('sP').hidden=hs>=HINTS.length};
+$('sP').onclick=()=>{hs++;paintH()};
+const reveal=m=>{$('sL').classList.add('hidden');$('sO').classList.remove('hidden');$('sM').textContent=m;boom();TVS.chime();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
+$('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';$('sO').classList.add('hidden');$('mS').classList.add('open');
+ if(PL.m||(!PL.s&&PL.a)){reveal(PL.m?clean(PL.m,240):'Escucha este mensaje de voz.');return}$('sL').classList.remove('hidden');hs=1;paintH();setTimeout(()=>$('sG').focus(),150)};
+async function guess(){const g=$('sG').value;if(!g.trim())return;const m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g);if(m!==null){reveal(m);return}
+ tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pista.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');const c=$('sC');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');$('sG').value='';$('sG').focus()}
+$('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
+$('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
+lucide.createIcons();</script>
+<script src="../js/extras.js"></script><script src="../js/nuevas.js"></script></body></html>
