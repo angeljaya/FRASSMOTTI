@@ -50,12 +50,12 @@ Si ves "Falta la función /api/admin", el despliegue no incluyó `functions/`. E
 - Probar en tu computadora: `python3 -m http.server 8000` y abre `http://localhost:8000/#tutorial`.
 
 ## 8. Links cortos con KV (obligatorio para el link `?id=`)
-1. **Crear el KV** (una sola vez): `npx wrangler kv namespace create CARDS`. Te devuelve un `id`.
-2. **Pegar el id** en `wrangler.toml`, en la línea `id = "PEGA_AQUI_EL_ID_DEL_NAMESPACE"`.
-3. **Variables:** `ADMIN_PIN` y `SIGNING_SECRET` deben estar como secretos del proyecto. Si las tenías puestas como variables normales en el panel de Cloudflare, vuelve a crearlas con `npx wrangler pages secret put ADMIN_PIN --project-name frassmotti` (y lo mismo con `SIGNING_SECRET`). Al usar `wrangler.toml`, ese archivo pasa a mandar sobre los bindings del panel: comprueba en Settings > Functions que `CARDS` aparece enlazado.
-4. **Desplegar:** `npx wrangler pages deploy . --project-name frassmotti` (arrastrar y soltar NO ejecuta Functions ni KV).
+**Importante:** el proyecto debe ser de tipo **Pages** (Workers & Pages > Create application > pestaña Pages > Connect to Git). Pages no tiene "Deploy command": con "Build command" vacío y "Build output directory" en `/` basta, y la carpeta `functions/` se publica sola. **No uses `npx wrangler deploy`**: es para Workers y falla con "Missing entry-point to Worker script".
+1. **Crear el KV** (una vez): en Cloudflare > Storage & Databases > KV > Create, con el nombre `CARDS` (o `npx wrangler kv namespace create CARDS`).
+2. **Enlazarlo:** tu proyecto Pages > Settings > Functions (Bindings) > KV namespace bindings > Add: variable `CARDS`, namespace `CARDS`. Hazlo en Production (y en Preview si pruebas ahí).
+3. **Variables:** en Settings > Variables and Secrets deben existir `ADMIN_PIN` y `SIGNING_SECRET` (tipo Secret).
+4. **Redesplegar:** haz un nuevo commit o usa "Retry deployment".
 5. **Usar:** en `admin.html` pega el pedido, escribe tu PIN y toca generar. El link sale como `.../r/tarjeta.html?id=AbC12xYz`: ese es el que conviertes en QR.
-- **Sin terminal:** puedes borrar `wrangler.toml` y enlazar el KV desde Cloudflare > tu proyecto Pages > Settings > Functions > KV namespace bindings, con el nombre de variable `CARDS` (en Production y Preview).
-- **Probar en tu computadora:** `npx wrangler pages dev .` (crea un KV local; en `wrangler.toml` el `id` puede quedar como está).
 - **Si ves "No se pudo guardar en KV":** revisa que `CARDS` esté enlazado y que `ADMIN_PIN` exista. Mientras tanto el sistema te da el link largo.
-
+- **Config por archivo (opcional):** `wrangler.toml.ejemplo` explica cómo hacerlo, pero no es necesario.
+- **Probar en tu computadora:** `npx wrangler pages dev .`

@@ -129,9 +129,11 @@ Antes el link llevaba todo (datos y foto en Base64) y medía varios miles de car
 - **Seguridad:** solo se puede guardar con tu `ADMIN_PIN` (verificado en el servidor). Leer es público, pero el id es aleatorio e imposible de adivinar. El secreto sigue cifrado con su palabra: ni KV lo ve. Una tarjeta que está en KV se considera pagada, por eso no necesita firma.
 - **Si KV falla** (no está configurado, sin PIN en el servidor o sin conexión), `admin.html` avisa y entrega el link largo de siempre, así nunca te quedas sin poder entregar. Un PIN incorrecto sí se rechaza.
 - **Apagarlo:** `TV.SHORT_LINKS:false` en `js/config.js` devuelve el comportamiento anterior. Los links largos ya entregados siguen funcionando siempre.
-- **Archivos nuevos:** `functions/api/card.js`, `wrangler.toml`. **Cambios mínimos:** `js/config.js` (1 línea), `admin.html`, `r/tarjeta.html` (3 líneas más un bloque de carga) y `js/extras.js` (1 línea, para `?abre=` y `?of=`).
+- **Archivos nuevos:** `functions/api/card.js` y `wrangler.toml.ejemplo` (no activo: el KV se enlaza desde el panel de Cloudflare). **Cambios mínimos:** `js/config.js` (1 línea), `admin.html`, `r/tarjeta.html` (3 líneas más un bloque de carga) y `js/extras.js` (1 línea, para `?abre=` y `?of=`).
 - **Nota técnica:** la tarjeta lee el id con una petición síncrona a propósito, para que `q`, `PL` y `extras.js` no cambien. Son unos milisegundos y el navegador puede mostrar un aviso de "deprecated" en la consola; es inofensivo.
 
 ## Corrección (v20)
 - **Vista previa de plantillas en `personalizar.html`:** las imágenes de fondo de las fechas especiales se pedían a `/css/assets/...` (404) porque la ruta, pasada como variable CSS, se resolvía contra la hoja de estilos y no contra la página. Ahora `js/diseno.js` entrega una ruta absoluta (1 línea en `tplHTML`). La tarjeta final ya funcionaba.
 
+## Corrección de despliegue
+- Un `wrangler.toml` activo con `pages_build_output_dir` hacía fallar `npx wrangler deploy` (comando de Workers) con "Missing entry-point". Se renombró a `wrangler.toml.ejemplo`. El proyecto debe ser Pages (ver INSTRUCCIONES, sección 8).
