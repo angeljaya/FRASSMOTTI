@@ -54,11 +54,12 @@ $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre')
  const T=TV.find(v('plantilla')),sec=clean(v('secreto'),240),clave=clean(v('clave'),20).trim(),pl={};
  const p=new URLSearchParams({nombre,frase:clean(v('frase'),70)||T.frase,color:v('color'),t:T.id,de:clean(v('de'),24)});
  if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);const hh=['pista','pista2','pista3'].map(i=>clean(v(i),60).trim()).filter(Boolean);if(hh.length)pl.h=hh.length>1?hh:hh[0]}else pl.m=sec}
- let link=location.href.replace(/admin\.html.*$/,'')+'r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
+ /* Construye siempre la ruta desde el dominio raíz, sin depender de la ruta del panel */
+ let link=location.origin+'/r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
  let corto=false;   /* v20: link corto. Los datos van a KV (solo con tu PIN) y el link queda como tarjeta.html?id=XXXX. Si KV falla, se usa el link largo de siempre */
  if(TV.SHORT_LINKS){try{const r=await fetch('/api/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qs:p.toString(),h:Object.keys(pl).length?TVS.pack(pl):'',pin:v('pin')})}),d=await r.json().catch(()=>({}));
   if(r.status===401){$('msg').textContent=d.error||'PIN incorrecto';return}
-  if(r.ok&&d.id){link=location.href.replace(/admin\.html.*$/,'')+'r/tarjeta.html?id='+d.id;corto=true;sessionStorage.setItem('tv_pin',v('pin'))}else $('msg').textContent='No se pudo guardar en KV ('+(d.error||r.status)+'). Se usó el link largo.'}catch(e){$('msg').textContent='Sin conexión con /api/card. Se usó el link largo.'}}
+  if(r.ok&&d.id){link=location.origin+'/r/tarjeta.html?id='+d.id;corto=true;sessionStorage.setItem('tv_pin',v('pin'))}else $('msg').textContent='No se pudo guardar en KV ('+(d.error||r.status)+'). Se usó el link largo.'}catch(e){$('msg').textContent='Sin conexión con /api/card. Se usó el link largo.'}}
  if(TV.REQUIRE_PAYMENT&&!corto){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
   if(!r.ok){$('msg').textContent=d.error||'Error al firmar';return}sessionStorage.setItem('tv_pin',v('pin'));link=d.link}catch(e){$('msg').textContent='No se pudo contactar /api/sign (ver README).';return}}
  $('out').value=link;$('ver').href=link;$('len').textContent='Largo del link: '+link.length+' caracteres'+(thumb?' (incluye foto)':'');$('res').classList.remove('hidden');$('res').scrollIntoView({behavior:'smooth'})};
