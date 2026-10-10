@@ -21,7 +21,7 @@ const on=id=>$(id).checked,v=(id,n)=>clean($(id).value,n||240).trim();
 /* v17 · Secreto y cápsula son opcionales: solo cuentan si su interruptor (secOn / capOn) está encendido */
 const secOn=()=>$('secOn').checked,capOn=()=>$('capOn').checked;
 const secMsg=()=>secOn()?v('secreto',240):'',clave=()=>secOn()?v('clave',20):'',pistas=()=>secOn()?['pista','pista2','pista3'].map(id=>v(id,60)).filter(Boolean).slice(0,TV.PISTAS_MAX||3):[];
-const qL=()=>secOn()?v('qLock',80):'',aL=()=>secOn()?v('aLock',30):'',abre=()=>capOn()?$('abre').value:'';
+const abre=()=>capOn()?$('abre').value:'';
 const titulo=()=>v('titulo',14)||T.ti,palabra=()=>(v('palabra',9)||T.pa).toUpperCase().slice(0,9);
 const mensaje=()=>clean($('frase').value,2600).trim()||T.frase;
 const sello=()=>(v('sello',1)||v('nombre',24)||'C').charAt(0).toUpperCase();
@@ -119,7 +119,6 @@ $('pay').onclick=()=>{if(!S.g){toast('Elige primero: ¿la tarjeta es para una mu
  const tm=TV.tam(S.tam),w=TM.count($('frase').value);
  if(w>tm.max){toast(`Tu mensaje tiene ${w} palabras: elige un tamaño más grande o acórtalo (máx. ${tm.max})`);$('frase').scrollIntoView({block:'center'});return}
  if(secOn()&&!secMsg()){toast('Escribe el mensaje secreto o apaga "Adivina el secreto"');$('secreto').scrollIntoView({block:'center'});$('secreto').focus();return}
- if(!!qL()!==!!aL()){toast('El candado del sobre necesita pregunta y respuesta');$('qLock').scrollIntoView({block:'center'});return}
  if(capOn()&&!abre()){toast('Elige la fecha de entrega o apaga la cápsula del tiempo');$('abre').scrollIntoView({block:'center'});$('abre').focus();return}
  if(abre()&&!(Date.parse(abre())>Date.now())&&!confirm('La fecha de la cápsula ya pasó, así que no habrá bloqueo. ¿Continuar?'))return;
  if(secMsg()&&!clave()&&!confirm('Sin palabra secreta el mensaje se verá sin candado. ¿Continuar?'))return;open('mPay')};
@@ -130,7 +129,7 @@ function pedidoTexto(){const n=v('nombre',24),msg=mensaje(),r=FOTO.st.img?FOTO.r
   `Para: ${n}`,`De parte de: ${v('deParte',24)||'-'}`,`Título: ${titulo()}`,`Palabra: ${palabra()}`,`Frase: "${msg.replace(/\s+/g,' ').slice(0,70)}"`,`Mensaje (${TM.count(msg)} palabras): "${msg.replace(/\n+/g,' ¶ ')}"`,
   `Color: ${S.col||'según plantilla'}`,`Tipografía: ${S.fu}`,`Inicial del sello: ${sello()}`,
   `Mensaje secreto: "${secMsg()||'-'}"`,`Palabra clave: "${clave()||'(sin candado)'}"`,`Pista: "${pistas()[0]||'-'}"`,`Pista 2: "${pistas()[1]||'-'}"`,`Pista 3: "${pistas()[2]||'-'}"`,
-  `Pregunta cerradura: "${qL()||'-'}"`,`Respuesta cerradura: "${aL()||'-'}"`,`Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,
+  `Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,
   `Foto: ${S.photo?'La envío por este chat (recortada)':'Sin foto'}`,...(S.photo?[`Encuadre foto: ${enc}`]:[]),'---------------------',
   `Mi WhatsApp: ${v('tel',20)||'-'}`,`Monto: ${TV.PRECIO} Bs por Yape`,'Adjunto mi comprobante de pago.',...(window.extraLines?extraLines():[])].join('\n')}
 
@@ -150,7 +149,7 @@ $('send').onclick=async()=>{if(window.sinComprobante&&sinComprobante())return;
 window.fotoParaEnviar=async()=>{if(!FOTO.st.img)return null;const u=FOTO.render(asp(),900),b=await (await fetch(u)).blob();return new File([b],'foto-recortada.jpg',{type:'image/jpeg'})};
 
 /* ---------- Borrador automático (localStorage) ---------- */
-const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','tel','qLock','aLock','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
+const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
 function draft(){try{localStorage.setItem('tv_draft',JSON.stringify({...Object.fromEntries(FIELDS.map(f=>[f,$(f).value])),col:S.col,g:S.g||'',dis:S.dis,tam:S.tam,fu:S.fu,bw:S.bw,tog:Object.fromEntries(TOGS.map(t=>[t,on(t)]))}))}catch(e){}}
 try{const d=JSON.parse(localStorage.getItem('tv_draft')||'{}');
  if(!Q.get('g')&&(d.g==='h'||d.g==='m'))S.g=d.g;
@@ -161,7 +160,7 @@ try{const d=JSON.parse(localStorage.getItem('tv_draft')||'{}');
  FIELDS.forEach(f=>{if(d[f]&&f!=='ocasion')$(f).value=d[f]});
  if(d.col&&TV.PALETA[d.col])S.col=d.col;if(d.dis)S.dis=d.dis;if(d.tam)S.tam=TV.tam(d.tam).id;if(d.fu)S.fu=TV.fuente(d.fu).id;if(d.bw===false)S.bw=false;
  if(d.tog)TOGS.forEach(t=>{$(t).checked=!!d.tog[t]});
- if(!d.tog||d.tog.secOn===undefined){if(d.secreto||d.clave||d.qLock)$('secOn').checked=true}   /* borradores anteriores a v17 */
+ if(!d.tog||d.tog.secOn===undefined){if(d.secreto||d.clave)$('secOn').checked=true}   /* borradores anteriores a v17 */
  if(!d.tog||d.tog.capOn===undefined){if(d.abre)$('capOn').checked=true}
 }catch(e){buildOcasiones()}
 if(!$('ocasion').options.length)buildOcasiones();
