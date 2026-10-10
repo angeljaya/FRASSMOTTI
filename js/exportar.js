@@ -156,8 +156,10 @@ let FOTO_IMG=null;
 const val=id=>($(id)&&$(id).value||'').trim();
 async function leer(){
  const t=TV.find(val('plantilla')),tam=+val('tam')||1,fr=clean(val('frase'),70)||t.frase,m=clean(val('mensaje'),2600).trim(),msg=(m&&(tam>1||m.length>70))?m:fr;
+ /* v22: si la foto se ajustó con "Ajustar encuadre" (js/foto.js), se usa ese recorte en alta resolución */
+ let foto=FOTO_IMG;try{if(typeof FOTO!=='undefined'&&FOTO.st&&FOTO.st.img){const im=await img(FOTO.render(235/({1:200,2:150,3:112}[tam]||200),1400));if(im)foto=im}}catch(x){}
  return{t,g:val('gen')==='h'?'h':'m',dis:val('dis'),col:val('color')||null,fu:val('fu'),v:+val('motivo')||0,nombre:clean(val('nombre'),24)||'Alguien especial',de:clean(val('de'),24),
-  titulo:clean(val('titulo'),14)||t.ti,palabra:clean(val('palabra'),9)||t.pa,tam,msg,bw:val('fo')!=='c',foto:FOTO_IMG,marca:!!($('xMarca')&&$('xMarca').checked)}}
+  titulo:clean(val('titulo'),14)||t.ti,palabra:clean(val('palabra'),9)||t.pa,tam,msg,bw:val('fo')!=='c',foto,marca:!!($('xMarca')&&$('xMarca').checked)}}
 const slug=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cliente';
 
 /* ---------- desbloqueo por PIN (verificado en el servidor) ---------- */
@@ -194,7 +196,7 @@ function init(){
  $('xPng').onclick=()=>trabajar(async()=>{msg('Generando PNG...');const o=await leer(),r=await render(o,S());guardar(await blob(r.canvas,'image/png'),base(o)+'.png');msg(`Listo: PNG de ${r.canvas.width} x ${r.canvas.height} px`+nota(r,S()))});
  $('xJpg').onclick=()=>trabajar(async()=>{msg('Generando JPG...');const o=await leer(),r=await render(o,S());guardar(await blob(r.canvas,'image/jpeg',.95),base(o)+'.jpg');msg(`Listo: JPG de ${r.canvas.width} x ${r.canvas.height} px`+nota(r,S()))});
  $('xPdf').onclick=()=>trabajar(async()=>{msg('Generando PDF...');const o=await leer(),r=await render(o,S());guardar(await pdf(r.canvas,300),base(o)+'.pdf');msg(`Listo: PDF a 300 DPI (${(r.canvas.width/300*25.4).toFixed(0)} x ${(r.canvas.height/300*25.4).toFixed(0)} mm)`+nota(r,S()))});
- $('xVer').onclick=()=>trabajar(async()=>{msg('Generando vista previa...');const o=await leer(),r=await render(o,2),u=URL.createObjectURL(await blob(r.canvas,'image/jpeg',.85));$('xPrev').src=u;ver($('xPrev'),true);msg('Vista previa (la descarga sale en la calidad elegida).')});
+ $('xVer').onclick=()=>trabajar(async()=>{msg('Generando vista previa...');const o=await leer(),r=await render(o,Math.min(S(),4)),u=URL.createObjectURL(await blob(r.canvas,'image/jpeg',.92));$('xPrev').src=u;ver($('xPrev'),true);msg('Vista previa (la descarga sale en la calidad elegida).')});
 }
 return{render,pdf,leer,verificar,init};
 })();

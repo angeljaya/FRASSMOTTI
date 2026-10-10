@@ -1,7 +1,20 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Panel de pedidos | Frassmotti</title>
 <link rel="icon" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet">
-<script src="js/config.js"></script><script src="js/secret.js"></script><script src="js/diseno.js"></script><script src="js/exportar.js"></script></head>
+<script src="js/config.js"></script><script src="js/secret.js"></script><script src="js/diseno.js"></script><script src="js/foto.js"></script><script src="js/exportar.js"></script><style>
+/* v22 · Recortador de foto (mismos estilos que css/v14.css, solo lo necesario para el panel) */
+.crop-area{position:relative;width:100%;overflow:hidden;border-radius:14px;background:#0b0b0d;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.crop-area:active{cursor:grabbing}
+.crop-area img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
+.crop-area::after{content:'';position:absolute;inset:0;pointer-events:none;border:2px solid rgba(255,255,255,.85);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 66.6%/100% 1px no-repeat}
+.crop-area.bw img{filter:grayscale(1) contrast(1.15) brightness(1.05)}
+input[type=range].zoom{width:100%}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{padding:.7rem 1rem;border:2px solid #e5e5e3;border-radius:16px;background:#fff;font-weight:600;cursor:pointer}
+.seg button[aria-pressed=true]{border-color:var(--c,#111827);background:color-mix(in srgb,var(--c,#111827) 10%,#fff)}
+.pg-thumb{width:84px;height:62px;object-fit:cover;border-radius:10px;border:1px solid #e5e5e3}
+</style>
+</head>
 <body><main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
 <div class="pt-4 flex items-center justify-between"><h1 class="serif text-4xl">Panel de pedidos</h1><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a></div>
 <div class="card p-5 space-y-3"><p class="font-semibold text-gray-900">Paso 1: pega el pedido que te llegó por WhatsApp</p>
@@ -21,7 +34,9 @@
 <div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="titulo">Título</label><input id="titulo" class="input" maxlength="14"></div><div><label class="label" for="palabra">Palabra en círculos</label><input id="palabra" class="input" maxlength="9"></div><div><label class="label" for="sello">Inicial del sello</label><input id="sello" class="input" maxlength="1"></div></div>
 <div><label class="label" for="mensaje">Mensaje completo (tarjeta 2 y 3; en la 1 puede ir igual que la frase)</label><textarea id="mensaje" rows="4" maxlength="2600" class="input"></textarea></div>
 <div><label class="label" for="fo">Foto</label><select id="fo" class="input"><option value="">Blanco y negro</option><option value="c">A color</option></select></div>
-<div><label class="label" for="foto">Foto (opcional): la que el cliente te envió por WhatsApp</label><input id="foto" type="file" accept="image/*" class="input"><p class="text-xs text-gray-600 mt-1">Con foto el link queda más largo. Sin foto, es corto.</p></div>
+<div><label class="label" for="foto">Foto (opcional): la que el cliente te envió por WhatsApp</label><input id="foto" type="file" accept="image/*" class="input"><p class="text-xs text-gray-600 mt-1">Al subirla se abre el recortador: mueve, haz zoom y elige blanco y negro o color, igual que en el ejemplo en vivo. Con links cortos la foto viaja en buena calidad.</p></div>
+<div id="fotoBox" class="hidden card p-4 space-y-3"><div class="flex items-center gap-3"><img id="fotoThumb" class="pg-thumb" alt="Tu foto recortada"><div class="flex flex-wrap gap-2"><button type="button" id="fotoEdit" class="btn btn-ghost !py-2 !px-4 text-sm">Ajustar encuadre</button><button type="button" id="fotoDel" class="text-sm text-gray-600 underline px-2">Quitar foto</button></div></div>
+<div class="seg" id="fotoMode" role="group" aria-label="Estilo de la foto"><button type="button" data-m="bn" aria-pressed="true">Blanco y negro</button><button type="button" data-m="c" aria-pressed="false">A color</button></div></div>
 <div id="mvRow" class="hidden"><label class="label" for="motivo">Motivo (imagen)</label><select id="motivo" class="input"></select></div>
 <div data-feat="voz"><label class="label" for="voz">Nota de voz (audio que envió el cliente)</label><input id="voz" type="file" accept="audio/*" class="input"><p id="vozInfo" class="text-xs text-gray-600 mt-1">Máximo unos 15 segundos para que el link no sea enorme.</p></div>
 <div data-feat="grupo"><label class="label" for="aportes">Aportes del grupo (pega los mensajes de los amigos)</label><textarea id="aportes" rows="4" class="input" placeholder="Pega aquí los mensajes que contienen 'Aporte: ...'"></textarea></div>
@@ -40,6 +55,13 @@
 <button id="xVer" data-x type="button" class="btn btn-ghost w-full text-sm">Ver vista previa</button><p id="xMsg" class="text-sm text-gray-600 min-h-[1.25rem]" role="status"></p>
 <img id="xPrev" alt="Vista previa de la tarjeta" class="w-full max-w-xs mx-auto rounded-xl border border-gray-200" hidden style="display:none"></div></div>
 </main>
+<div id="mCrop" class="modal"><div class="card p-5 w-full max-w-sm relative max-h-[94vh] overflow-y-auto">
+ <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar">✕</button>
+ <h3 class="serif text-2xl pr-8">Ajusta la foto</h3><p class="text-sm text-gray-600 mt-1 mb-3">Arrastra para mover y usa el zoom. Este marco tiene la misma proporción que la tarjeta.</p>
+ <div id="cropArea" class="crop-area"><img alt="Foto a recortar"></div>
+ <div class="mt-4 flex items-center gap-3"><span aria-hidden="true" class="text-gray-500">−</span><input id="cropZoom" type="range" class="zoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><span aria-hidden="true" class="text-gray-500">+</span></div>
+ <div class="grid grid-cols-2 gap-2 mt-4"><button type="button" id="cropBW" class="btn btn-ghost !py-2.5 text-sm">Blanco y negro</button><button type="button" id="cropReset" class="btn btn-ghost !py-2.5 text-sm">Centrar</button></div>
+ <button type="button" id="cropOk" class="btn btn-accent w-full mt-3">Listo, usar esta foto</button></div></div>
 <script>
 const $=id=>document.getElementById(id),v=id=>$(id).value;let thumb=null;
 $('plantilla').innerHTML=TV.TODAS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
@@ -55,9 +77,13 @@ $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre')
  const p=new URLSearchParams({nombre,frase:clean(v('frase'),70)||T.frase,color:v('color'),t:T.id,de:clean(v('de'),24)});
  if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);{const sq=clean(v('preg'),100).trim();if(sq)pl.sq=sq}const hh=['pista','pista2','pista3'].map(i=>clean(v(i),60).trim()).filter(Boolean);if(hh.length)pl.h=hh.length>1?hh:hh[0]}else pl.m=sec}
  /* Construye siempre la ruta desde el dominio raíz, sin depender de la ruta del panel */
- let link=location.origin+'/r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
+ const largo=()=>location.origin+'/r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
+ let link=largo();
  let corto=false;   /* v20: link corto. Los datos van a KV (solo con tu PIN) y el link queda como tarjeta.html?id=XXXX. Si KV falla, se usa el link largo de siempre */
- if(TV.SHORT_LINKS){try{const r=await fetch('/api/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qs:p.toString(),h:Object.keys(pl).length?TVS.pack(pl):'',pin:v('pin')})}),d=await r.json().catch(()=>({}));
+ const kv=async()=>{const r=await fetch('/api/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qs:p.toString(),h:Object.keys(pl).length?TVS.pack(pl):'',pin:v('pin')})});return{r,d:await r.json().catch(()=>({}))}};
+ if(TV.SHORT_LINKS){try{let q=await kv();
+  if(!q.r.ok&&q.r.status!==401&&pl.p&&thumbLQ&&pl.p!==thumbLQ){pl.p=thumbLQ;link=largo();q=await kv()}   /* si el servidor rechaza la foto grande, reintenta con la pequeña */
+  const r=q.r,d=q.d;
   if(r.status===401){$('msg').textContent=d.error||'PIN incorrecto';return}
   if(r.ok&&d.id){link=location.origin+'/r/tarjeta.html?id='+d.id;corto=true;sessionStorage.setItem('tv_pin',v('pin'))}else $('msg').textContent='No se pudo guardar en KV ('+(d.error||r.status)+'). Se usó el link largo.'}catch(e){$('msg').textContent='Sin conexión con /api/card. Se usó el link largo.'}}
  if(TV.REQUIRE_PAYMENT&&!corto){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
@@ -96,11 +122,33 @@ $('order').addEventListener('input',()=>{const t=v('order');
  $('mensaje').value=msg;
  if(col&&Object.keys(TV.COLORS).includes(col))$('color').value=col;
  const enc=get(t,'Encuadre foto');$('fo').value=/modo=color/.test(enc)?'c':'';});
-/* miniatura de la foto con la proporción del espacio de la tarjeta (según el tamaño elegido) */
-const PH={1:200,2:150,3:112};
-$('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{
- const W=170,H=Math.round(W*PH[+$('tam').value||1]/235),c=document.createElement('canvas');c.width=W;c.height=H;const a=W/H;let sw=i.width,sh=i.width/a;if(sh>i.height){sh=i.height;sw=i.height*a}
- c.getContext('2d').drawImage(i,(i.width-sw)/2,(i.height-sh)/2,sw,sh,0,0,W,H);thumb=c.toDataURL('image/jpeg',.55)};i.src=r.result};r.readAsDataURL(f)};
+/* v22 · Foto con recorte (módulo js/foto.js, el mismo de personalizar.html): mover, zoom, blanco y negro / color.
+   La miniatura que viaja en el link ya NO es de 170 px: con links cortos (KV) va a 520 px; si el servidor la rechaza, se reintenta con la pequeña. */
+const PH={1:200,2:150,3:112},IMG_W=235,asp=()=>IMG_W/PH[+$('tam').value||1],bwNow=()=>$('fo').value!=='c';
+let thumbLQ=null;
+if(typeof FOTO!=='undefined'){
+ const refreshFoto=()=>{const ok=!!(FOTO.st&&FOTO.st.img);$('fotoBox').classList.toggle('hidden',!ok);
+  if(!ok){thumb=null;thumbLQ=null;return}
+  const lq=FOTO.render(asp(),170),hq=FOTO.render(asp(),520);thumbLQ=lq;thumb=TV.SHORT_LINKS?hq:lq;
+  $('fotoThumb').src=hq;$('fotoThumb').style.filter=bwNow()?'grayscale(1) contrast(1.1)':'none';
+  $('fotoMode').querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.m==='bn')===bwNow()))};
+ const editar=()=>FOTO.edit(asp(),{bw:bwNow,setBW:x=>{$('fo').value=x?'':'c'},done:refreshFoto});
+ $('foto').onchange=async e=>{const f=e.target.files[0];thumb=null;thumbLQ=null;
+  if(!f){FOTO.clear();refreshFoto();return}
+  try{await FOTO.load(f);refreshFoto();editar()}catch(err){$('msg').textContent=err.message||'No se pudo leer la foto';$('foto').value=''}};
+ $('fotoEdit').onclick=editar;
+ $('fotoDel').onclick=()=>{FOTO.clear();$('foto').value='';refreshFoto()};
+ $('fotoMode').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;$('fo').value=b.dataset.m==='bn'?'':'c';refreshFoto()};
+ $('fo').addEventListener('change',refreshFoto);$('tam').addEventListener('change',refreshFoto);   /* la proporción depende del tamaño */
+ $('mCrop').addEventListener('click',e=>{if(e.target.id==='mCrop'||e.target.closest('[data-close]'))refreshFoto()});
+ document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-close]'))m.classList.remove('open')}));
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
+}else{
+ /* sin js/foto.js: se mantiene la miniatura de siempre (recorte centrado) */
+ $('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{
+  const W=170,H=Math.round(W*PH[+$('tam').value||1]/235),c=document.createElement('canvas');c.width=W;c.height=H;const a=W/H;let sw=i.width,sh=i.width/a;if(sh>i.height){sh=i.height;sw=i.height*a}
+  c.getContext('2d').drawImage(i,(i.width-sw)/2,(i.height-sh)/2,sw,sh,0,0,W,H);thumb=c.toDataURL('image/jpeg',.55)};i.src=r.result};r.readAsDataURL(f)};
+}
 /* parámetros del link y payload */
 const _n=nuevas;nuevas=async(p,pl,T)=>{await _n(p,pl,T);
  p.set('g',v('gen'));p.set('d',v('dis'));p.set('tam',v('tam'));p.set('fu',v('fu'));
