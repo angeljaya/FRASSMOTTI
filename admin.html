@@ -14,7 +14,6 @@
 <div><label class="label" for="secreto">Mensaje secreto (opcional)</label><textarea id="secreto" rows="2" maxlength="240" class="input"></textarea></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista 1</label><input id="pista" class="input" maxlength="60"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="pista2">Pista 2 (opcional)</label><input id="pista2" class="input" maxlength="60"></div><div><label class="label" for="pista3">Pista 3 (opcional)</label><input id="pista3" class="input" maxlength="60"></div></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="qLock">Cerradura: pregunta</label><input id="qLock" class="input" maxlength="80"></div><div><label class="label" for="aLock">Cerradura: respuesta</label><input id="aLock" class="input" maxlength="30"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label></div>
 <div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="gen">Para</label><select id="gen" class="input"><option value="m">Mujer</option><option value="h">Hombre</option></select></div><div><label class="label" for="tam">Tamaño</label><select id="tam" class="input"><option value="1">1 · Postal</option><option value="2">2 · Deslizante</option><option value="3">3 · Tipo libro</option></select></div><div><label class="label" for="fu">Tipografía</label><select id="fu" class="input"></select></div></div>
 <div><label class="label" for="dis">Diseño (flores y marco)</label><select id="dis" class="input"></select></div>
@@ -46,9 +45,9 @@ $('plantilla').innerHTML=TV.TODAS.map(t=>`<option value="${t.id}">${t.name}</opt
 if(TV.REQUIRE_PAYMENT||TV.SHORT_LINKS){$('pinRow').classList.remove('hidden');$('pin').value=sessionStorage.getItem('tv_pin')||''}
 /* Lee el mensaje de pedido y devuelve los campos */
 function parseOrder(text){const g=k=>{const m=text.match(new RegExp('^'+k+':\\s*"?(.*?)"?\\s*$','mi'));const r=m?m[1].trim():'';return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)?'':r};
- return{plantilla:g('Plantilla'),nombre:g('Para'),de:g('De parte de'),frase:g('Frase'),color:g('Color'),secreto:g('Mensaje secreto'),clave:g('Palabra clave'),pista:g('Pista'),tel:g('Mi WhatsApp'),qLock:g('Pregunta cerradura'),aLock:g('Respuesta cerradura'),abre:g('Abre el'),ofi:g('Modo oficina')}}
+ return{plantilla:g('Plantilla'),nombre:g('Para'),de:g('De parte de'),frase:g('Frase'),color:g('Color'),secreto:g('Mensaje secreto'),clave:g('Palabra clave'),pista:g('Pista'),tel:g('Mi WhatsApp'),abre:g('Abre el'),ofi:g('Modo oficina')}}
 $('order').addEventListener('input',()=>{const o=parseOrder(v('order'));if(o.plantilla&&TV.TODAS.some(t=>t.id===o.plantilla))$('plantilla').value=o.plantilla;
- ['nombre','de','frase','secreto','clave','pista','qLock','aLock'].forEach(k=>$(k).value=o[k]);$('abre').value=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(o.abre)?o.abre:'';$('ofi').checked=/^s[ií]$/i.test(o.ofi);$('color').value=['rosa','noche','ambar'].includes(o.color)?o.color:'';$('cli').value=o.tel.replace(/\D/g,'')});
+ ['nombre','de','frase','secreto','clave','pista'].forEach(k=>$(k).value=o[k]);$('abre').value=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(o.abre)?o.abre:'';$('ofi').checked=/^s[ií]$/i.test(o.ofi);$('color').value=['rosa','noche','ambar'].includes(o.color)?o.color:'';$('cli').value=o.tel.replace(/\D/g,'')});
 $('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas'),m=Math.min(i.width,i.height);c.width=c.height=112;c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,112,112);thumb=c.toDataURL('image/jpeg',.5)};i.src=r.result};r.readAsDataURL(f)};
 $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre'),24);if(!nombre){$('msg').textContent='Falta el nombre de quien recibe.';return}
  const T=TV.find(v('plantilla')),sec=clean(v('secreto'),240),clave=clean(v('clave'),20).trim(),pl={};
@@ -63,10 +62,8 @@ $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre')
  if(TV.REQUIRE_PAYMENT&&!corto){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
   if(!r.ok){$('msg').textContent=d.error||'Error al firmar';return}sessionStorage.setItem('tv_pin',v('pin'));link=d.link}catch(e){$('msg').textContent='No se pudo contactar /api/sign (ver README).';return}}
  $('out').value=link;$('ver').href=link;$('len').textContent='Largo del link: '+link.length+' caracteres'+(thumb?' (incluye foto)':'');$('res').classList.remove('hidden');$('res').scrollIntoView({behavior:'smooth'})};
-/* v11: cerradura con pregunta (respuesta cifrada), cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
-async function extras(p,pl){const ql=clean(v('qLock'),80).trim(),al=clean(v('aLock'),30).trim(),ab=v('abre');
- if(!!ql!==!!al)return 'La cerradura necesita pregunta Y respuesta.';
- if(ql){if(!(window.crypto&&crypto.subtle))return 'La cerradura necesita HTTPS (o localhost).';pl.q=ql;pl.qk=await TVS.enc('ok',TVS.fold(al))}
+/* v11: cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
+async function extras(p,pl){const ab=v('abre');
  if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(ab))p.set('abre',ab);
  if($('ofi').checked)p.set('of','1');return ''}
 $('cp').onclick=()=>{navigator.clipboard.writeText($('out').value);$('cp').textContent='Copiado'};
