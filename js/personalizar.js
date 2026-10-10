@@ -21,7 +21,7 @@ const on=id=>$(id).checked,v=(id,n)=>clean($(id).value,n||240).trim();
 /* v17 · Secreto y cápsula son opcionales: solo cuentan si su interruptor (secOn / capOn) está encendido */
 const secOn=()=>$('secOn').checked,capOn=()=>$('capOn').checked;
 const secMsg=()=>secOn()?v('secreto',240):'',clave=()=>secOn()?v('clave',20):'',pistas=()=>secOn()?['pista','pista2','pista3'].map(id=>v(id,60)).filter(Boolean).slice(0,TV.PISTAS_MAX||3):[];
-const abre=()=>capOn()?$('abre').value:'';
+const pregS=()=>secOn()?v('secPreg',100):'',abre=()=>capOn()?$('abre').value:'';
 const titulo=()=>v('titulo',14)||T.ti,palabra=()=>(v('palabra',9)||T.pa).toUpperCase().slice(0,9);
 const mensaje=()=>clean($('frase').value,2600).trim()||T.frase;
 const sello=()=>(v('sello',1)||v('nombre',24)||'C').charAt(0).toUpperCase();
@@ -89,7 +89,8 @@ $('pvCel').onclick=boom;
 /* Minijuego: adivina el secreto */
 const key=()=>clave().toLowerCase();
 function reveal(){$('sLock').classList.add('hidden');$('sOpen').classList.remove('hidden');$('sMsg').textContent=secMsg()||'Aquí aparecerá tu mensaje secreto.';boom();chime()}
-function paintHints(){const H=pistas();$('sHint').textContent=H.length?H.slice(0,S.shown).map((h,i)=>(H.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'Pista: tú ya sabes cuál es...';$('sMore').hidden=S.shown>=H.length}
+function paintHints(){const H=pistas(),pq=pregS();$('sQuestion').textContent=pq;$('sQuestion').hidden=!pq;
+ $('sHint').textContent=H.length?H.slice(0,S.shown).map((h,i)=>(H.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'';$('sHint').hidden=!H.length;$('sMore').hidden=S.shown>=H.length}
 $('sMore').onclick=()=>{S.shown++;paintHints()};
 $('pvGift').onclick=()=>{S.tries=0;S.shown=1;$('sGuess').value='';$('sErr').textContent='';paintHints();
  $('sOpen').classList.add('hidden');open('mSecret');
@@ -119,6 +120,7 @@ $('pay').onclick=()=>{if(!S.g){toast('Elige primero: ¿la tarjeta es para una mu
  const tm=TV.tam(S.tam),w=TM.count($('frase').value);
  if(w>tm.max){toast(`Tu mensaje tiene ${w} palabras: elige un tamaño más grande o acórtalo (máx. ${tm.max})`);$('frase').scrollIntoView({block:'center'});return}
  if(secOn()&&!secMsg()){toast('Escribe el mensaje secreto o apaga "Adivina el secreto"');$('secreto').scrollIntoView({block:'center'});$('secreto').focus();return}
+ if(secOn()&&secMsg()&&clave()&&!pregS()){toast('Escribe la pregunta que verá quien recibe, para que sepa qué responder');$('secPreg').scrollIntoView({block:'center'});$('secPreg').focus();return}
  if(capOn()&&!abre()){toast('Elige la fecha de entrega o apaga la cápsula del tiempo');$('abre').scrollIntoView({block:'center'});$('abre').focus();return}
  if(abre()&&!(Date.parse(abre())>Date.now())&&!confirm('La fecha de la cápsula ya pasó, así que no habrá bloqueo. ¿Continuar?'))return;
  if(secMsg()&&!clave()&&!confirm('Sin palabra secreta el mensaje se verá sin candado. ¿Continuar?'))return;open('mPay')};
@@ -128,7 +130,7 @@ function pedidoTexto(){const n=v('nombre',24),msg=mensaje(),r=FOTO.st.img?FOTO.r
  return['*NUEVO PEDIDO - FRASSMOTTI*','---------------------',`Ocasión: ${T.name}`,`Plantilla: ${T.id}`,`Género: ${S.g==='h'?'Hombre':'Mujer'}`,`Diseño: ${dis.id}`,`Tamaño: ${S.tam}`,
   `Para: ${n}`,`De parte de: ${v('deParte',24)||'-'}`,`Título: ${titulo()}`,`Palabra: ${palabra()}`,`Frase: "${msg.replace(/\s+/g,' ').slice(0,70)}"`,`Mensaje (${TM.count(msg)} palabras): "${msg.replace(/\n+/g,' ¶ ')}"`,
   `Color: ${S.col||'según plantilla'}`,`Tipografía: ${S.fu}`,`Inicial del sello: ${sello()}`,
-  `Mensaje secreto: "${secMsg()||'-'}"`,`Palabra clave: "${clave()||'(sin candado)'}"`,`Pista: "${pistas()[0]||'-'}"`,`Pista 2: "${pistas()[1]||'-'}"`,`Pista 3: "${pistas()[2]||'-'}"`,
+  `Mensaje secreto: "${secMsg()||'-'}"`,`Pregunta del secreto: "${pregS()||'-'}"`,`Palabra clave: "${clave()||'(sin candado)'}"`,`Pista: "${pistas()[0]||'-'}"`,`Pista 2: "${pistas()[1]||'-'}"`,`Pista 3: "${pistas()[2]||'-'}"`,
   `Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,
   `Foto: ${S.photo?'La envío por este chat (recortada)':'Sin foto'}`,...(S.photo?[`Encuadre foto: ${enc}`]:[]),'---------------------',
   `Mi WhatsApp: ${v('tel',20)||'-'}`,`Monto: ${TV.PRECIO} Bs por Yape`,'Adjunto mi comprobante de pago.',...(window.extraLines?extraLines():[])].join('\n')}
@@ -149,7 +151,7 @@ $('send').onclick=async()=>{if(window.sinComprobante&&sinComprobante())return;
 window.fotoParaEnviar=async()=>{if(!FOTO.st.img)return null;const u=FOTO.render(asp(),900),b=await (await fetch(u)).blob();return new File([b],'foto-recortada.jpg',{type:'image/jpeg'})};
 
 /* ---------- Borrador automático (localStorage) ---------- */
-const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
+const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','secPreg','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
 function draft(){try{localStorage.setItem('tv_draft',JSON.stringify({...Object.fromEntries(FIELDS.map(f=>[f,$(f).value])),col:S.col,g:S.g||'',dis:S.dis,tam:S.tam,fu:S.fu,bw:S.bw,tog:Object.fromEntries(TOGS.map(t=>[t,on(t)]))}))}catch(e){}}
 try{const d=JSON.parse(localStorage.getItem('tv_draft')||'{}');
  if(!Q.get('g')&&(d.g==='h'||d.g==='m'))S.g=d.g;

@@ -89,7 +89,8 @@
   <label class="flex items-start gap-3 cursor-pointer" for="secOn"><input id="secOn" type="checkbox" class="w-5 h-5 mt-1 flex-none" aria-controls="secBox"><span><span class="serif text-2xl flex items-center gap-2"><i data-lucide="lock" class="w-5 h-5 text-accent"></i>Adivina el secreto <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></span><span class="block text-sm text-gray-600 mt-1">Un mensaje escondido bajo candado: solo lo lee quien adivine la palabra secreta.</span></span></label>
   <div id="secBox" class="space-y-4" hidden>
    <div><label class="label" for="secreto">Mensaje secreto</label><textarea id="secreto" rows="3" maxlength="240" class="input" placeholder="Lo que solo verá quien adivine la palabra secreta"></textarea></div>
-   <div><label class="label" for="clave">Palabra secreta (la que abre el candado)</label><input id="clave" class="input" maxlength="20" placeholder="Ej: Paris" autocomplete="off"><p class="text-xs text-gray-600 mt-1">No importan las mayúsculas. Si la dejas vacía, el mensaje se verá sin candado.</p></div>
+   <div><label class="label" for="secPreg">Pregunta para quien recibe <span class="text-gray-500 font-normal">(la verá antes de adivinar)</span></label><input id="secPreg" class="input" maxlength="100" placeholder="Ej: ¿En qué ciudad nos conocimos?" autocomplete="off"><p class="text-xs text-gray-600 mt-1">Así quien recibe la tarjeta sabe qué responder. La respuesta correcta es la palabra secreta de abajo.</p></div>
+   <div><label class="label" for="clave">Palabra secreta (la respuesta a tu pregunta, la que abre el candado)</label><input id="clave" class="input" maxlength="20" placeholder="Ej: Paris" autocomplete="off"><p class="text-xs text-gray-600 mt-1">No importan las mayúsculas. Si la dejas vacía, el mensaje se verá sin candado.</p></div>
    <div><span class="label">Pistas (hasta 3)</span><div class="space-y-2">
     <input id="pista" class="input" maxlength="60" placeholder="Pista 1: Nuestro primer viaje" aria-label="Pista 1"><input id="pista2" class="input" maxlength="60" placeholder="Pista 2 (opcional): empieza con P" aria-label="Pista 2"><input id="pista3" class="input" maxlength="60" placeholder="Pista 3 (opcional): la ciudad del amor" aria-label="Pista 3"></div>
     <p class="text-xs text-gray-600 mt-1">Se muestra la primera y quien la recibe puede pedir las otras, o aparecen solas al fallar.</p></div>
@@ -118,6 +119,7 @@
 <div id="mSecret" class="modal"><div id="sCard" class="card p-7 w-full max-w-sm text-center relative">
  <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
  <div id="sLock"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3>
+  <p id="sQuestion" class="serif text-2xl mt-3 break-words" style="color:#0f172a" hidden></p>
   <p id="sHint" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p>
   <button type="button" id="sMore" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button>
   <input id="sGuess" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off">
