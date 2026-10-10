@@ -110,9 +110,12 @@ async function render(o,S){
  const ix=a+bw0+pad.l,iy=b+bw0+pad.t;
  x.save();if(mar==='floral'){rr(x,ix,iy,imgW,imgH,10);x.clip()}x.drawImage(ph,ix,iy,imgW,imgH);x.restore();x.strokeStyle='#eee';x.lineWidth=1;x.strokeRect(ix+.5,iy+.5,imgW-1,imgH-1);
  if(mar==='cinta'){x.save();x.translate(0,b-13+12.5);x.rotate(-3*Math.PI/180);x.globalAlpha=.82;x.fillStyle=mix(th.ac,'#ffffff',.4);sh(0,2,4,'rgba(0,0,0,.18)');x.fillRect(-43,-12.5,86,25);x.restore()}
- const cap=(o.nombre||'')+(o.de?' · de '+o.de:'');x.textAlign='center';x.textBaseline='alphabetic';x.fillStyle='#111';
- const cs=fitFont(x,cap,700,fu.ms*.86,fu.m,Fw-24);x.font=`700 ${cs}px ${fu.m}`;x.fillText(cap,0,b+Fh-3-cs*.2);
- sticker(x,stk[0],a-20,b-15,45,-15);sticker(x,stk[1],a+Fw+25-120,b+Fh+50-120,120,5);sticker(x,stk[2],a+Fw-10-40,b+Fh+20-40,40,25);
+ /* v21: primero los stickers (flores y estrellas) y DESPUÉS los nombres, para que nada tape "Nombre · de ..." (igual que en carta.css) */
+ sticker(x,stk[0],a-20,b-15,45,-15);sticker(x,stk[1],a+Fw+26-112,b+Fh+46-112,112,5);sticker(x,stk[2],a+Fw-10-40,b+Fh+20-40,40,25);
+ const cap=(o.nombre||'')+(o.de?' · de '+o.de:'');x.textAlign='center';x.textBaseline='alphabetic';
+ const cs=fitFont(x,cap,700,fu.ms*.86,fu.m,Fw-24);x.font=`700 ${cs}px ${fu.m}`;const cy0=b+Fh-3-cs*.2;
+ x.lineJoin='round';x.lineWidth=5;x.strokeStyle='rgba(255,255,255,.95)';x.strokeText(cap,0,cy0);   /* halo blanco: se lee aunque pase una flor por detrás */
+ x.fillStyle='#111';x.fillText(cap,0,cy0);
  x.restore();
 
  /* ---- mensaje completo (en la tarjeta 2 y 3 se muestra entero, sin paginar) ---- */
