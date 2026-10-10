@@ -1,4 +1,4 @@
-/* Extras v11 (tarjeta): marca de agua viral, cápsula del tiempo, cerradura con pregunta,
+/* Extras v11 (tarjeta): marca de agua viral, cápsula del tiempo,
    modo oficina (Excel) y efectos de agitar / soplar. Se carga DESPUÉS del script de la tarjeta
    y solo envuelve funciones existentes: si este archivo falla o se borra, la tarjeta sigue igual. */
 (function(){
@@ -52,26 +52,11 @@ function capsule(){return new Promise(res=>{
  btn.onclick=()=>end(true);m.querySelector('.xclose').onclick=()=>end(false);m.addEventListener('click',e=>{if(e.target===m)end(false)});
  show(m)})}
 
-/* ============ 3) CERRADURA CON PREGUNTA SECRETA (#17) ============ */
-/* Payload del link: PL.q = pregunta, PL.qk = AES-GCM("ok") con la respuesta como clave (nunca viaja la respuesta) */
-function ask(){return new Promise(res=>{
- const m=modal('mQ','<div class="text-4xl" aria-hidden="true">🔐</div><h3 class="serif text-3xl mt-2">Cerradura secreta</h3><p class="text-sm mt-2" style="color:#475569">Responde para abrir el sobre:</p><p class="serif text-2xl mt-3 break-words" data-k="q"></p><input class="input mt-5 text-center" data-k="i" placeholder="Tu respuesta" autocomplete="off" maxlength="40"><p class="text-sm mt-2 min-h-[1.25rem] font-semibold" data-k="e" style="color:#b91c1c"></p><button type="button" class="btn btn-dark w-full mt-3" data-k="b">Abrir sobre</button>');
- const f=k=>m.querySelector('[data-k="'+k+'"]'),inp=f('i'),err=f('e');let tries=0,busy=false;
- f('q').textContent=clean(PL.q,80);
- const end=ok=>{hide(m);setTimeout(()=>m.remove(),300);res(ok)};
- const go=async()=>{if(busy||!inp.value.trim())return;busy=true;
-  const ok=(await TVS.dec(PL.qk,TVS.fold(inp.value)))==='ok';busy=false;
-  if(ok){TVS.chime();end(true);return}
-  tries++;err.textContent=tries>=3?'Casi... piensa en lo que solo ustedes dos saben.':'Esa no es la respuesta. Intenta otra vez.';shakeEl(m);buzz(80);inp.value='';inp.focus()};
- f('b').onclick=go;inp.onkeydown=e=>{if(e.key==='Enter')go()};
- m.querySelector('.xclose').onclick=()=>end(false);m.addEventListener('click',e=>{if(e.target===m)end(false)});
- show(m);setTimeout(()=>inp.focus(),200)})}
-
-/* Envuelve abrirCarta(): primero la cápsula, luego la cerradura, y recién ahí abre el sobre original */
-const sello=el('selloWrap'),hint=el('hint'),origAbrir=window.abrirCarta,conCerradura=!!(PL.q&&PL.qk),sellada=abreTs&&abreTs>Date.now();
-if(typeof origAbrir==='function'&&(sellada||conCerradura)){
+/* Envuelve abrirCarta(): solo si hay cápsula del tiempo activa, muestra la cuenta regresiva antes de abrir. Sin cápsula, el sobre abre libre. */
+const sello=el('selloWrap'),hint=el('hint'),origAbrir=window.abrirCarta,sellada=abreTs&&abreTs>Date.now();
+if(typeof origAbrir==='function'&&sellada){
  sello&&sello.classList.add('cand');
- if(hint&&hint.lastChild&&hint.lastChild.nodeType===3)hint.lastChild.textContent=sellada?' Cápsula del tiempo: toca el sello':' Tiene cerradura: toca el sello';
+ if(hint&&hint.lastChild&&hint.lastChild.nodeType===3)hint.lastChild.textContent=' Cápsula del tiempo: toca el sello';
  let passed=false,busy=false;
  window.abrirCarta=async function(){
   if(busy||estado==='abierto')return;
@@ -80,7 +65,6 @@ if(typeof origAbrir==='function'&&(sellada||conCerradura)){
   busy=true;
   try{await clockReady;
    if(abreTs&&now()<abreTs&&!(await capsule()))return;
-   if(conCerradura&&!(await ask()))return;
    passed=true;sello&&sello.classList.remove('cand');
   }finally{busy=false}
   origAbrir();

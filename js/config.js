@@ -24,20 +24,15 @@ const TV={
    d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.cssText=`width:${z}px;height:${z}px;font-size:${Math.round(z*.57)}px;transform:translateY(${i%2?8:0}px) rotate(${(i*37)%20-10}deg)`;el.append(d)})},
   TODAS:[
    {id:'cumple-divertido',name:'Cumple Divertido',tag:'Más vendido',d:'Para celebrar con humor y mucha fiesta.',ti:'Feliz',pa:'CUMPLE',frase:'Para la más loca del grupo',
-    K:{b1:'#2a1530',b2:'#0b0610',e1:'#3a1d44',e2:'#241028',wl:'#e0245e',wd:'#7a0f33',g:'#d4af37',paper:'#fbf3e6',ac:'#d81b60'},
-    q:'¿Qué tiene {n} que nadie más tiene?',o:['Su risa contagiosa','Su energía infinita','Todo lo anterior'],ok:2},
+    K:{b1:'#2a1530',b2:'#0b0610',e1:'#3a1d44',e2:'#241028',wl:'#e0245e',wd:'#7a0f33',g:'#d4af37',paper:'#fbf3e6',ac:'#d81b60'}},
    {id:'amor',name:'Te Quiero',tag:'Romántica',d:'Una declaración que se abre con sello de cera.',ti:'Te',pa:'QUIERO',frase:'Eres mi lugar favorito',
-    K:{b1:'#3a1220',b2:'#10060a',e1:'#4a1a2a',e2:'#2c0f19',wl:'#e63950',wd:'#7d0a22',g:'#f0b4be',paper:'#fff1f2',ac:'#c9184a'},
-    q:'¿Qué es lo primero que piensa {n} al despertar?',o:['En café','En mí','En seguir durmiendo'],ok:1},
+    K:{b1:'#3a1220',b2:'#10060a',e1:'#4a1a2a',e2:'#2c0f19',wl:'#e63950',wd:'#7d0a22',g:'#f0b4be',paper:'#fff1f2',ac:'#c9184a'}},
    {id:'gracias',name:'Gracias Infinitas',tag:'Nueva',d:'Para agradecer a quien siempre está.',ti:'Muchas',pa:'GRACIAS',frase:'Gracias por estar siempre',
-    K:{b1:'#12332a',b2:'#050f0b',e1:'#1b4d3e',e2:'#0f2c24',wl:'#2fa36b',wd:'#0d4a2f',g:'#d4af37',paper:'#f3f7ee',ac:'#1b7a4b'},
-    q:'¿Quién merece un aplauso hoy?',o:['{n}','{n}, sin duda','Solo {n}'],ok:0},
+    K:{b1:'#12332a',b2:'#050f0b',e1:'#1b4d3e',e2:'#0f2c24',wl:'#2fa36b',wd:'#0d4a2f',g:'#d4af37',paper:'#f3f7ee',ac:'#1b7a4b'}},
    {id:'aniversario',name:'Aniversario',tag:'Elegante',d:'Un recuerdo para celebrar el tiempo juntos.',ti:'Juntos',pa:'SIEMPRE',frase:'Contigo todo gira mejor',
-    K:{b1:'#16204a',b2:'#070a18',e1:'#233063',e2:'#141c3d',wl:'#5668d8',wd:'#1c2a7a',g:'#cfd6e6',paper:'#f4f5fb',ac:'#3949ab'},
-    q:'¿Cuál es el mejor plan para {n}?',o:['Una cena tranquila','Viajar sin rumbo','Cualquiera, contigo'],ok:2},
+    K:{b1:'#16204a',b2:'#070a18',e1:'#233063',e2:'#141c3d',wl:'#5668d8',wd:'#1c2a7a',g:'#cfd6e6',paper:'#f4f5fb',ac:'#3949ab'}},
    {id:'mama',name:'Para Mamá',tag:'Con cariño',d:'El detalle más tierno para ella.',ti:'Para',pa:'MAMÁ',frase:'Gracias por ser mi hogar',
-    K:{b1:'#3a1f4d',b2:'#0e0614',e1:'#4b2a63',e2:'#2d1840',wl:'#b04ad1',wd:'#5a1478',g:'#e8c15a',paper:'#fbf2fc',ac:'#8e24aa'},
-    q:'¿Quién tiene siempre la razón?',o:['{n}','{n} (otra vez)','Nadie discute con {n}'],ok:0}
+    K:{b1:'#3a1f4d',b2:'#0e0614',e1:'#4b2a63',e2:'#2d1840',wl:'#b04ad1',wd:'#5a1478',g:'#e8c15a',paper:'#fbf2fc',ac:'#8e24aa'}}
   ]
 };
 
@@ -57,21 +52,20 @@ TV.FISICOS=[
 
 /* v14: plantilla para Papá (se inserta después de Mamá) */
 TV.TODAS.splice(5,0,{id:'papa',name:'Para Papá',tag:'Con cariño',d:'Un detalle sincero para quien siempre te cuidó.',ti:'Para',pa:'PAPÁ',frase:'Gracias por enseñarme a ser fuerte',
- K:{b1:'#14263a',b2:'#060d14',e1:'#1d3a56',e2:'#10263a',wl:'#2b7fb8',wd:'#0f3a5c',g:'#cdd6e0',paper:'#eef3f8',ac:'#1f5f99'},
- q:'¿Quién tiene siempre la razón?',o:['Papá','Papá (otra vez)','Nadie discute con papá'],ok:0});
+ K:{b1:'#14263a',b2:'#060d14',e1:'#1d3a56',e2:'#10263a',wl:'#2b7fb8',wd:'#0f3a5c',g:'#cdd6e0',paper:'#eef3f8',ac:'#1f5f99'}});
 
 /* ===== 3. PLANTILLAS ESPECIALES (v14: todas habilitadas; activo:false = ocultas) =====
    Para añadir una: copia un bloque, cambia id y datos, y pon sus 3 imágenes en assets/<id>-1.jpg, -2.jpg, -3.jpg */
 const _esp=o=>Object.assign({tag:'Especial',activo:true},o,{imgs:[1,2,3].map(n=>`assets/${o.id}-${n}.jpg`)});
 TV.TODAS.push(
  _esp({id:'mujer-boliviana',name:'Día de la Mujer Boliviana',fecha:'11 de octubre',cat:'mujer',d:'Un homenaje a su fuerza y su cariño.',ti:'Feliz Día',pa:'MUJER',frase:'Tu fuerza inspira a todos',
-  K:{b1:'#33103f',b2:'#0c0410',e1:'#4a1d5c',e2:'#2a0f37',wl:'#e91e8c',wd:'#7a0e4a',g:'#f4c542',paper:'#fdf0f8',ac:'#d81b8a'},q:'¿Qué admiramos más de {n}?',o:['Su fortaleza','Su corazón','Todo lo anterior'],ok:2}),
+  K:{b1:'#33103f',b2:'#0c0410',e1:'#4a1d5c',e2:'#2a0f37',wl:'#e91e8c',wd:'#7a0e4a',g:'#f4c542',paper:'#fdf0f8',ac:'#d81b8a'}}),
  _esp({id:'halloween',name:'Halloween',fecha:'31 de octubre',cat:'halloween',d:'Dulces, sustos suaves y mucha diversión.',ti:'Feliz',pa:'HALLOWEEN',frase:'Dulce o truco: hoy te toca sonreír',
-  K:{b1:'#1f1208',b2:'#060403',e1:'#2b1a0d',e2:'#170d06',wl:'#ff8a1f',wd:'#8a3b00',g:'#ff9a2e',paper:'#f6ecdc',ac:'#e65100'},q:'¿Qué disfraz elegiría {n}?',o:['Fantasma','Vampiro','Bruja'],ok:2}),
+  K:{b1:'#1f1208',b2:'#060403',e1:'#2b1a0d',e2:'#170d06',wl:'#ff8a1f',wd:'#8a3b00',g:'#ff9a2e',paper:'#f6ecdc',ac:'#e65100'}}),
  _esp({id:'difuntos',name:'Todos los Santos y Difuntos',fecha:'1 y 2 de noviembre',cat:'difuntos',d:'Un recuerdo lleno de amor y gratitud.',ti:'Con amor',pa:'RECUERDO',frase:'Tu recuerdo vive en nuestro corazón',
-  K:{b1:'#1c1a24',b2:'#060509',e1:'#2c2838',e2:'#18151f',wl:'#f2a31b',wd:'#8a5200',g:'#f5b942',paper:'#f5efe6',ac:'#d97706'},q:'¿Qué recordamos siempre de {n}?',o:['Su sonrisa','Sus consejos','Todo lo anterior'],ok:2}),
+  K:{b1:'#1c1a24',b2:'#060509',e1:'#2c2838',e2:'#18151f',wl:'#f2a31b',wd:'#8a5200',g:'#f5b942',paper:'#f5efe6',ac:'#d97706'}}),
  _esp({id:'navidad',name:'Navidad',fecha:'25 de diciembre',cat:'navidad',d:'Magia, paz y abrazos para esta fecha.',ti:'Feliz',pa:'NAVIDAD',frase:'Que la magia de hoy te acompañe siempre',
-  K:{b1:'#12301f',b2:'#050d08',e1:'#1f4d38',e2:'#10291f',wl:'#d62828',wd:'#7a0f13',g:'#e6c15a',paper:'#fbf5ea',ac:'#c1121f'},q:'¿Qué pediría {n} a Papá Noel?',o:['Paz y salud','Abrazos','Todo lo anterior'],ok:2})
+  K:{b1:'#12301f',b2:'#050d08',e1:'#1f4d38',e2:'#10291f',wl:'#d62828',wd:'#7a0f13',g:'#e6c15a',paper:'#fbf5ea',ac:'#c1121f'}})
 );
 const _cat={'cumple-divertido':'cumple',amor:'amor',gracias:'amistad',aniversario:'amor',mama:'amor',papa:'papa'};
 TV.TODAS.forEach(t=>{t.cat=t.cat||_cat[t.id]||'amor'});

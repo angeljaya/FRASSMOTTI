@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" href="favicon.svg"><title>Personaliza tu tarjeta | Frassmotti</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script>
+<link rel="stylesheet" href="css/styles.css"><link rel="stylesheet" href="css/carta.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/v14.css">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="js/config.js"></script><script src="js/diseno.js"></script><script src="js/mensaje.js"></script><script src="js/foto.js"></script><script src="js/wa.js" defer></script></head>
+<body>
+<header class="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between"><a href="index.html" class="serif text-2xl flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>FRASSMOTTI</a><a href="index.html" class="btn btn-ghost !py-2 text-sm">Volver a la tienda</a></header>
+
+<!-- 1) DOCK: vista previa del celular (se encoge y queda fija al hacer scroll) -->
+<section id="dock"><div id="dockBox" class="flex justify-center pt-4 overflow-visible" style="height:610px">
+ <div id="phone" class="relative w-[300px] h-[580px] rounded-[44px] bg-gray-900 p-3 shadow-2xl">
+  <div class="h-full rounded-[34px] overflow-hidden relative" style="background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2))">
+<div style="position:absolute;left:50%;top:14px;width:340px;transform:translateX(-50%) scale(.78);transform-origin:top center"><div style="position:relative;min-height:520px">
+<div class="carta-bg textura-papel"><div class="bg-text-pattern" id="pvPat"></div></div>
+<div class="carta-content"><h1 class="scrapbook-title" id="pvTit"></h1><div class="letters-container" id="pvLet"></div>
+<div class="photo-frame">              <svg class="sticker sticker-star-1" viewBox="0 0 100 100">
+                <defs>
+                  <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="50%" stop-color="#b0b0b0"/>
+                    <stop offset="100%" stop-color="#505050"/>
+                  </linearGradient>
+                </defs>
+                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
+              </svg>
+<img id="pvAv" class="photo-img" alt="Foto"><p class="photo-cap" id="pvCap"></p>              <svg class="sticker sticker-flowers" viewBox="0 0 150 150">
+                 <path d="M70 140 Q80 100 60 70 M75 140 Q90 100 110 80" fill="none" stroke="#d4af37" stroke-width="6" stroke-linecap="round"/>
+                 <path d="M70 130 Q50 100 70 100 Q80 120 70 130 Z" fill="#d4af37"/>
+                 <g transform="translate(55,65) scale(0.8) rotate(-10)">
+                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff4d4d" stroke="#b31010" stroke-width="1"/>
+                   <circle cx="0" cy="0" r="10" fill="#800000"/>
+                   <circle cx="0" cy="0" r="5" fill="#330000"/>
+                 </g>
+                 <g transform="translate(105,75) scale(0.6) rotate(15)">
+                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff6666" stroke="#b31010" stroke-width="1"/>
+                   <circle cx="0" cy="0" r="10" fill="#800000"/>
+                   <circle cx="0" cy="0" r="5" fill="#330000"/>
+                 </g>
+              </svg>
+              
+              <svg class="sticker sticker-star-2" viewBox="0 0 100 100">
+                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
+              </svg></div>
+<p class="handwritten-msg" id="pvMsg"></p>
+<div class="card-actions"><button type="button" class="btn-card btn-card-secondary" id="pvGift"><i data-lucide="lock"></i>Secreto</button><button type="button" class="btn-card btn-card-primary" id="pvCel"><i data-lucide="sparkles"></i>Celebrar</button></div></div></div></div></div></div><div class="pv-seal" id="pvSeal" title="Así se verá el sello"><span id="pvSealL">C</span></div></div></div></section>
+
+<!-- 2) FORMULARIO -->
+<main class="max-w-xl mx-auto px-5 pt-10 pb-24 space-y-8">
+ <div><h1 class="serif text-4xl">Crea tu tarjetita</h1><a id="ejLink" target="_blank" class="inline-flex text-sm font-medium underline text-gray-700 mt-2">Ver ejemplo en vivo de esta plantilla</a><p class="text-gray-600 mt-2">Mientras escribes, el celular de arriba se actualiza. Cada detalle que eliges la vuelve más suya.</p></div>
+
+ <section class="space-y-4" aria-labelledby="h1s"><h2 id="h1s" class="serif text-2xl">1. ¿Para quién es? <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(obligatorio)</span></h2>
+  <div class="seg" id="gen" role="group" aria-label="Para quién" aria-required="true"><button type="button" data-g="m" aria-pressed="false">Para una mujer</button><button type="button" data-g="h" aria-pressed="false">Para un hombre</button></div><p id="genErr" class="text-sm font-semibold text-red-700 min-h-[1.25rem] -mt-2" role="alert"></p>
+  <div><label class="label" for="ocasion">Ocasión</label><select id="ocasion" class="input"></select></div>
+  <div><span class="label">Diseño (elegimos el ideal para esta ocasión; cámbialo si quieres)</span><div class="flex flex-wrap gap-2" id="disenos"></div></div>
+  <div class="grid sm:grid-cols-2 gap-4">
+   <div><label class="label" for="nombre">Nombre de quien la recibe</label><input id="nombre" class="input" maxlength="24" placeholder="Carla"></div>
+   <div><label class="label" for="deParte">De parte de</label><input id="deParte" class="input" maxlength="24" placeholder="Tu nombre"></div></div>
+ </section>
+
+ <section class="space-y-4" aria-labelledby="h2s"><h2 id="h2s" class="serif text-2xl">2. ¿Qué tan larga será tu carta?</h2>
+  <div class="grid gap-3" id="tams"></div>
+  <div class="grid sm:grid-cols-2 gap-4">
+   <div><label class="label" for="titulo">Título (puedes cambiarlo)</label><input id="titulo" class="input" maxlength="14" placeholder="Te"></div>
+   <div><label class="label" for="palabra">Palabra grande en círculos</label><input id="palabra" class="input" maxlength="9" placeholder="QUIERO" style="text-transform:uppercase"></div></div>
+  <p class="text-xs text-gray-600 -mt-2">El diseño de las letras se mantiene elegante, escribas lo que escribas.</p>
+  <div><label class="label" for="frase">Tu mensaje</label><textarea id="frase" rows="4" class="input" maxlength="2600"></textarea><p class="wc mt-1" id="wc"></p></div>
+ </section>
+
+ <section class="space-y-4" aria-labelledby="h3s"><h2 id="h3s" class="serif text-2xl">3. Su foto <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></h2>
+  <div><label class="file-btn" for="foto"><i data-lucide="image-plus" class="w-5 h-5 text-accent"></i><span id="fotoTxt" class="text-sm text-gray-600">Subir foto desde tu dispositivo</span></label>
+  <input id="foto" type="file" accept="image/*" class="hidden"></div>
+  <div id="fotoBox" class="hidden card p-4 space-y-3">
+   <div class="flex items-center gap-3"><img id="fotoThumb" class="pg-thumb" alt="Tu foto recortada"><div class="flex flex-wrap gap-2"><button type="button" id="fotoEdit" class="btn btn-ghost !py-2 !px-4 text-sm"><i data-lucide="crop" class="w-4 h-4"></i>Ajustar encuadre</button><button type="button" id="fotoDel" class="text-sm text-gray-600 underline px-2">Quitar foto</button></div></div>
+   <div class="seg" id="fotoMode" role="group" aria-label="Estilo de la foto"><button type="button" data-m="bn" aria-pressed="true">Blanco y negro</button><button type="button" data-m="c" aria-pressed="false">A color</button></div>
+  </div>
+  <p class="text-xs text-gray-600">Sin foto, la tarjeta usa un ilustrado de la ocasión. Se recorta con la misma proporción del espacio de la tarjeta.</p>
+ </section>
+
+ <section class="space-y-4" aria-labelledby="h4s"><h2 id="h4s" class="serif text-2xl">4. Estilo</h2>
+  <div><span class="label">Color (cambia las letras y también el fondo; si no eliges, usamos el de la ocasión)</span><div class="flex gap-3 flex-wrap" id="cols"></div></div>
+  <div><span class="label">Tipografía</span><div class="grid grid-cols-3 gap-3" id="fonts"></div></div>
+  <div><label class="label" for="sello">Inicial del sello de cera</label><input id="sello" class="input !w-24 text-center text-xl uppercase" maxlength="1" placeholder="C" aria-describedby="selloH"><p id="selloH" class="text-xs text-gray-600 mt-1">Es la letra que aparece en el sello del sobre. Si la dejas vacía, usamos la inicial de quien recibe.</p></div>
+ </section>
+
+<fieldset class="card p-6 space-y-4" id="secCard"><legend class="sr-only">Adivina el secreto</legend>
+  <label class="flex items-start gap-3 cursor-pointer" for="secOn"><input id="secOn" type="checkbox" class="w-5 h-5 mt-1 flex-none" aria-controls="secBox"><span><span class="serif text-2xl flex items-center gap-2"><i data-lucide="lock" class="w-5 h-5 text-accent"></i>Adivina el secreto <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></span><span class="block text-sm text-gray-600 mt-1">Un mensaje escondido bajo candado: solo lo lee quien adivine la palabra secreta.</span></span></label>
+  <div id="secBox" class="space-y-4" hidden>
+   <div><label class="label" for="secreto">Mensaje secreto</label><textarea id="secreto" rows="3" maxlength="240" class="input" placeholder="Lo que solo verá quien adivine la palabra secreta"></textarea></div>
+   <div><label class="label" for="clave">Palabra secreta (la que abre el candado)</label><input id="clave" class="input" maxlength="20" placeholder="Ej: Paris" autocomplete="off"><p class="text-xs text-gray-600 mt-1">No importan las mayúsculas. Si la dejas vacía, el mensaje se verá sin candado.</p></div>
+   <div><span class="label">Pistas (hasta 3)</span><div class="space-y-2">
+    <input id="pista" class="input" maxlength="60" placeholder="Pista 1: Nuestro primer viaje" aria-label="Pista 1"><input id="pista2" class="input" maxlength="60" placeholder="Pista 2 (opcional): empieza con P" aria-label="Pista 2"><input id="pista3" class="input" maxlength="60" placeholder="Pista 3 (opcional): la ciudad del amor" aria-label="Pista 3"></div>
+    <p class="text-xs text-gray-600 mt-1">Se muestra la primera y quien la recibe puede pedir las otras, o aparecen solas al fallar.</p></div>
+  </div></fieldset>
+
+ <fieldset class="card p-6 space-y-4" id="capCard"><legend class="sr-only">Cápsula del tiempo</legend>
+  <label class="flex items-start gap-3 cursor-pointer" for="capOn"><input id="capOn" type="checkbox" class="w-5 h-5 mt-1 flex-none" aria-controls="capBox"><span><span class="serif text-2xl flex items-center gap-2"><i data-lucide="hourglass" class="w-5 h-5 text-accent"></i>Cápsula del tiempo <span class="text-sm text-gray-500 font-normal" style="font-family:Outfit">(opcional)</span></span><span class="block text-sm text-gray-600 mt-1">Programa cuándo se puede abrir tu regalo digital. Hasta esa fecha la tarjeta queda sellada y muestra una cuenta regresiva.</span></span></label>
+  <div id="capBox" class="space-y-3" hidden>
+   <div><label class="label" for="abre">Fecha y hora de entrega</label><input id="abre" type="datetime-local" class="input"></div>
+   <div class="flex flex-wrap gap-2" id="capQuick" aria-label="Fechas rápidas"></div>
+   <p id="capTxt" class="text-sm font-medium text-gray-800 min-h-[1.25rem]" role="status"></p>
+   <p class="text-xs text-gray-600">Perfecta para cumpleaños y sorpresas. La hora es la del dispositivo de quien abre la tarjeta. Si no eliges fecha, la tarjeta se abre apenas la reciba.</p>
+  </div></fieldset>
+
+ <fieldset class="card p-6 space-y-4"><legend class="sr-only">Modo oficina</legend>
+  <label class="flex items-start gap-3 text-sm text-gray-700"><input id="ofi" type="checkbox" class="w-5 h-5 mt-0.5"><span><b>Modo oficina</b> <span class="text-gray-500">(opcional)</span>: la tarjeta se abre disfrazada de hoja de Excel, ideal para leerla en el trabajo sin que se note.</span></label></fieldset>
+
+ <section class="space-y-4" aria-labelledby="h5s"><h2 id="h5s" class="serif text-2xl">5. Cómo la quieres recibir</h2>
+  <div><label class="label" for="formato">Formato</label><select id="formato" class="input"></select><p class="text-xs text-gray-600 mt-1">Llaveros, collares y manillas con QR: el precio se confirma por WhatsApp.</p></div>
+  <div><label class="label" for="tel">Tu WhatsApp</label><input id="tel" class="input" inputmode="tel" maxlength="20" placeholder="7XXXXXXX"></div>
+  <button type="button" id="pay" class="btn btn-accent w-full text-lg"><i data-lucide="smartphone" class="w-5 h-5"></i><span>Pagar Bs <span class="price"></span> por Yape</span></button>
+ </section>
+</main>
+
+<!-- MODAL: minijuego -->
+<div id="mSecret" class="modal"><div id="sCard" class="card p-7 w-full max-w-sm text-center relative">
+ <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
+ <div id="sLock"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3>
+  <p id="sHint" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p>
+  <button type="button" id="sMore" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button>
+  <input id="sGuess" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off">
+  <p id="sErr" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p>
+  <button id="sTry" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
+ <div id="sOpen" class="hidden"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sMsg" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div></div>
+
+<!-- MODAL: recortar foto -->
+<div id="mCrop" class="modal"><div class="card p-5 w-full max-w-sm relative max-h-[94vh] overflow-y-auto">
+ <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
+ <h3 class="serif text-2xl pr-8">Ajusta tu foto</h3><p class="text-sm text-gray-600 mt-1 mb-3">Arrastra para mover y usa el zoom. Este marco tiene la misma proporción que tu tarjeta.</p>
+ <div id="cropArea" class="crop-area"><img alt="Foto a recortar"></div>
+ <div class="mt-4 flex items-center gap-3"><i data-lucide="zoom-out" class="w-4 h-4 text-gray-500"></i><input id="cropZoom" type="range" class="zoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><i data-lucide="zoom-in" class="w-4 h-4 text-gray-500"></i></div>
+ <div class="grid grid-cols-2 gap-2 mt-4"><button type="button" id="cropBW" class="btn btn-ghost !py-2.5 text-sm">Blanco y negro</button><button type="button" id="cropReset" class="btn btn-ghost !py-2.5 text-sm">Centrar</button></div>
+ <button type="button" id="cropOk" class="btn btn-accent w-full mt-3">Listo, usar esta foto</button></div></div>
+
+<!-- MODAL: pago Yape -->
+<div id="mPay" class="modal"><div class="card p-7 w-full max-w-sm text-center relative max-h-[92vh] overflow-y-auto">
+ <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
+ <h3 class="serif text-3xl">Paga por Yape</h3><p class="text-gray-600 text-sm mt-1">Monto: <b>Bs <span class="price"></span></b></p>
+ <div id="qrBox" class="flex justify-center my-5"></div><a id="qrDl" href="assets/qr-pago.png" download="qr-pago-frassmotti.png" class="btn btn-ghost text-sm w-full mb-4"><i data-lucide="download" class="w-4 h-4"></i>Descargar QR</a>
+ <ol class="text-sm text-gray-600 text-left list-decimal pl-5 space-y-1"><li>Escanea el QR con Yape y paga.</li><li>Guarda la captura del comprobante.</li><li>Adjunta la captura abajo y toca el botón: se abre WhatsApp con tu pedido. Si subiste foto o audio, envíalos también en el chat.</li></ol>
+ <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de Yape</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a><a href="index.html#tutorial" class="block text-sm text-gray-600 underline mt-2">Ver el paso a paso de mi pedido</a></div></div>
+<!-- ENVÍO CON ÉXITO (se muestra al enviar el comprobante de Yape) -->
+<div id="okEnvio" class="ok-wrap" role="dialog" aria-modal="true" aria-labelledby="okT"><div class="ok-box">
+ <div class="ok-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+ <span class="ok-3d" id="okT">¡Envío con éxito!</span>
+ <p class="ok-sub">Tu pedido ya va camino a nuestro WhatsApp. Estás por regalar algo que nadie más tendrá: algo hecho solo para esa persona.</p>
+ <div class="ok-next"><b>¿Qué sigue?</b><br>1. Verificamos tu pago de Yape.<br>2. Preparamos tu tarjeta con todo lo que elegiste.<br>3. Te escribimos por WhatsApp con tu link mágico.</div>
+ <div class="ok-btns"><a id="okWa" class="btn ok-wa hidden" target="_blank" rel="noopener">Abrir WhatsApp con mi pedido</a><button type="button" id="okCerrar" class="btn btn-accent">Perfecto, gracias</button><a href="index.html" class="btn ok-home">Volver al inicio</a></div></div></div>
+<div id="toast" class="toast" role="status"></div><script src="js/secret.js"></script><script src="js/personalizar.js"></script><script src="js/nuevas.js"></script><script src="js/pago.js"></script></body></html>
