@@ -63,8 +63,9 @@
 </div></div>
 <p class="hint-text" id="hint"><i data-lucide="hand"></i> Rompe el sello</p></div></div>
 <div id="mS" class="modal" role="dialog" aria-modal="true"><div id="sC" class="card p-7 w-full max-w-sm text-center relative"><button class="absolute top-4 right-4 text-gray-500" id="x" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
-<div id="sL"><i data-lucide="lock" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sQ" class="serif text-2xl mt-3 break-words" style="color:#0f172a" hidden></p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
-<div id="sO" class="hidden"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div></div>
+<div class="candado-zona mt-2"><div class="candado" id="candado" role="img" aria-label="Mensaje secreto bloqueado"><div class="candado-grillete"></div><div class="candado-cuerpo"><span class="candado-ojo"></span></div></div><div id="sO" class="candado-msg"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div>
+<div id="sL"><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sQ" class="serif text-2xl mt-3 break-words" style="color:#0f172a" hidden></p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
+</div></div>
 
 <div id="toast" class="toast" role="status"></div>
 <script src="../js/carta.js"></script>
@@ -134,11 +135,24 @@ const HINTS=[].concat(PL.h||[]).map(x=>clean(x,60).trim()).filter(Boolean).slice
 const SQ=clean(PL.sq,100).trim();
 const paintH=()=>{$('sQ').textContent=SQ;$('sQ').hidden=!SQ;$('sH').textContent=HINTS.length?HINTS.slice(0,hs).map((h,i)=>(HINTS.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'';$('sH').hidden=!HINTS.length;$('sP').hidden=hs>=HINTS.length};
 $('sP').onclick=()=>{hs++;paintH()};
-const reveal=m=>{$('sL').classList.add('hidden');$('sO').classList.remove('hidden');$('sM').textContent=m;boom();TVS.chime();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
-$('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';$('sO').classList.add('hidden');$('mS').classList.add('open');
+/* v22 · candado metálico: vuelve al estado cerrado (sin animar) cada vez que se abre el modal */
+const _fx=()=>{const c=$('candado');return[c,$('sO'),c.querySelector('.candado-grillete')]};
+function resetCandado(){const[c,o,g]=_fx();[c,o,g].forEach(e=>e.style.transition='none');g.style.animation='none';
+ c.classList.remove('candado-abierto','candado-error');c.setAttribute('aria-label','Mensaje secreto bloqueado');void c.offsetWidth;[c,o,g].forEach(e=>e.style.transition='');g.style.animation='';
+ const L=$('sL');L.classList.remove('hidden');L.style.transition='';L.style.opacity='';L.style.pointerEvents='';$('sM').textContent='';$('sT').disabled=false;busy=false}
+function abrirInstantaneo(){const[c,o,g]=_fx();[c,o,g].forEach(e=>e.style.transition='none');c.classList.add('candado-abierto');void c.offsetWidth;[c,o,g].forEach(e=>e.style.transition='')}
+$('candado').onclick=()=>{if(!$('candado').classList.contains('candado-abierto'))$('sG').focus()};
+/* reveal(m,true) = clave acertada: anima el candado (abrirCandado de carta.js suena playChimeSound() a los 850 ms, cuando entra .candado-msg).
+   reveal(m) = mensaje/voz que no pide clave: se muestra directo, como antes. */
+const reveal=(m,conCandado)=>{const L=$('sL');$('sM').textContent=m;
+ const fin=()=>{if(!$('mS').classList.contains('open'))return;boom();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
+ if(conCandado){L.style.transition='opacity .35s ease';L.style.opacity='0';L.style.pointerEvents='none';setTimeout(()=>L.classList.add('hidden'),380);abrirCandado('#candado');setTimeout(fin,850)}
+ else{L.classList.add('hidden');abrirInstantaneo();TVS.chime();fin()}};
+$('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';resetCandado();$('mS').classList.add('open');
  if(PL.m||(!PL.s&&PL.a)){reveal(PL.m?clean(PL.m,240):'Escucha este mensaje de voz.');return}$('sL').classList.remove('hidden');hs=1;paintH();setTimeout(()=>$('sG').focus(),150)};
-async function guess(){const g=$('sG').value;if(!g.trim())return;const m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g);if(m!==null){reveal(m);return}
- tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');const c=$('sC');c.classList.remove('shake');void c.offsetWidth;c.classList.add('shake');$('sG').value='';$('sG').focus()}
+let busy=false;
+async function guess(){if(busy)return;const g=$('sG').value;if(!g.trim())return;busy=true;$('sT').disabled=true;let m=null;try{m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g)}catch(e){m=null}busy=false;if(m!==null){reveal(m,true);return}
+ tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');$('sT').disabled=false;sacudirCandado('#candado');$('sG').value='';$('sG').focus()}
 $('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
 $('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
 lucide.createIcons();</script>
