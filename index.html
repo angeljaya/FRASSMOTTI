@@ -4,41 +4,111 @@
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="js/config.js"></script><script src="js/secret.js"></script><title>Frassmotti | Regalos que se abren con un QR</title>
 <meta name="description" content="FRASSMOTTI: tarjetas digitales que se abren con un QR. Compártelas por link o llévalas grabadas en llaveros, collares y manillas.">
 <meta property="og:title" content="Frassmotti | Regalos que se abren con un QR"><meta property="og:description" content="Personaliza una tarjetita que hace PUM al abrirse."><meta property="og:type" content="website"><script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script><script src="js/fx.js"></script><script src="js/wa.js" defer></script></head>
-<body><header class="hero-header px-5 h-20 flex items-center justify-between"><a href="index.html" class="logo" aria-label="FRASSMOTTI"><svg class="logo__seal" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="lw" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#c8283a"/><stop offset=".7" stop-color="#6e000a"/><stop offset="1" stop-color="#2a0003"/></radialGradient><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1c1"/><stop offset=".45" stop-color="#d4af37"/><stop offset="1" stop-color="#7a560c"/></linearGradient></defs><path d="M32 3c9 0 14 2 20 8s9 11 9 21-3 15-9 21-11 8-20 8-14-2-20-8S3 42 3 32 6 17 12 11 23 3 32 3z" fill="url(#lw)"/><circle cx="32" cy="32" r="21" fill="none" stroke="url(#lg)" stroke-width="1.6" stroke-dasharray="3 3"/><text x="32" y="43" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="30" fill="url(#lg)">F</text><ellipse cx="22" cy="17" rx="9" ry="4.5" fill="#fff" opacity=".22" transform="rotate(-30 22 17)"/></svg><span class="logo__word">FRASSMOTTI</span></a><a href="#productos" class="btn btn-dark !py-2.5 text-sm">Hacer la mía</a><a data-wa="Hola! Quiero información sobre FRASSMOTTI." class="btn btn-ghost !py-2.5 text-sm hidden sm:inline-flex">WhatsApp</a></header>
+<body class="store"><header class="hero-header px-5 h-20 flex items-center justify-between"><a href="index.html" class="logo" aria-label="FRASSMOTTI"><svg class="logo__seal" viewBox="0 0 64 64" aria-hidden="true"><defs><radialGradient id="lw" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#c8283a"/><stop offset=".7" stop-color="#6e000a"/><stop offset="1" stop-color="#2a0003"/></radialGradient><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff1c1"/><stop offset=".45" stop-color="#d4af37"/><stop offset="1" stop-color="#7a560c"/></linearGradient></defs><path d="M32 3c9 0 14 2 20 8s9 11 9 21-3 15-9 21-11 8-20 8-14-2-20-8S3 42 3 32 6 17 12 11 23 3 32 3z" fill="url(#lw)"/><circle cx="32" cy="32" r="21" fill="none" stroke="url(#lg)" stroke-width="1.6" stroke-dasharray="3 3"/><text x="32" y="43" text-anchor="middle" font-family="Cinzel,serif" font-weight="900" font-size="30" fill="url(#lg)">F</text><ellipse cx="22" cy="17" rx="9" ry="4.5" fill="#fff" opacity=".22" transform="rotate(-30 22 17)"/></svg><span class="logo__word">FRASSMOTTI</span></a><button type="button" id="btn-ocasiones" class="btn btn-ghost !py-2.5 text-sm" aria-controls="sidebar-ocasiones" aria-expanded="false"><i data-lucide="menu" class="w-4 h-4"></i><span>Ver Ocasiones</span></button><a href="#productos" class="btn btn-dark !py-2.5 text-sm hidden sm:inline-flex">Hacer la mía</a><a data-wa="Hola! Quiero información sobre FRASSMOTTI." class="btn btn-ghost !py-2.5 text-sm hidden sm:inline-flex">WhatsApp</a></header>
 <main>
 <section class="hero"><div class="hero-bg" aria-hidden="true"><i class="g1"></i><i class="g2"></i></div>
 <div class="max-w-6xl mx-auto px-5 pt-28 pb-16 grid lg:grid-cols-2 gap-4 items-center">
 <div class="text-center lg:text-left"><span class="chip hx" style="--d:.1s">Hecho en Bolivia</span>
 <h1 class="serif text-5xl sm:text-7xl leading-[1.02] mt-6 hx" style="--d:.25s">Ya no regales una imagen.<br><span class="gold-t">Regala una experiencia.</span></h1>
-<p class="hero-p text-lg mt-6 max-w-xl mx-auto lg:mx-0 hx" style="--d:.45s">Foto, frase, confeti, trivia y un secreto con candado que solo abre quien conoce la clave. Llega por WhatsApp.</p>
+<p class="hero-p text-lg mt-6 max-w-xl mx-auto lg:mx-0 hx" style="--d:.45s">Foto, frase, confeti y un secreto con candado que solo abre quien conoce la clave. Llega por WhatsApp.</p>
 <div class="flex gap-3 justify-center lg:justify-start flex-wrap mt-9 hx" style="--d:.65s"><a href="#productos" class="btn btn-accent">Hacer la mía <i data-lucide="arrow-down" class="w-4 h-4"></i></a><a href="r/tarjeta.html?nombre=Carla&frase=Para%20la%20m%C3%A1s%20loca&t=cumple-divertido&ej=1" class="btn btn-ghost">Ver ejemplo en vivo</a></div></div>
 <div class="relative h-[400px] lg:h-[580px] hx" style="--d:.3s"><canvas id="hero3d" class="w-full h-full" aria-label="Tarjeta 3D"></canvas><div id="heroFb" class="absolute inset-0 flex items-center justify-center"><div class="hc"><b>Feliz</b><div class="hcl"><span>C</span><span>U</span><span>M</span><span>P</span><span>L</span><span>E</span></div><div class="ph"><i></i><em>Carla</em></div><p>Para la más loca</p><span class="ws">C</span></div></div></div></div></section>
 <div class="mq mb-20" aria-hidden="true"><div id="mq"></div></div>
-<section id="productos" class="max-w-6xl mx-auto px-5 pb-24"><div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6"></div></section>
-<section class="max-w-6xl mx-auto px-5 pb-24"><div class="rounded-[32px] p-8 sm:p-12" style="background:#111827"><div class="max-w-2xl"><span class="chip" style="background:#FF4D5A">Edición física</span>
-<h2 class="serif text-4xl sm:text-5xl mt-4 text-white">Llévala contigo, también en físico</h2><p class="mt-3 text-gray-300">Elige tu tarjeta digital para compartir por link o grábala con un código QR en accesorios exclusivos. Quien lo escanea abre tu tarjeta al instante.</p><a href="#tutorial" class="btn mt-6" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28)">Ver el paso a paso, hasta tu casa</a></div>
-<div id="fisicos" class="grid md:grid-cols-3 gap-5 mt-10"></div></div></section>
-<section id="tutorial" class="tut" hidden aria-label="Tutorial: tu regalo paso a paso"></section>
+<section id="productos" class="max-w-6xl mx-auto px-5 pb-24"><div class="card p-8 sm:p-10 text-center max-w-2xl mx-auto"><h2 class="serif text-4xl">Elige tu ocasión</h2><p class="text-gray-600 mt-3">Cumpleaños, amor, mamá, aniversario y más. Abre el menú de ocasiones, escoge tu tarjetita y personalízala.</p>
+<button type="button" class="btn btn-accent mt-6" data-open-ocasiones><i data-lucide="menu" class="w-4 h-4"></i>Ver Ocasiones</button></div></section>
+<section id="fisico" class="max-w-6xl mx-auto px-5 pb-24"><div class="max-w-2xl"><span class="chip" style="background:#FF4D5A">Edición física</span>
+<h2 class="serif text-4xl sm:text-5xl mt-4">Llévala contigo, también en físico</h2><p class="sec-lead mt-3">Elige tu tarjeta digital para compartir por link o grábala con un código QR en accesorios exclusivos. Quien lo escanea abre tu tarjeta al instante.</p><a href="#tutorial" class="btn mt-6" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.28)">Ver el paso a paso, hasta tu casa</a></div>
+<div id="fisicos" class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10 items-stretch">
+<article class="card prod lift"><div class="fx prod-media" data-vis="manilla"><img src="assets/manilla-perro.jpg" alt="Manilla Artesanal QR con placa grabada y foto personalizada" loading="lazy" decoding="async" onerror="this.remove()"></div>
+<div class="prod-body"><h3 class="serif text-2xl">Manilla Artesanal QR</h3><p class="text-sm text-gray-600 mt-2">Manilla ajustable de hilo trenzado con placa grabada y foto personalizada.</p>
+<div class="prod-foot"><p class="prod-price">30 <small>Bs</small></p><a href="#productos" class="btn btn-accent">Personalizar ahora</a></div></div></article>
+<article class="card prod lift"><div class="fx prod-media" data-vis="collar"><img src="assets/relicario-musgo.jpg" alt="Collar Relicario Corazón con foto física y código QR grabado" loading="lazy" decoding="async" onerror="this.remove()"></div>
+<div class="prod-body"><h3 class="serif text-2xl">Collar Relicario Corazón</h3><p class="text-sm text-gray-600 mt-2">Collar relicario de acero inoxidable con foto física y código QR secreto grabado.</p>
+<div class="prod-foot"><p class="prod-price">70 <small>Bs</small></p><a href="#productos" class="btn btn-accent">Personalizar ahora</a></div></div></article>
+<article class="card prod lift"><div class="fx prod-media" data-vis="llavero"><img src="assets/llavero-piedra.jpg" alt="Llavero Acrílico Nítido con grabado QR" loading="lazy" decoding="async" onerror="this.remove()"></div>
+<div class="prod-body"><h3 class="serif text-2xl">Llavero Acrílico Nítido</h3><p class="text-sm text-gray-600 mt-2">Llavero de acrílico transparente de alta resistencia con grabado QR imborrable.</p>
+<div class="prod-foot"><p class="prod-price">20 <small>Bs</small></p><a data-wa="Hola! Quiero añadir al pedido: Llavero Acrílico Nítido (20 Bs) con mi tarjeta FRASSMOTTI." class="btn btn-dark">Añadir al carrito</a></div></div></article>
+</div></section>
+<style>
+/* Sección Comunidad Frassmotti · tarjeta glassmorphic */
+.card.tk-glass{background:rgba(255,255,255,0.65);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.4)}
+.tk-cta{display:flex;justify-content:center;margin-top:2rem}
+.tk-cta .btn-accent{font-size:1.125rem;padding:1rem 2rem;max-width:100%;text-align:center}
+</style>
+<section id="comunidad" class="max-w-6xl mx-auto px-5 pb-24" aria-label="Comunidad Frassmotti">
+<div class="card tk-glass p-6 sm:p-10">
+<div class="text-center max-w-2xl mx-auto mb-8"><h2 class="serif text-4xl sm:text-5xl">Comunidad Frassmotti</h2><p class="text-gray-600 mt-3">Frases que se volvieron regalo</p></div>
+<!-- Elfsight TikTok Feed | Untitled TikTok Feed -->
+<script src="https://elfsightcdn.com/platform.js" async></script>
+<div class="elfsight-app-bb100e42-42ee-40e1-ab91-78429a9683ea" data-elfsight-app-lazy></div>
+<div class="tk-cta"><button type="button" id="btn-tiktok-qr" class="btn btn-accent">🎁 Convertir una frase de TikTok en Llavero QR</button></div>
+</div></section>
 <section class="max-w-6xl mx-auto px-5 pb-24"><h2 class="serif text-4xl text-center">Lo que incluye cada tarjetita</h2><div id="feats" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-10"></div></section>
 <section class="max-w-5xl mx-auto px-5 pb-24"><h2 class="serif text-4xl text-center">Así de simple</h2><div class="grid md:grid-cols-3 gap-6 mt-10" id="steps"></div></section>
-<section class="max-w-2xl mx-auto px-5 pb-24"><h2 class="serif text-4xl text-center mb-6">Preguntas frecuentes</h2>
-<details class="faq"><summary>¿Cómo pago?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Pagas por Yape escaneando el QR y nos envías el comprobante por WhatsApp junto a tu pedido.</p></details>
-<details class="faq"><summary>¿Qué es el secreto con candado?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Tú escribes un mensaje, una clave y una pista. Quien recibe la tarjetita debe adivinar la clave para leerlo. El mensaje viaja cifrado.</p></details>
+<section class="max-w-2xl mx-auto px-5 pb-24"><h2 class="serif text-4xl text-center mb-6">Preguntas frecuentes</h2><div class="card p-6 sm:p-8">
+<details class="faq"><summary>¿Cómo pago?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Pago fácil por código QR bancario o transferencia directa. Nos envías el comprobante por WhatsApp junto a tu pedido.</p></details>
+<details class="faq"><summary>¿Qué es el secreto con candado?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Tú escribes un mensaje, una pregunta, la palabra secreta que es su respuesta y hasta 3 pistas. Quien recibe la tarjetita debe adivinar la palabra para leerlo. El mensaje viaja cifrado.</p></details>
 <details class="faq"><summary>¿Cuánto tarda?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Tras confirmar tu pago recibes tu link mágico por WhatsApp.</p></details>
-<details class="faq"><summary>¿Se ve bien en el celular?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Está pensada para abrirse desde WhatsApp en cualquier teléfono.</p></details></section><section class="max-w-3xl mx-auto px-5 pb-24"><div class="card p-8 text-center"><h2 class="serif text-4xl">¿Dudas o un pedido especial?</h2><p class="text-gray-600 mt-3">Escríbenos directo por WhatsApp y te respondemos personalmente.</p>
+<details class="faq"><summary>¿Se ve bien en el celular?<i data-lucide="plus" class="w-5 h-5"></i></summary><p class="text-gray-600 mt-2 text-sm">Está pensada para abrirse desde WhatsApp en cualquier teléfono.</p></details></div></section><section class="max-w-3xl mx-auto px-5 pb-24"><div class="card p-8 text-center"><h2 class="serif text-4xl">¿Dudas o un pedido especial?</h2><p class="text-gray-600 mt-3">Escríbenos directo por WhatsApp y te respondemos personalmente.</p>
 <a data-wa="Hola! Quiero hacer un pedido o consulta sobre FRASSMOTTI." class="btn mt-6 text-white" style="background:#25D366">Chatear al +591 65153083</a></div></section></main>
-<footer class="text-center text-sm text-gray-500 pb-10">FRASSMOTTI Bolivia · Pago por Yape · <a data-wa="Hola!" class="underline">WhatsApp +591 65153083</a></footer>
+<footer class="text-center text-sm text-gray-500 pb-10">FRASSMOTTI Bolivia · Pago fácil por código QR bancario o transferencia directa · <a data-wa="Hola!" class="underline">WhatsApp +591 65153083</a></footer>
+<div id="panel-backdrop" aria-hidden="true"></div>
+<aside id="sidebar-ocasiones" aria-label="Ocasiones" aria-hidden="true">
+ <div class="so-head"><div><p class="serif so-title">Ocasiones</p><p class="so-sub">Elige la tarjeta para tu momento</p></div><button type="button" class="so-close" data-close-panel="ocasiones" aria-label="Cerrar ocasiones"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+ <div class="so-body"><div id="grid" class="grid grid-cols-1 gap-4"></div></div>
+</aside>
+<button type="button" id="btn-tutorial" class="help-fab" aria-controls="tutorial" aria-expanded="false"><i data-lucide="lightbulb" class="w-4 h-4"></i><span>¿Cómo funciona?</span></button>
+<section id="tutorial" class="tut" hidden aria-hidden="true" aria-label="Tutorial: tu regalo paso a paso"></section>
 <script>
 document.getElementById('grid').innerHTML=TV.T.map(t=>{const k=t.K;return `<a href="personalizar.html?plantilla=${t.id}" class="card tilt ring-focus block p-4" data-tilt><span class="glare"></span>
 <div class="mini" style="--b1:${k.b1};--b2:${k.b2};--e1:${k.e1};--e2:${k.e2};--wl:${k.wl};--wd:${k.wd};--g:${k.g};--paper:${k.paper}"><div class="e"><span class="p"></span><span class="f"></span><span class="w">${t.name[0]}</span></div></div>
 ${t.imgs?`<div class="flex gap-2 mt-3">${t.imgs.map(s=>`<img src="${TV.asset(s)}" alt="" loading="lazy" onerror="this.remove()" class="w-1/3 aspect-[4/3] object-cover rounded-xl">`).join('')}</div>`:''}<div class="px-2 pt-5 pb-2"><div class="flex items-center justify-between gap-2"><h3 class="serif text-2xl">${t.name}</h3><span class="chip" style="background:${k.ac}">${t.tag}</span></div><p class="text-sm text-gray-600 mt-2">${t.d}</p>${t.fecha?'<p class="text-xs font-semibold mt-1" style="color:'+k.ac+'">'+t.fecha+'</p>':''}
 <div class="flex items-center justify-between mt-4"><span class="text-xl font-semibold">${TV.PRECIO} Bs</span><span class="text-sm font-medium text-gray-700 flex items-center gap-1">Personalizar <i data-lucide="arrow-right" class="w-4 h-4"></i></span></div></div></a>`}).join('');
 document.getElementById('feats').innerHTML=[['image','Foto en blanco y negro','Tu foto con estilo polaroid.'],['lock','Secreto con candado','Mensaje cifrado con tu clave.'],['volume-2','Sonidos reales','Sello, papel y campanitas.'],['message-circle','Entrega por WhatsApp','Link listo para compartir.']].map(f=>`<div class="card p-6"><i data-lucide="${f[0]}" class="w-6 h-6 text-accent"></i><p class="serif text-2xl mt-4">${f[1]}</p><p class="text-gray-600 text-sm mt-2">${f[2]}</p></div>`).join('');
-document.getElementById('steps').innerHTML=[['pen-line','Personaliza','Foto, frase, color y tu secreto con candado.'],['smartphone','Paga por Yape','Escaneas el QR y envías el pedido por WhatsApp.'],['send','Comparte','Recibes tu link mágico y lo mandas por WhatsApp.']].map((s,i)=>`<div class="card p-7"><i data-lucide="${s[0]}" class="w-6 h-6 text-accent"></i><p class="serif text-2xl mt-4">${i+1}. ${s[1]}</p><p class="text-gray-600 text-sm mt-2">${s[2]}</p></div>`).join('');
+document.getElementById('steps').innerHTML=[['pen-line','Personaliza','Foto, frase, color y tu secreto con candado.'],['smartphone','Paga fácil','Pago fácil por código QR bancario o transferencia directa. Luego envías el pedido por WhatsApp.'],['send','Comparte','Recibes tu link mágico y lo mandas por WhatsApp.']].map((s,i)=>`<div class="card p-7"><i data-lucide="${s[0]}" class="w-6 h-6 text-accent"></i><p class="serif text-2xl mt-4">${i+1}. ${s[1]}</p><p class="text-gray-600 text-sm mt-2">${s[2]}</p></div>`).join('');
 document.getElementById('mq').className='mq-t';document.getElementById('mq').innerHTML=[0,1].map(()=>TV.T.map(t=>`<span>${t.name}</span>`).join('')).join('');
 FX.tilt();FX.reveal('#steps .card,#feats .card,h2');if(FX.hero(document.getElementById('hero3d')))document.getElementById('heroFb').remove();
 const qr=(n,s)=>{let r=s,h='';const F=(a,b)=>(a<3&&b<3)||(a>n-4&&b<3)||(a<3&&b>n-4);for(let b=0;b<n;b++)for(let a=0;a<n;a++){r=(r*9301+49297)%233280;h+=(F(a,b)||r%100<46)?'<i></i>':'<b></b>'}return `<div class="pq" style="grid-template-columns:repeat(${n},1fr);width:${n*4+10}px">${h}</div>`};
 const VIS={llavero:()=>`<div class="k-key">${qr(11,7)}</div>`,collar:()=>`<div class="k-neck">${qr(11,13)}</div>`,manilla:()=>`<div class="k-band">${qr(11,21)}</div>`};
-document.getElementById('fisicos').innerHTML=TV.FISICOS.filter(f=>f.activo!==false).map(f=>`<div class="rounded-3xl p-5" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14)"><div class="fx">${(VIS[f.id]||VIS.llavero)()}</div><h3 class="serif text-2xl text-white mt-4">${f.name}</h3><p class="text-sm text-gray-300 mt-1">${f.d}</p>${f.precio?`<p class="text-white font-semibold mt-2">Desde ${f.precio} Bs</p>`:''}<a data-wa="Hola! Quiero cotizar: ${f.name} con mi tarjeta FRASSMOTTI." class="btn btn-accent mt-4 w-full text-sm">Cotizar por WhatsApp</a></div>`).join('');
+document.querySelectorAll('#fisicos [data-vis]').forEach(el=>el.insertAdjacentHTML('afterbegin',(VIS[el.dataset.vis]||VIS.llavero)()));   /* maqueta CSS: se ve si la foto aún no existe */
 lucide.createIcons();</script>
-<script src="js/tutorial.js"></script></body></html>
+<script src="js/tutorial.js"></script>
+<script>
+/* v23 · Paneles laterales: Ocasiones (izquierda) y ¿Cómo funciona? (derecha).
+   Solo abre/cierra: los pasos 1-8 y sus ilustraciones siguen siendo controlados por js/tutorial.js. */
+(function(){'use strict';
+const $=id=>document.getElementById(id),side=$('sidebar-ocasiones'),tut=$('tutorial'),bd=$('panel-backdrop'),bOc=$('btn-ocasiones'),bTu=$('btn-tutorial');
+if(!tut&&bTu)bTu.remove();   /* si el tutorial se desactiva en config.js, el botón desaparece */
+const CLS=new Map([[side,'open'],[tut,'tut-panel-active']]);
+const isOpen=el=>!!el&&el.classList.contains(CLS.get(el));
+let from=null;
+const paint=()=>{const a=isOpen(side),b=isOpen(tut);document.body.classList.toggle('panel-open',a||b);if(bd)bd.classList.toggle('show',a||b);if(bOc)bOc.setAttribute('aria-expanded',a);if(bTu)bTu.setAttribute('aria-expanded',b)};
+const set=(el,on)=>{if(!el)return;el.classList.toggle(CLS.get(el),on);el.setAttribute('aria-hidden',on?'false':'true')};
+const open=(el,src)=>{if(!el)return;[side,tut].forEach(p=>p!==el&&set(p,false));from=src||document.activeElement;set(el,true);paint();
+ setTimeout(()=>{const f=el.querySelector('[data-close-panel]');if(f)f.focus({preventScroll:true});if(el===tut)dispatchEvent(new Event('resize'))},60)};   /* el resize hace que el tutorial recalcule la altura del paso */
+const close=(el,back)=>{if(!el||!isOpen(el))return;set(el,false);paint();if(back!==false&&from&&from.focus)from.focus({preventScroll:true})};
+const toggle=(el,src)=>isOpen(el)?close(el):open(el,src);
+if(bOc)bOc.addEventListener('click',()=>toggle(side,bOc));
+if(bTu)bTu.addEventListener('click',()=>toggle(tut,bTu));
+document.addEventListener('click',e=>{
+ const c=e.target.closest('[data-close-panel]');if(c){close(c.dataset.closePanel==='tutorial'?tut:side);return}
+ const o=e.target.closest('[data-open-ocasiones],a[href="#productos"]');if(o&&side){e.preventDefault();open(side,o);return}
+ const t=e.target.closest('a[href="#tutorial"]');if(t&&tut){e.preventDefault();open(tut,t)}});
+if(bd)bd.addEventListener('click',()=>{close(side,false);close(tut,false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){close(side);close(tut)}});
+})();
+</script>
+<script>
+/* Botón "Convertir una frase de TikTok en Llavero QR": scroll suave hacia la personalización.
+   Si existe un formulario de personalización en esta misma página lo usa; si no, baja suave hasta
+   "Elige tu ocasión" (#productos) y abre el menú de ocasiones, que lleva a personalizar.html. */
+(function(){'use strict';
+const btn=document.getElementById('btn-tiktok-qr');if(!btn)return;
+btn.addEventListener('click',()=>{
+ const form=document.querySelector('#personalizar, #formulario-personalizacion, #form-personalizar, form[data-personalizar]');
+ const target=form||document.getElementById('productos');if(!target)return;
+ target.scrollIntoView({behavior:'smooth',block:'center'});
+ if(!form){setTimeout(()=>{const o=document.querySelector('[data-open-ocasiones]');if(o)o.click()},700)}
+});
+})();
+</script></body></html>
