@@ -44,3 +44,47 @@ requestAnimationFrame(updateParallax);
 
 window.addEventListener('mousemove', (e) => { const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((e.clientX-cx)/cx)*22; targetRotX = -((e.clientY-cy)/cy)*18; });
 window.addEventListener('touchmove', (e) => { if(e.touches.length>0){ const touch = e.touches[0]; const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((touch.clientX-cx)/cx)*25; targetRotX = -((touch.clientY-cy)/cy)*20; }});
+
+
+/* ===== v22 · Apertura cinemática del candado =====
+   Llamar a abrirCandado() en el punto EXACTO donde tu validación confirma la clave correcta.
+   - Agrega .candado-abierto al candado (grillete sube y gira, candado se desvanece, mensaje entra con fade-up; todo lo anima el CSS).
+   - Devuelve una Promesa que se resuelve cuando termina la secuencia (~1.6 s), por si quieres encadenar algo después.
+   - Es idempotente: si ya está abierto, no repite nada.
+   Para clave incorrecta: sacudirCandado(). */
+const CANDADO_SECUENCIA_MS = 1600;   /* grillete .8s + fade con retraso .6s + mensaje (.85s + .7s) */
+
+function _getCandado(sel) {
+  return document.querySelector(sel || '#candado') || document.querySelector('.candado');
+}
+
+function abrirCandado(sel) {
+  const candado = _getCandado(sel);
+  if (!candado || candado.classList.contains('candado-abierto')) return Promise.resolve(false);
+
+  candado.classList.remove('candado-error');
+  candado.classList.add('candado-abierto');
+  candado.setAttribute('aria-label', 'Mensaje secreto desbloqueado');
+
+  /* el sonido de campanitas coincide con la entrada del mensaje */
+  setTimeout(() => { try { playChimeSound(); } catch (e) {} }, 850);
+
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      candado.dispatchEvent(new CustomEvent('candado:revelado', { bubbles: true }));
+      resolve(true);
+    }, CANDADO_SECUENCIA_MS);
+  });
+}
+
+function sacudirCandado(sel) {
+  const candado = _getCandado(sel);
+  if (!candado || candado.classList.contains('candado-abierto')) return;
+  candado.classList.remove('candado-error');
+  void candado.offsetWidth;                      /* reinicia la animación si se repite el error */
+  candado.classList.add('candado-error');
+  setTimeout(() => candado.classList.remove('candado-error'), 450);
+}
+
+window.abrirCandado = abrirCandado;
+window.sacudirCandado = sacudirCandado;

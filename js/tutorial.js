@@ -21,6 +21,8 @@ const EMO={
  collar:{corto:'Cerca del corazón, justo donde importa.',largo:'Un collar se lleva pegado al pecho, cerca del corazón. Es un mensaje que abraza sin hacer ruido.'},
  manilla:{corto:'En la muñeca, siempre a la vista.',largo:'Una manilla se queda en la muñeca, siempre a la vista. Un detalle pequeño que se vuelve parte de esa persona.'}
 };
+/* Precios fijos de los accesorios (Bs) */
+const PRECIO={llavero:20,collar:70,manilla:30};
 const emo=id=>EMO[id]||{corto:'Un recuerdo que se puede tocar.',largo:'Un accesorio que se toca, se lleva y se guarda: un recuerdo que se queda cuando tú no estás.'};
 let sel=0;
 
@@ -58,7 +60,7 @@ const ART={
  /* 3 · elegir accesorio */
  3:()=>{const pos=[60,160,260];return FIS.slice(0,3).map((f,i)=>{const on=i===sel,x=FIS.length===3?pos[i]:(FIS.length===2?[100,220][i]:160);
   return `<g class="t-it${on?' on':''}">${on?`<circle cx="${x}" cy="108" r="64" fill="url(#tgg)" class="t-pop"/>`:''}${acc(f.id,x,108,on?1.12:.82,7+i*6,on?'t-fl':'')}<text x="${x}" y="206" text-anchor="middle" font-family="Outfit,sans-serif" font-size="12.5" font-weight="${on?600:400}" fill="${on?'#ffe29f':'rgba(255,255,255,.55)'}">${e(f.name.split(' ')[0])}</text></g>`}).join('')+star(160,24,1,0)+star(40,40,.7,.8)+star(290,34,.8,1.4)},
- /* 4 · pagar con Yape */
+ /* 4 · pagar por QR bancario o transferencia */
  4:()=>`${phone(104,12,112,216,'#f3f0ff')}
   <rect x="116" y="30" width="88" height="22" rx="8" fill="#6b2fb3"/><text x="160" y="45" text-anchor="middle" font-family="Outfit,sans-serif" font-weight="600" font-size="11" fill="#fff">Pago por QR</text>
   <rect x="124" y="64" width="72" height="72" rx="8" fill="#fff" stroke="#ddd6fe"/>${QR(130,70,60,13,31)}
@@ -108,10 +110,10 @@ const PASOS=[
   tip:()=>'Si te bloqueas, imagina que se lo dices en voz baja, mirándole a los ojos. Escríbelo tal cual.'},
  {k:'Paso 3 · Elige cómo llega',t:'Un link emociona. Lo que se toca, se queda.',feel:()=>emo(A().id).corto,
   p:()=>`Puedes compartir tu tarjeta solo por link, o llevarla grabada con un QR en un accesorio. ${emo(A().id).largo} Elige arriba el que más se parezca a esa persona y mira cómo el recorrido se ajusta a ti.`,
-  note:()=>'El precio del accesorio te lo confirmamos por WhatsApp; ahí también resolvemos cualquier duda.',
+  note:()=>PRECIO[A().id]?`Tu ${nom()} cuesta ${PRECIO[A().id]} Bs: precio fijo, sin sorpresas.`:'',
   tip:()=>'Pregúntate dónde le gustaría tenerte cerca. Esa respuesta casi siempre elige el accesorio por ti.'},
- {k:'Paso 4 · Un pago sencillo',t:'Paga por Yape, sin complicaciones',feel:'Un paso corto y tranquilo.',
-  p:()=>'Escaneas el QR de Yape, guardas la captura de tu comprobante y la adjuntas a tu pedido. No necesitas crear una cuenta ni recordar contraseñas. Lo hicimos corto a propósito, para que tu energía se quede en lo que de verdad importa: el mensaje.',
+ {k:'Paso 4 · Un pago sencillo',t:'Pago fácil, sin complicaciones',feel:'Un paso corto y tranquilo.',
+  p:()=>'Pagas por código QR bancario o transferencia directa, guardas la captura de tu comprobante y la adjuntas a tu pedido. No necesitas crear una cuenta ni recordar contraseñas. Lo hicimos corto a propósito, para que tu energía se quede en lo que de verdad importa: el mensaje.',
   tip:()=>'Puedes descargar el QR de pago desde el mismo cuadro del pedido, por si prefieres pagar desde otro celular.'},
  {k:'Paso 5 · Te acompañamos',t:'Tu pedido llega a WhatsApp, y ahí nos vemos',feel:'Aquí no eres un número.',
   p:()=>'Al tocar "Ya pagué, enviar pedido" se abre WhatsApp con tus datos ya escritos. Una persona del equipo revisa tu comprobante y, cuando todo está en orden, te envía tu link mágico por el mismo chat. Si algo falta, te lo decimos con cariño y lo resolvemos juntos.',
@@ -141,7 +143,7 @@ const slide=(s,i)=>{const eta=s.eta?val(s.eta):'',note=s.note?val(s.note):'';
 
 function build(){
  const picker=FIS.length?`<div class="tut-pick" role="group" aria-label="Elige tu accesorio"><span class="tut-pl">Tu accesorio:</span>${FIS.map((f,i)=>`<button type="button" class="tut-chip" data-a="${i}" aria-pressed="${i===sel}">${e(f.name)}</button>`).join('')}</div>`:'';
- host.innerHTML=DEFS+`<div class="tut-wrap"><header class="tut-head"><span class="tut-eyebrow">Paso a paso</span><h2 id="tutH" class="serif">Tu regalo, de tu idea a sus manos</h2>
+ host.innerHTML=DEFS+`<div class="tut-wrap"><div class="tut-top"><button type="button" class="tut-close" data-close-panel="tutorial" aria-label="Cerrar tutorial"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></div><header class="tut-head"><span class="tut-eyebrow">Paso a paso</span><h2 id="tutH" class="serif">Tu regalo, de tu idea a sus manos</h2>
   <p>Si es la primera vez que regalas algo así, respira: es más fácil de lo que parece. Desliza y mira cómo una idea tuya se convierte en algo que se puede tocar, guardar y escanear.</p>${picker}</header>
   <div class="tut-card" role="region" aria-roledescription="carrusel" aria-labelledby="tutH">
    <div class="tut-track" tabindex="0" aria-label="Pasos del tutorial. Usa las flechas del teclado o desliza.">${PASOS.map(slide).join('')}</div>
