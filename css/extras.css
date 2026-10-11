@@ -56,3 +56,93 @@
 @keyframes smoke{0%{opacity:.8;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(-70px) translateX(14px) scale(2.4)}}
 @media (prefers-reduced-motion:reduce){.fx-wobble,.fx-wind,.vela-flame,#vela.off .vela-smoke{animation:none}}
 .toast{z-index:320}
+
+
+/* ===== v22 · CANDADO METÁLICO ===== */
+.candado-zona{display:grid;place-items:center;width:100%}
+.candado-zona>*{grid-area:1/1}              /* candado y mensaje comparten celda: sin saltos de layout */
+
+.candado{
+  position:relative;display:flex;flex-direction:column;align-items:center;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;
+  filter:drop-shadow(0 8px 10px rgba(0,0,0,.45));
+  transition:opacity .5s ease .6s,transform .5s ease .6s,visibility 0s linear 1.1s;
+}
+.candado:not(.candado-abierto):hover{transform:translateY(-2px)}
+.candado:not(.candado-abierto):hover .candado-grillete{transform:translateY(-3px)}
+
+/* grillete: arco de acero con degradado (borde con máscara) */
+.candado-grillete{
+  position:relative;width:66px;height:60px;margin-bottom:-14px;
+  border:11px solid transparent;border-bottom:0;border-radius:36px 36px 0 0;
+  background:linear-gradient(100deg,#6b7280 0%,#e5e7eb 28%,#f9fafb 40%,#9ca3af 62%,#4b5563 100%) border-box;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+  transform-origin:11px 100%;
+  transition:transform .25s ease;
+}
+
+/* cuerpo de bronce */
+.candado-cuerpo{
+  position:relative;z-index:1;width:112px;height:88px;overflow:hidden;
+  border-radius:14px 14px 18px 18px;border:1px solid rgba(70,40,5,.6);
+  background:linear-gradient(145deg,#f1d58a 0%,#cf9f3d 24%,#8f5f16 52%,#d8aa4a 76%,#7b5012 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.7),
+    inset 0 -3px 6px rgba(60,35,5,.55),
+    inset 2px 0 3px rgba(255,255,255,.25),
+    inset -2px 0 3px rgba(0,0,0,.3);
+}
+/* variante acero: <div class="candado-cuerpo candado-acero"> */
+.candado-acero{
+  border-color:rgba(30,41,59,.6);
+  background:linear-gradient(145deg,#f1f5f9 0%,#b6bec9 26%,#6b7480 54%,#c9d0d9 78%,#515a66 100%);
+}
+/* destello que cruza al pasar el dedo/cursor */
+.candado-cuerpo::before{
+  content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:skewX(-20deg);transition:left .8s ease;pointer-events:none;
+}
+.candado:hover .candado-cuerpo::before{left:130%}
+
+/* ojo de la cerradura */
+.candado-ojo{
+  position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-14px 0 0 -8px;border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#3a2a12,#0b0703);
+  box-shadow:0 1px 0 rgba(255,255,255,.35),inset 0 1px 2px #000;
+}
+.candado-ojo::after{
+  content:"";position:absolute;left:50%;top:9px;width:6px;height:18px;margin-left:-3px;
+  background:#0b0703;border-radius:0 0 3px 3px;
+}
+
+/* clave incorrecta (opcional): agregar y quitar .candado-error */
+.candado-error{animation:candado-sacudir .45s ease}
+@keyframes candado-sacudir{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* mensaje oculto: aparece con fade-up cuando el candado está abierto */
+.candado-msg{
+  visibility:hidden;opacity:0;transform:translateY(22px);pointer-events:none;
+  transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1),visibility 0s linear .7s;
+}
+
+/* ===== ESTADO ABIERTO ===== */
+.candado-abierto{pointer-events:none;opacity:0;transform:translateY(6px) scale(.94);visibility:hidden}
+.candado-abierto .candado-grillete{animation:candado-abrir .8s cubic-bezier(.3,.7,.2,1) forwards}
+@keyframes candado-abrir{
+  0%{transform:translateY(0) rotate(0)}
+  45%{transform:translateY(-26px) rotate(0)}      /* se despega hacia arriba */
+  100%{transform:translateY(-26px) rotate(-38deg)} /* y gira sobre su pata izquierda */
+}
+.candado-abierto~.candado-msg{
+  visibility:visible;opacity:1;transform:none;pointer-events:auto;
+  transition:opacity .7s ease .85s,transform .7s cubic-bezier(.2,.8,.2,1) .85s,visibility 0s linear .85s;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .candado,.candado-msg{transition-duration:.01s!important;transition-delay:0s!important}
+  .candado-abierto .candado-grillete{animation-duration:.01s}
+  .candado-error{animation:none}
+}

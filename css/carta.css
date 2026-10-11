@@ -341,3 +341,44 @@ body.carta-page{background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2)
 .photo-frame .photo-cap{z-index:20!important;pointer-events:none;
   text-shadow:0 0 3px #fff,0 0 6px #fff,0 0 10px #fff}
 .photo-frame .sticker-flowers{width:112px;bottom:-46px;right:-26px}
+
+
+/* ===== v22 · POLAROID FLOTANTE ===== */
+.photo-frame{
+  background:#ffffff;
+  padding:12px 12px 62px;               /* cartucho inferior ancho */
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:3px;
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.18),
+    0 10px 18px rgba(0,0,0,.22),
+    0 28px 48px -8px rgba(0,0,0,.42);   /* sombra proyectada profunda */
+  transform:rotate(2deg) translateY(0);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease;
+  will-change:transform;
+}
+.photo-frame .photo-img{border:1px solid rgba(0,0,0,.08)}
+
+/* brillo de papel fotográfico (debajo de stickers z:3 y del nombre z:20) */
+.photo-frame::after{
+  content:"";position:absolute;inset:12px 12px 62px;
+  background:linear-gradient(135deg,rgba(255,255,255,.26) 0%,transparent 38%);
+  pointer-events:none;z-index:1;
+}
+
+/* el nombre se centra en el cartucho; el halo blanco de v21 se mantiene */
+.photo-frame .photo-cap{bottom:14px;line-height:1.1}
+
+/* "despegada" del fondo: solo en dispositivos con hover */
+@media (hover:hover){
+  .photo-frame:hover{
+    transform:rotate(.5deg) translateY(-10px) scale(1.025);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,.2),
+      0 22px 32px rgba(0,0,0,.28),
+      0 46px 70px -10px rgba(0,0,0,.5);
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .photo-frame{transition-duration:.01s!important}
+}

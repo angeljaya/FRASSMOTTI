@@ -99,3 +99,63 @@ details.faq summary::-webkit-details-marker{display:none}details.faq[open] summa
 .k-band{width:176px;height:80px;border-radius:40px;border:12px solid #111827;display:grid;place-items:center}
 .k-band .pq{box-shadow:0 0 0 3px #d4af37}
 @keyframes kf{50%{transform:rotate(3deg)}}
+
+/* ===== v22: TIENDA PREMIUM · orgánica + Glassmorphism =====
+   Todo está bajo body.store (solo index.html lo usa): personalizar, tarjeta, admin y grupo NO cambian. */
+body.store{color:#f3f4f6;background-color:#07090d;
+ background-image:radial-gradient(120% 80% at 50% -10%,rgba(30,41,48,.55) 0%,rgba(8,12,16,.86) 55%,rgba(4,6,9,.96) 100%),url('../assets/fondo-naturaleza.jpg');
+ background-size:cover,cover;background-position:center top,center;background-repeat:no-repeat;background-attachment:fixed}
+/* celulares: "fixed" no funciona bien (iOS), la imagen se fija con una capa propia */
+@media (hover:none){
+ body.store{background-image:none}
+ body.store::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(120% 80% at 50% -10%,rgba(30,41,48,.55) 0%,rgba(8,12,16,.86) 55%,rgba(4,6,9,.96) 100%),url('../assets/fondo-naturaleza.jpg') center/cover no-repeat}}
+/* Vidrio: secciones y tarjetas principales */
+body.store .card,body.store .glass-panel{background:rgba(255,255,255,0.65);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.4);color:#111827;box-shadow:0 24px 48px -24px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.35)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){body.store .card,body.store .glass-panel{background:rgba(245,245,244,.94)}}
+body.store .card.tilt:hover,body.store .card.lift:hover{box-shadow:0 34px 60px -22px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.4)}
+body.store .card .text-gray-500,body.store .card .text-gray-600{color:#374151}
+body.store .card .text-gray-700{color:#1f2937}
+/* Textos que van directo sobre el fondo oscuro */
+body.store main h2.serif{color:#f9fafb}
+body.store .card h2.serif,body.store .glass-panel h2.serif{color:#111827}
+body.store .sec-lead{color:#d1d5db}
+body.store footer{color:#cbd5e1}
+body.store footer a{color:#f3f4f6}
+body.store .mq{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body.store .mq-t span{color:#e7e5e4}
+body.store details.faq{border-bottom:1px solid rgba(17,24,39,.14)}
+body.store details.faq:last-child{border-bottom:0}
+/* 3 productos reales: tarjetas verticales fijas */
+body.store .prod{padding:14px;display:flex;flex-direction:column;overflow:hidden}
+body.store .prod .prod-media{position:relative;height:250px;border-radius:18px;overflow:hidden}
+body.store .prod .prod-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+body.store .prod:hover .prod-media img{transform:scale(1.05)}
+body.store .prod-body{display:flex;flex-direction:column;flex:1;padding:18px 8px 6px}
+body.store .prod-foot{margin-top:auto;padding-top:20px;display:flex;flex-direction:column;gap:14px}
+body.store .prod-price{font-size:1.9rem;font-weight:600;line-height:1;color:#111827}
+body.store .prod-price small{font-size:.95rem;font-weight:500;color:#4b5563}
+body.store .prod .btn{width:100%}
+
+/* ===== v23: PANELES LATERALES ===== */
+body.panel-open{overflow:hidden}
+#panel-backdrop{position:fixed;inset:0;z-index:80;background:rgba(5,8,12,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .4s,visibility 0s linear .4s}
+#panel-backdrop.show{opacity:1;visibility:visible;transition:opacity .4s,visibility 0s}
+/* Izquierda: Ocasiones */
+#sidebar-ocasiones{position:fixed;left:0;top:0;bottom:0;width:min(85vw, 320px);z-index:100;transform:translateX(-100%);transition:transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),visibility 0s linear .4s;visibility:hidden;
+ display:flex;flex-direction:column;color:#f3f4f6;background:rgba(9,12,17,.82);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,.14);box-shadow:20px 0 50px -12px rgba(0,0,0,.55)}
+#sidebar-ocasiones.open{transform:translateX(0);visibility:visible;transition:transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),visibility 0s}
+#sidebar-ocasiones .so-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:calc(18px + env(safe-area-inset-top,0px)) 16px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
+#sidebar-ocasiones .so-title{font-size:2rem;line-height:1;color:#fff}
+#sidebar-ocasiones .so-sub{font-size:.8rem;color:#cbd5e1;margin-top:6px}
+#sidebar-ocasiones .so-close{flex:none;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;cursor:pointer;transition:background .2s}
+#sidebar-ocasiones .so-close:hover{background:rgba(255,255,255,.22)}
+#sidebar-ocasiones .so-close:focus-visible,#btn-tutorial:focus-visible{outline:3px solid rgba(255,77,90,.6);outline-offset:2px}
+#sidebar-ocasiones .so-body{flex:1;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0px))}
+/* dentro del panel el desenfoque no aporta (ya está sobre vidrio): tarjetas más sólidas para leerse bien */
+#sidebar-ocasiones .card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(255,255,255,.88)}
+/* Derecha: botón "¿Cómo funciona?" (el panel está en css/tutorial.css) */
+.help-fab{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:44;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:999px;cursor:pointer;font:500 .85rem 'Outfit',sans-serif;color:#f3f4f6;background:rgba(10,13,20,.62);border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 26px -10px rgba(0,0,0,.6);transition:transform .25s,background .25s,opacity .3s}
+.help-fab:hover{transform:translateY(-3px);background:rgba(10,13,20,.8)}
+body.panel-open .help-fab{opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#sidebar-ocasiones,#panel-backdrop{transition-duration:.01ms!important}}
+

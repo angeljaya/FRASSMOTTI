@@ -1,13 +1,22 @@
 /* Tutorial interactivo v18 · "Tu regalo, de tu idea a sus manos"
    No depende de Tailwind: todo con clases .tut-* y animaciones .t-* (SVG). */
 :where(.tut) :where(h2,h3,p){margin:0}
-.tut{padding:0 20px 96px}
+/* v23 · Ahora es un PANEL que se desliza desde la derecha (ya no está en medio de la página) */
+.tut{position:fixed;right:0;top:0;bottom:0;z-index:90;width:min(85vw, 400px);padding:0 16px calc(32px + env(safe-area-inset-bottom,0px));overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;color:#111827;
+ background:rgba(255, 255, 255, 0.96);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);transform:translateX(100%);visibility:hidden;
+ transition:transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),visibility 0s linear .4s;box-shadow:-10px 0 30px rgba(0,0,0,0.15)}
+.tut-panel-active{transform:translateX(0);visibility:visible;transition:transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),visibility 0s}
+.tut-top{position:sticky;top:0;z-index:6;display:flex;justify-content:flex-end;padding:calc(12px + env(safe-area-inset-top,0px)) 0 6px;margin:0 -16px;padding-right:16px;background:linear-gradient(rgba(255,255,255,.98) 70%,rgba(255,255,255,0))}
+.tut-close{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1.5px solid #e5e5e3;background:#fff;color:#111827;cursor:pointer;transition:all .2s}
+.tut-close svg{width:18px;height:18px}
+.tut-close:hover{background:#111827;color:#ffe29f;border-color:#111827}
+.tut-close:focus-visible{outline:3px solid #FF4D5A;outline-offset:3px}
 .tut[hidden]{display:none}
-.tut-wrap{max-width:1040px;margin:0 auto}
-.tut-head{text-align:center;max-width:680px;margin:0 auto 28px}
+.tut-wrap{max-width:none;margin:0 auto}
+.tut-head{text-align:center;margin:0 auto 18px}
 .tut-eyebrow{display:inline-block;font:600 .72rem 'Outfit',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8a640f;background:rgba(212,175,55,.14);border:1px solid rgba(212,175,55,.4);padding:.3rem .8rem;border-radius:999px}
-.tut-head h2{font-size:clamp(2.1rem,5vw,3rem);line-height:1.08;margin-top:14px;color:#111827}
-.tut-head>p{margin-top:12px;color:#4b5563;line-height:1.6}
+.tut-head h2{font-size:1.9rem;line-height:1.08;margin-top:12px;color:#111827}
+.tut-head>p{margin-top:10px;color:#4b5563;line-height:1.6;font-size:.92rem}
 
 /* selector de accesorio */
 .tut-pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;margin-top:20px}
@@ -18,19 +27,19 @@
 .tut-chip:focus-visible,.tut-nav:focus-visible,.tut-dot:focus-visible,.tut-track:focus-visible{outline:3px solid #FF4D5A;outline-offset:3px}
 
 /* tarjeta deslizable */
-.tut-card{position:relative;background:#fff;border:1px solid #ececea;border-radius:32px;box-shadow:0 1px 2px rgba(17,24,39,.04),0 24px 56px -28px rgba(17,24,39,.28);overflow:hidden}
+.tut-card{position:relative;background:#fff;border:1px solid #ececea;border-radius:24px;box-shadow:0 1px 2px rgba(17,24,39,.04),0 14px 34px -22px rgba(17,24,39,.3);overflow:hidden}
 .tut-track{display:flex;align-items:flex-start;transition:height .35s cubic-bezier(.2,.8,.2,1);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none}
 .tut-track::-webkit-scrollbar{display:none}
 .tut-slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;display:grid;grid-template-columns:1fr}
-.tut-stage{position:relative;display:grid;place-items:center;padding:22px 18px 10px;min-height:250px;background:radial-gradient(90% 90% at 50% 18%,#232c40 0%,#121722 58%,#0a0d14 100%)}
+.tut-stage{position:relative;display:grid;place-items:center;padding:20px 12px 8px;min-height:230px;background:radial-gradient(90% 90% at 50% 18%,#232c40 0%,#121722 58%,#0a0d14 100%)}
 .tut-stage::after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 80% 90%,rgba(139,0,0,.28),transparent 70%)}
 .tut-stage svg{position:relative;z-index:1;width:100%;max-width:400px;height:auto;max-height:300px;overflow:visible}
 .tut-num{position:absolute;left:18px;top:2px;z-index:0;font:400 78px/1 'Instrument Serif',serif;color:rgba(255,255,255,.08);user-select:none}
-.tut-body{padding:26px 24px 28px;display:flex;flex-direction:column;gap:10px}
+.tut-body{padding:20px 18px 22px;display:flex;flex-direction:column;gap:10px}
 .tut-k{font:600 .72rem 'Outfit',sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#8a640f}
-.tut-t{font:400 clamp(1.7rem,4.4vw,2.2rem)/1.1 'Instrument Serif',serif;letter-spacing:-.02em;color:#111827}
+.tut-t{font:400 1.65rem/1.1 'Instrument Serif',serif;letter-spacing:-.02em;color:#111827}
 .tut-feel{font:italic 500 1.02rem 'Outfit',sans-serif;color:#be123c}
-.tut-p{color:#374151;line-height:1.68;font-size:1rem}
+.tut-p{color:#374151;line-height:1.65;font-size:.95rem}
 .tut-note{font-size:.88rem;color:#4b5563;padding-left:12px;border-left:3px solid #e5e5e3;line-height:1.5}
 .tut-eta{align-self:flex-start;font:500 .85rem 'Outfit',sans-serif;background:#111827;color:#fff;padding:.4rem .9rem;border-radius:999px}
 .tut-tip{display:flex;gap:10px;align-items:flex-start;margin-top:6px;padding:12px 14px;border-radius:16px;background:#fdf6e7;border:1px solid #f1e0b5}
@@ -57,14 +66,6 @@
 .tut-hint a{text-decoration:underline;cursor:pointer;color:#374151}
 .tut-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-@media(min-width:860px){
- .tut-slide{grid-template-columns:1.02fr 1fr}
- .tut-stage{min-height:440px;padding:30px}
- .tut-stage svg{max-width:440px;max-height:none}
- .tut-body{padding:44px 44px 40px;justify-content:center;gap:12px}
- .tut-num{font-size:110px;left:26px;top:6px}
- .tut-ctrl{padding:16px 28px}
-}
 
 /* ilustraciones animadas (solo opacity/transform: seguras con el atributo transform del SVG) */
 .tut-slide:not(.on) svg *{animation-play-state:paused!important}
@@ -102,13 +103,12 @@
 .tut-cta a,.tut-cta a:hover{text-decoration:none}
 .tut-cta .btn-accent{color:#fff}.tut-cta .btn-ghost{color:#111827}
 
-/* móvil: flechas sobre la ilustración (el botón de WhatsApp queda abajo a la derecha y ya no las tapa) */
-@media(max-width:859px){
- .tut-nav{position:absolute;top:104px;z-index:3;width:42px;height:42px;background:rgba(10,13,20,.55);color:#fff;border-color:rgba(255,255,255,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
- .tut-nav[data-d="-1"]{left:10px}.tut-nav[data-d="1"]{right:10px}
- .tut-nav:hover:not(:disabled){background:#ffe29f;color:#111827;border-color:#ffe29f}
- .tut-ctrl{justify-content:center}
-}
+/* flechas sobre la ilustración (el botón de WhatsApp queda abajo a la derecha y ya no las tapa) */
+.tut-nav{position:absolute;top:112px;z-index:3;width:42px;height:42px;background:rgba(10,13,20,.55);color:#fff;border-color:rgba(255,255,255,.3);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.tut-nav[data-d="-1"]{left:10px}.tut-nav[data-d="1"]{right:10px}
+.tut-nav:hover:not(:disabled){background:#ffe29f;color:#111827;border-color:#ffe29f}
+.tut-ctrl{justify-content:center}
 @media(max-width:360px){.tut-dot{width:17px}}
 /* botón flotante de WhatsApp compacto mientras se ve el tutorial */
 body.tut-vis .wa-fab.wide span{max-width:0;margin-left:0}
+@media (prefers-reduced-motion:reduce){.tut{transition-duration:.01ms!important}}
