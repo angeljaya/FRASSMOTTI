@@ -6,8 +6,17 @@ const g=id=>document.getElementById(id),box=g('qrBox'),dl=g('qrDl'),im=box&&box.
 const fail=()=>{box.innerHTML='<p class="text-sm text-gray-700 p-3">El QR no está disponible por ahora.</p><a class="underline text-sm font-medium" target="_blank">Pedir el QR por WhatsApp</a>';box.querySelector('a').href=TV.wa('Hola! Necesito el QR de pago de FRASSMOTTI.');dl&&dl.classList.add('hidden')};
 if(!TV.QR_IMAGE||!im){dl&&dl.classList.add('hidden')}else{dl.href=TV.QR_IMAGE;im.addEventListener('error',fail);if(im.complete&&!im.naturalWidth)fail()}
 /* Formato: link digital o accesorio físico */
-const fo=g('formato');if(fo)fo.innerHTML='<option>Solo link digital</option>'+(TV.FISICOS||[]).filter(f=>f.activo!==false).map(f=>`<option>${f.name}</option>`).join('');
-const prev=window.extraLines;window.extraLines=()=>[...(prev?prev():[]),'Formato: '+(fo?fo.value:'Solo link digital')+(fo&&fo.selectedIndex>0?' (precio a confirmar)':'')];
+const fo=g('formato'),fi=g('fmtInfo');
+if(fo){fo.innerHTML=(TV.PRODUCTOS||[]).map(p=>`<option value="${p.id}" data-n="${p.name}"${p.pronto?' disabled':''}>${p.name} — ${p.pronto?'Muy pronto':'Bs '+TV.precio(p.id)}</option>`).join('');
+ try{const s=sessionStorage.getItem('tv_formato');if(s&&[...fo.options].some(o=>o.value===s&&!o.disabled))fo.value=s}catch(e){}}   /* viene del botón "Personalizar ahora" del llavero */
+const fid=()=>(fo&&fo.value)||'digital';
+const pintaPrecio=()=>{const id=fid(),p=TV.precio(id);if(p!=null)document.querySelectorAll('.price').forEach(e=>e.textContent=p);
+ if(!fi)return;const d=TV.diasPromo();
+ fi.textContent=id==='llavero'?'Incluye tu tarjeta virtual y su código QR listo para grabar en el llavero. Pagas Bs '+TV.PRECIO_LLAVERO+' en total.'
+  :TV.promoActiva()?'Promo de lanzamiento: Bs '+TV.PROMO.precio+' por '+d+(d===1?' día más':' días más')+'. Después: Bs '+TV.PRECIO_NORMAL+'.'
+  :'Tarjeta virtual para compartir por link (WhatsApp).'};
+if(fo){fo.addEventListener('change',pintaPrecio);pintaPrecio()}
+const prev=window.extraLines;window.extraLines=()=>{const id=fid(),o=fo&&fo.selectedOptions[0];return[...(prev?prev():[]),'Formato: '+(o?o.dataset.n:'Tarjeta virtual (solo link)')+' · Bs '+(TV.precio(id)||TV.PRECIO)+(id==='digital'&&TV.promoActiva()?' (promo)':'')]};
 /* Comprobante */
 const cp=g('comp'),info=g('compInfo');
 cp.addEventListener('change',()=>{const f=cp.files[0];info.textContent='';if(!f)return;if(!f.type.startsWith('image/')||f.size>10*1048576){cp.value='';info.textContent='Sube una imagen (captura) de hasta 10 MB.';return}info.textContent='Adjunto: '+f.name});

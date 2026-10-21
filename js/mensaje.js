@@ -58,7 +58,7 @@ function mount(host,text,tam,opt){
   let x0=null;bk.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
   bk.addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>34)go(i+(dx<0?1:-1))});
   bk.addEventListener('click',e=>{const r=bk.getBoundingClientRect();if(e.clientX-r.left>r.width/2)go(i+1);else go(i-1)});
-  box.append(bk,nav);card.querySelector('.card-actions').before(box);paint();
+  bk.setAttribute('data-nodt','');box.append(bk,nav);card.querySelector('.card-actions').before(box);paint();
   if(pages.length>1)box.append(el('p','msg-hint','Toca los lados o desliza para pasar la página'));
  }
  return{pages:pages.length,go};

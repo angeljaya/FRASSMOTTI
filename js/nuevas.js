@@ -40,7 +40,7 @@ if(g('pay')&&g('frase')){
 
 /* ---------- TARJETA: mensajes del grupo ---------- */
 if(typeof PL!=='undefined'&&Array.isArray(PL.g)&&PL.g.length&&g('dock')){
- const b=document.createElement('button'),m=document.createElement('div');b.className='pill';b.innerHTML='<i data-lucide="users"></i>Grupo ('+PL.g.length+')';g('dock').prepend(b);
+ const b=document.createElement('button'),m=document.createElement('div');b.className='pill';b.innerHTML='<i data-lucide="users"></i>Grupo ('+PL.g.length+')';g('dock').append(b);
  m.className='modal';m.innerHTML='<div class="card p-6 w-full max-w-sm relative max-h-[85vh] overflow-y-auto"><button data-x class="absolute top-4 right-4 text-gray-600 text-xl" aria-label="Cerrar">&times;</button><h3 class="serif text-3xl mb-4">Mensajes del grupo</h3><div id="gL" class="space-y-4"></div></div>';document.body.append(m);
  m.onclick=e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')};
  PL.g.forEach(x=>{const r=document.createElement('div'),i=document.createElement('img'),d=document.createElement('div'),n=document.createElement('p'),f=document.createElement('p');r.className='flex gap-3 items-start';i.className='w-14 h-14 rounded-full object-cover bg-gray-100 flex-none';

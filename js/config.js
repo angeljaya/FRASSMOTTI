@@ -3,7 +3,16 @@
 const DEV=typeof location!=='undefined'&&/[?&]dev=1/.test(location.search);
 const TV={
   WHATSAPP:'59165153083',      // Tu número con código de país (sin +)
-  PRECIO:50,
+  /* v27 · PRECIOS. Tarjeta virtual: promo de lanzamiento (PROMO.precio durante PROMO.dias días desde PROMO.inicio), luego PRECIO_NORMAL.
+     Llavero con QR: precio fijo y ya incluye la tarjeta virtual. */
+  PROMO:{precio:3,inicio:'2026-10-19',dias:10},
+  PRECIO_NORMAL:50,             // precio de la tarjeta virtual al terminar la promo (AJÚSTALO)
+  PRECIO_LLAVERO:15,
+  get PRECIO(){return this.precio('digital')},   // precio actual de la tarjeta virtual (lo usan tienda y personalizar)
+  promoFin(){const[y,m,d]=this.PROMO.inicio.split('-').map(Number);return new Date(y,m-1,d+this.PROMO.dias)},
+  promoActiva(){return Date.now()<this.promoFin().getTime()},
+  diasPromo(){return Math.max(0,Math.ceil((this.promoFin().getTime()-Date.now())/864e5))},
+  precio(id){if(id==='llavero')return this.PRECIO_LLAVERO;if(!id||id==='digital')return this.promoActiva()?this.PROMO.precio:this.PRECIO_NORMAL;return null},
   REQUIRE_PAYMENT:false,        // true = la tarjeta solo se activa con link firmado desde admin.html (requiere Functions)
   SHORT_LINKS:true,             // v20: link corto con Cloudflare KV (tarjeta.html?id=XXXX). Pide ADMIN_PIN + KV 'CARDS'. false = link largo de siempre
   WATERMARK:true,               // v11: marca de agua viral al pie de la tarjeta (false = sin marca)
@@ -38,6 +47,14 @@ const TV={
 
 /* ===== 2. INTERRUPTORES: true = visible para el cliente ===== */
 TV.FUNCIONES={redactor:false,grupo:false,voz:false};
+
+/* v27 · Productos que se pueden pedir. pronto:true = se muestra "Muy pronto" y no se puede elegir. */
+TV.PRODUCTOS=[
+ {id:'digital',name:'Tarjeta virtual (solo link)'},
+ {id:'llavero',name:'Tarjeta virtual + llavero con QR'},
+ {id:'collar',name:'Collar con QR',pronto:true},
+ {id:'manilla',name:'Manilla con QR',pronto:true}
+];
 
 /* ===== TUTORIAL "Tu regalo paso a paso" (index.html, sección #tutorial). activo:false lo oculta. entrega: texto opcional, ej. '3 a 5 días hábiles' (vacío = no se muestra) ===== */
 TV.TUTORIAL={activo:true,entrega:''};

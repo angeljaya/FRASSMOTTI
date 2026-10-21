@@ -60,6 +60,7 @@ function render(){
  $('pvAv').src=S.photo||TV.avatar(1,n);$('pvAv').classList.toggle('color',!S.photo||!S.bw);
  TM.mount($('pvMsg'),mensaje(),S.tam);
   $('pvGift').style.display=(secOn()&&secMsg())?'':'none';
+  if(typeof PVX!=='undefined')PVX.sync();
   $('pvSealL').textContent=sello();$('titulo').placeholder=T.ti;$('palabra').placeholder=T.pa;$('sello').placeholder=(v('nombre',24)||'C').charAt(0).toUpperCase();
  /* contador de palabras y estado de botones */
  const w=TM.count($('frase').value),tm=TV.tam(S.tam);$('wc').textContent=`${w} ${w===1?'palabra':'palabras'} · ${tm.n} (${tm.w})`;$('wc').classList.toggle('over',w>tm.max);
@@ -184,4 +185,27 @@ function syncExtras(){
 $('capQuick').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;$('abre').value=loc($('capQuick')._q[+b.dataset.q][1]());syncExtras();render();draft()});
 ['secOn','capOn'].forEach(id=>$(id).addEventListener('change',()=>{syncExtras();render();draft();if(id==='secOn'&&secOn())setTimeout(()=>$('secreto').focus(),50)}));
 $('abre').addEventListener('input',syncExtras);$('ocasion').addEventListener('change',syncExtras);
+
+/* ---------- v27 · Panel "Interacciones" + doble toque + marca (vista previa en vivo) ----------
+   Se recalcula en render(): al cambiar ocasión, nombre, secreto o música, el celular lo refleja al instante. */
+const PVX=(function(){
+ try{
+  const dt=typeof DT!=='undefined'?DT.attach($('pvCard'),{layer:$('pvDt'),phrases:()=>DT.phrases(T,{nombre:v('nombre',24)||'Carla',pal:palabra()})}):null;
+  const demo=()=>{if(!dt)return;const r=$('pvCard').getBoundingClientRect();dt.fire(r.left+r.width/2,r.top+r.height*.55)};
+  const wob=()=>{const c=$('pvCard');c.classList.remove('dt-wobble');void c.offsetWidth;c.classList.add('dt-wobble');setTimeout(()=>c.classList.remove('dt-wobble'),750)};
+  $('pvHint').onclick=demo;
+  const acc=typeof ACC!=='undefined'?ACC.create({host:$('pvScreen'),phone:true,items:()=>[
+   {id:'sec',ic:'lock',t:'Secreto',d:'Adivina la clave y descubre un mensaje oculto',hidden:!(secOn()&&secMsg()),run:()=>$('pvGift').click()},
+   {id:'blow',ic:'wind',t:'Soplar',d:'Sopla al micrófono y apaga la velita',run:()=>toast('Quien recibe sopla al micrófono y la velita se apaga 🕯️')},
+   {id:'shake',ic:'phone',t:'Agitar',d:'Sacude el celular y llueven emojis',run:()=>{wob();demo();toast('Así se ve al agitar 📱')}},
+   {id:'tap',ic:'pointer',t:'Doble toque',d:'Toca 2 veces la tarjeta y brotan deseos',run:demo},
+   {id:'mus',ic:'music',t:'Música',d:'Pon o pausa la canción de la tarjeta',hidden:!TV.MUSIC,run:()=>toast('La música suena al abrir la tarjeta 🎵')},
+   {id:'sh',ic:'share',t:'Compartir',d:'Envíala por WhatsApp o copia el link',run:()=>toast('Compartir se activa al confirmar el pago')},
+   {id:'img',ic:'download',t:'Guardar imagen',d:'Descárgala para subirla a tus historias',run:()=>toast('Guardar imagen se activa al confirmar el pago')}]}):null;
+  /* Sonido / Mudo también en el celular de vista previa */
+  let pvSound=true;
+  if(typeof ACC!=='undefined'&&ACC.soundPill)$('pvScreen').append(ACC.soundPill({phone:true,get:()=>pvSound,set:v=>{pvSound=v;toast(v?'Sonido activado':'Mudo')}}).btn);
+  return{sync(){acc&&acc.refresh()}};
+ }catch(e){return{sync(){}}}
+})();
 syncExtras();buildDisenos();render();lucide.createIcons();

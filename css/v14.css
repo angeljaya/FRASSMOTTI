@@ -147,3 +147,21 @@ html,body.carta-page{max-width:100%;overflow-x:hidden}
 .demo-note{display:inline-block;margin-top:6px;padding:.2rem .7rem;border-radius:999px;background:#fef3c7;color:#78350f;font-size:.72rem;font-weight:600}
 .demo-note[hidden]{display:none}
 @media (prefers-reduced-motion:reduce){#dock.show #bSec.demo-pulse{animation:none}}
+
+/* ===== v26 FINAL · acciones ARRIBA en la tarjeta (anula el #dock de styles.css y la barra inferior de v14) ===== */
+body.carta-page #dock{position:fixed;top:calc(54px + env(safe-area-inset-top,0px));bottom:auto;left:0;right:0;width:auto;max-width:none;margin:0;
+ display:flex;gap:8px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:2px 12px 6px;
+ background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;z-index:100;
+ transition:opacity .5s,transform .5s}
+body.carta-page #dock.show{pointer-events:none}   /* los huecos entre botones dejan pasar el doble toque a la tarjeta */
+body.carta-page #dock .pill{pointer-events:auto;flex:0 0 auto;flex-direction:row;gap:6px;height:38px;min-width:0;padding:0 13px;font-size:13px;line-height:normal;letter-spacing:normal;text-align:left;white-space:nowrap;overflow:visible;border-radius:999px;background:rgba(8,10,16,.78);border:1px solid rgba(255,255,255,.3)}
+body.carta-page #dock .pill:hover{background:#000;transform:translateY(-2px)}
+body.carta-page #dock .pill.on,body.carta-page #dock .pill.on:hover{background:var(--gold-primary);color:#111;border-color:transparent}   /* "Agitar / Soplar" encendido */
+body.carta-page #dock .pill svg{width:16px;height:16px}
+@media (max-width:480px){
+ body.carta-page #dock .pill{height:36px;padding:0 12px;font-size:12px}
+ body.carta-page #dock .pill.ico{padding:0;width:38px;justify-content:center}
+ body.carta-page #dock .pill.ico span{display:none}
+}
+/* Vista previa del celular (personalizar.html): la pista sube para no tapar el sello de cera */
+.pv-hint{bottom:56px}

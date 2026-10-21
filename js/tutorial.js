@@ -21,8 +21,7 @@ const EMO={
  collar:{corto:'Cerca del corazón, justo donde importa.',largo:'Un collar se lleva pegado al pecho, cerca del corazón. Es un mensaje que abraza sin hacer ruido.'},
  manilla:{corto:'En la muñeca, siempre a la vista.',largo:'Una manilla se queda en la muñeca, siempre a la vista. Un detalle pequeño que se vuelve parte de esa persona.'}
 };
-/* Precios fijos de los accesorios (Bs) */
-const PRECIO={llavero:20,collar:70,manilla:30};
+/* v27 · Precios: se leen de js/config.js (TV.precio). Collar y manilla: muy pronto. */
 const emo=id=>EMO[id]||{corto:'Un recuerdo que se puede tocar.',largo:'Un accesorio que se toca, se lleva y se guarda: un recuerdo que se queda cuando tú no estás.'};
 let sel=0;
 
@@ -110,7 +109,7 @@ const PASOS=[
   tip:()=>'Si te bloqueas, imagina que se lo dices en voz baja, mirándole a los ojos. Escríbelo tal cual.'},
  {k:'Paso 3 · Elige cómo llega',t:'Un link emociona. Lo que se toca, se queda.',feel:()=>emo(A().id).corto,
   p:()=>`Puedes compartir tu tarjeta solo por link, o llevarla grabada con un QR en un accesorio. ${emo(A().id).largo} Elige arriba el que más se parezca a esa persona y mira cómo el recorrido se ajusta a ti.`,
-  note:()=>PRECIO[A().id]?`Tu ${nom()} cuesta ${PRECIO[A().id]} Bs: precio fijo, sin sorpresas.`:'',
+  note:()=>A().id==='llavero'?`Tu llavero cuesta ${TV.precio('llavero')} Bs e incluye tu tarjeta virtual: precio fijo, sin sorpresas.`:`Tu ${nom()} llega muy pronto.`,
   tip:()=>'Pregúntate dónde le gustaría tenerte cerca. Esa respuesta casi siempre elige el accesorio por ti.'},
  {k:'Paso 4 · Un pago sencillo',t:'Pago fácil, sin complicaciones',feel:'Un paso corto y tranquilo.',
   p:()=>'Pagas por código QR bancario o transferencia directa, guardas la captura de tu comprobante y la adjuntas a tu pedido. No necesitas crear una cuenta ni recordar contraseñas. Lo hicimos corto a propósito, para que tu energía se quede en lo que de verdad importa: el mensaje.',

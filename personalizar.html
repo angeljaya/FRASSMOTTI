@@ -5,15 +5,15 @@
 <link rel="stylesheet" href="css/styles.css"><link rel="stylesheet" href="css/carta.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="css/v14.css">
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-<script src="js/config.js"></script><script src="js/diseno.js"></script><script src="js/mensaje.js"></script><script src="js/foto.js"></script><script src="js/wa.js" defer></script></head>
+<script src="js/config.js"></script><script src="js/diseno.js"></script><script src="js/mensaje.js"></script><script src="js/doubletap.js"></script><script src="js/acciones.js"></script><script src="js/foto.js"></script><script src="js/wa.js" defer></script></head>
 <body>
 <header class="max-w-5xl mx-auto px-5 h-16 flex items-center justify-between"><a href="index.html" class="serif text-2xl flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5 text-accent"></i>FRASSMOTTI</a><a href="index.html" class="btn btn-ghost !py-2 text-sm">Volver a la tienda</a></header>
 
 <!-- 1) DOCK: vista previa del celular (se encoge y queda fija al hacer scroll) -->
 <section id="dock"><div id="dockBox" class="flex justify-center pt-4 overflow-visible" style="height:610px">
  <div id="phone" class="relative w-[300px] h-[580px] rounded-[44px] bg-gray-900 p-3 shadow-2xl">
-  <div class="h-full rounded-[34px] overflow-hidden relative" style="background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2))">
-<div style="position:absolute;left:50%;top:14px;width:340px;transform:translateX(-50%) scale(.78);transform-origin:top center"><div style="position:relative;min-height:520px">
+  <div class="h-full rounded-[34px] overflow-hidden relative" id="pvScreen" style="background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2))"><div class="dt-layer in-box" id="pvDt" aria-hidden="true"></div><button type="button" class="pv-hint" id="pvHint">✨ Toca 2 veces la tarjeta</button><span class="pv-brand">Hecho con <b>Frassmotti</b></span>
+<div style="position:absolute;left:50%;top:46px;width:340px;transform:translateX(-50%) scale(.78);transform-origin:top center"><div id="pvCard" style="position:relative;min-height:520px">
 <div class="carta-bg textura-papel"><div class="bg-text-pattern" id="pvPat"></div></div>
 <div class="carta-content"><h1 class="scrapbook-title" id="pvTit"></h1><div class="letters-container" id="pvLet"></div>
 <div class="photo-frame">              <svg class="sticker sticker-star-1" viewBox="0 0 100 100">
@@ -111,7 +111,7 @@
  <section class="space-y-4" aria-labelledby="h5s"><h2 id="h5s" class="serif text-2xl">5. Cómo la quieres recibir</h2>
   <div><label class="label" for="formato">Formato</label><select id="formato" class="input"></select><p class="text-xs text-gray-600 mt-1">Llaveros, collares y manillas con QR: el precio se confirma por WhatsApp.</p></div>
   <div><label class="label" for="tel">Tu WhatsApp</label><input id="tel" class="input" inputmode="tel" maxlength="20" placeholder="7XXXXXXX"></div>
-  <button type="button" id="pay" class="btn btn-accent w-full text-lg"><i data-lucide="smartphone" class="w-5 h-5"></i><span>Pagar Bs <span class="price"></span> por Yape</span></button>
+  <button type="button" id="pay" class="btn btn-accent w-full text-lg"><i data-lucide="smartphone" class="w-5 h-5"></i><span>Pagar Bs <span class="price"></span> por QR</span></button>
  </section>
 </main>
 
@@ -136,18 +136,18 @@
  <div class="grid grid-cols-2 gap-2 mt-4"><button type="button" id="cropBW" class="btn btn-ghost !py-2.5 text-sm">Blanco y negro</button><button type="button" id="cropReset" class="btn btn-ghost !py-2.5 text-sm">Centrar</button></div>
  <button type="button" id="cropOk" class="btn btn-accent w-full mt-3">Listo, usar esta foto</button></div></div>
 
-<!-- MODAL: pago Yape -->
+<!-- MODAL: pago QR -->
 <div id="mPay" class="modal"><div class="card p-7 w-full max-w-sm text-center relative max-h-[92vh] overflow-y-auto">
  <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
- <h3 class="serif text-3xl">Paga por Yape</h3><p class="text-gray-600 text-sm mt-1">Monto: <b>Bs <span class="price"></span></b></p>
+ <h3 class="serif text-3xl">Paga por QR</h3><p class="text-gray-600 text-sm mt-1">Monto: <b>Bs <span class="price"></span></b></p>
  <div id="qrBox" class="flex justify-center my-5"></div><a id="qrDl" href="assets/qr-pago.png" download="qr-pago-frassmotti.png" class="btn btn-ghost text-sm w-full mb-4"><i data-lucide="download" class="w-4 h-4"></i>Descargar QR</a>
- <ol class="text-sm text-gray-600 text-left list-decimal pl-5 space-y-1"><li>Escanea el QR con Yape y paga.</li><li>Guarda la captura del comprobante.</li><li>Adjunta la captura abajo y toca el botón: se abre WhatsApp con tu pedido. Si subiste foto o audio, envíalos también en el chat.</li></ol>
- <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de Yape</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a><a href="index.html#tutorial" class="block text-sm text-gray-600 underline mt-2">Ver el paso a paso de mi pedido</a></div></div>
-<!-- ENVÍO CON ÉXITO (se muestra al enviar el comprobante de Yape) -->
+ <ol class="text-sm text-gray-600 text-left list-decimal pl-5 space-y-1"><li>Escanea el QR con QR y paga.</li><li>Guarda la captura del comprobante.</li><li>Adjunta la captura abajo y toca el botón: se abre WhatsApp con tu pedido. Si subiste foto o audio, envíalos también en el chat.</li></ol>
+ <div class="text-left mt-5"><label class="label" for="comp">Captura de tu comprobante de QR</label><input id="comp" type="file" accept="image/*" class="input"><p id="compInfo" class="text-xs text-gray-700 mt-1"></p></div><button id="send" class="btn btn-accent w-full mt-5"><i data-lucide="message-circle" class="w-5 h-5"></i>Ya pagué, enviar pedido</button><a data-wa="Hola! Tengo una duda con el pago de mi tarjeta FRASSMOTTI." class="block text-sm text-gray-600 underline mt-3">¿Dudas con el pago? Escríbenos</a><a href="index.html#tutorial" class="block text-sm text-gray-600 underline mt-2">Ver el paso a paso de mi pedido</a></div></div>
+<!-- ENVÍO CON ÉXITO (se muestra al enviar el comprobante de QR) -->
 <div id="okEnvio" class="ok-wrap" role="dialog" aria-modal="true" aria-labelledby="okT"><div class="ok-box">
  <div class="ok-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
  <span class="ok-3d" id="okT">¡Envío con éxito!</span>
  <p class="ok-sub">Tu pedido ya va camino a nuestro WhatsApp. Estás por regalar algo que nadie más tendrá: algo hecho solo para esa persona.</p>
- <div class="ok-next"><b>¿Qué sigue?</b><br>1. Verificamos tu pago de Yape.<br>2. Preparamos tu tarjeta con todo lo que elegiste.<br>3. Te escribimos por WhatsApp con tu link mágico.</div>
+ <div class="ok-next"><b>¿Qué sigue?</b><br>1. Verificamos tu pago de QR.<br>2. Preparamos tu tarjeta con todo lo que elegiste.<br>3. Te escribimos por WhatsApp con tu link mágico.</div>
  <div class="ok-btns"><a id="okWa" class="btn ok-wa hidden" target="_blank" rel="noopener">Abrir WhatsApp con mi pedido</a><button type="button" id="okCerrar" class="btn btn-accent">Perfecto, gracias</button><a href="index.html" class="btn ok-home">Volver al inicio</a></div></div></div>
 <div id="toast" class="toast" role="status"></div><script src="js/secret.js"></script><script src="js/personalizar.js"></script><script src="js/nuevas.js"></script><script src="js/pago.js"></script></body></html>

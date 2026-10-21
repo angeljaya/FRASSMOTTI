@@ -5,8 +5,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script></head>
 <body class="carta-page"><div class="bg-glow"></div>
-<header class="topbar"><a href="../index.html" class="pill"><i data-lucide="arrow-left"></i>Volver a la tienda</a><button class="pill" id="btnSound" aria-label="Sonido"><i data-lucide="volume-2"></i><span>Sonido</span></button></header>
-<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button><a class="pill pill-accent" id="cr"><i data-lucide="plus"></i>Hacer la mía</a></nav>
+<header class="topbar"></header>
+<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button></nav>
+<a class="brand-mini" id="cr" target="_blank" rel="noopener">Hecho con <b>Frassmotti</b></a>
 <div id="pv" class="hidden">Vista previa: se activa al confirmar el pago</div>
 <div class="viewport-3d"><div class="escena-wrapper"><div class="escena" id="escena"><div class="sobre-3d" id="sobre">
         <div class="env-back textura-papel"></div>
@@ -68,7 +69,7 @@
 </div></div>
 
 <div id="toast" class="toast" role="status"></div>
-<script src="../js/carta.js"></script>
+<script src="../js/carta.js"></script><script src="../js/doubletap.js"></script>
 <script>
 /* v20 · Link corto ?id=XXXX: trae de KV (/api/card) lo que antes venía en la URL. El resto del código lo lee igual que siempre.
    (Petición síncrona a propósito: así q, PL y extras.js no cambian ni un carácter.) */
@@ -87,7 +88,7 @@ const msgLargo=PL.x?clean(PL.x,2600).trim():'',msgTxt=msgLargo||frase,tam=TV.tam
 /* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
 const tit=clean(q.get('titulo'),14)||T.ti,pal=(clean(q.get('palabra'),9)||T.pa).toUpperCase().slice(0,9);
 const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.get('fu'),v:+q.get('v')||0});
-document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href='../personalizar.html?plantilla='+T.id;
+document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href=TV.BRAND_URL||'../index.html?ref=tarjeta';
 const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
 $('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
 for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
@@ -101,11 +102,10 @@ const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTim
 const boom=()=>confetti({particleCount:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
 let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
 if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
-$('btnSound').onclick=()=>{soundEnabled=!soundEnabled;$('btnSound').innerHTML='<i data-lucide="'+(soundEnabled?'volume-2':'volume-x')+'"></i><span>'+(soundEnabled?'Sonido':'Mudo')+'</span>';lucide.createIcons()};
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
 /* Sello, sobre y carta (animaciones y sonidos del diseño original) */
 function abrirCarta(){if(estado==='abierto')return;estado='abierto';playWaxCrackSound();setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
- setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.__mus&&window.__mus.play().catch(()=>{})},1000);navigator.vibrate&&navigator.vibrate([30,40,30])}
+ setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.DT&&DT.hint('Toca dos veces la tarjeta ✨');window.__mus&&window.__mus.play().catch(()=>{})},1000);navigator.vibrate&&navigator.vibrate([30,40,30])}
 function cerrarCarta(e){if(e)e.stopPropagation();if(estado==='cerrado')return;estado='cerrado';escena.classList.remove('abierto');$('dock').classList.remove('show');playPaperSlideSound()}
 $('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom()};
 /* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
@@ -155,5 +155,6 @@ async function guess(){if(busy)return;const g=$('sG').value;if(!g.trim())return;
  tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');$('sT').disabled=false;sacudirCandado('#candado');$('sG').value='';$('sG').focus()}
 $('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
 $('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
+window.DT&&DT.attach($('escena'),{enabled:()=>estado==='abierto',phrases:()=>DT.phrases(T,{nombre,pal})});
 lucide.createIcons();</script>
-<script src="../js/extras.js"></script><script src="../js/nuevas.js"></script></body></html>
+<script src="../js/extras.js"></script><script src="../js/acciones.js"></script><script src="../js/nuevas.js"></script></body></html>

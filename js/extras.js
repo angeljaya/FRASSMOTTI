@@ -104,11 +104,11 @@ function closeOffice(){if(!xlOn)return;xlOn=false;
  document.title=prev.title;if(favicon()&&prev.icon)favicon().href=prev.icon;
  soundEnabled=prev.snd;if(prev.mus&&window.__mus)window.__mus.play().catch(()=>{})}
 el('xlBack').onclick=closeOffice;
-/* Botón "Oficina" junto al de Sonido (barra superior, visible siempre) */
-const snd=el('btnSound');
-if(snd){const grp=document.createElement('div');grp.style.cssText='display:flex;gap:8px';snd.replaceWith(grp);
- const b=document.createElement('button');b.type='button';b.className='pill';b.id='btnOfi';b.setAttribute('aria-label','Modo oficina');b.innerHTML='<i data-lucide="table"></i><span>Oficina</span>';
- b.onclick=openOffice;grp.append(snd,b)}
+/* Botón "Oficina" (barra superior). En computador: ícono + "Oficina". En celulares: solo una pequeña letra "X". */
+const topbar=document.querySelector('.topbar');
+if(topbar){const b=document.createElement('button');b.type='button';b.className='pill pill-ofi';b.id='btnOfi';b.setAttribute('aria-label','Modo oficina');b.title='Modo oficina';
+ b.innerHTML='<i data-lucide="table"></i><span class="ofi-t">Oficina</span><span class="ofi-x" aria-hidden="true">X</span>';
+ b.onclick=openOffice;topbar.append(b)}
 /* Tecla jefe: Esc dos veces seguidas alterna entre la tarjeta y el Excel */
 let lastEsc=0;addEventListener('keydown',e=>{if(e.key!=='Escape')return;const t=Date.now();if(t-lastEsc<600){lastEsc=0;xlOn?closeOffice():openOffice()}else lastEsc=t});
 if(QS.get('of')==='1')openOffice();
@@ -117,7 +117,7 @@ if(QS.get('of')==='1')openOffice();
 const lluvia=()=>{let shapes;try{shapes=(EMO[T.id]||['✨']).map(text=>confetti.shapeFromText({text,scalar:2}))}catch(e){}
  const fin=Date.now()+1500;(function f(){confetti({particleCount:4,angle:90,spread:75,startVelocity:12,origin:{x:Math.random(),y:-.1},gravity:.9,ticks:280,scalar:2,shapes,flat:!!shapes,disableForReducedMotion:true});if(Date.now()<fin)requestAnimationFrame(f)})()};
 const anim=(cls,ms)=>{const c=document.querySelector('.carta-content');if(!c)return;c.classList.remove(cls);void c.offsetWidth;c.classList.add(cls);setTimeout(()=>c.classList.remove(cls),ms)};
-const pillState=()=>{const b=el('bFx');b&&b.classList.toggle('on',!!(shakeH||blowOn))};
+const pillState=()=>{try{document.dispatchEvent(new CustomEvent('fxstate'))}catch(e){}};
 
 /* --- Agitar --- */
 let shakeH=null;
@@ -159,12 +159,7 @@ async function toggleBlow(){
   blowRaf=requestAnimationFrame(loop)};
  blowRaf=requestAnimationFrame(loop);toast('Sopla fuerte hacia el micrófono')}
 
-/* --- Botón y panel de efectos (en la barra inferior de la tarjeta) --- */
-const dock=el('dock'),cr=el('cr');
-if(dock){const b=document.createElement('button');b.type='button';b.className='pill';b.id='bFx';b.innerHTML='<i data-lucide="wind"></i>Agitar / Soplar';dock.insertBefore(b,cr||null);
- const mf=modal('mFx','<h3 class="serif text-3xl">Efectos mágicos</h3><p class="text-sm mt-2" style="color:#475569">Activa uno y sorpréndete.</p><div class="grid gap-3 mt-5"><button type="button" class="pick" data-fx="shake"><b>📱 Agitar el celular</b><br><small>Lluvia de emojis al sacudirlo</small></button><button type="button" class="pick" data-fx="blow"><b>🌬️ Soplar la velita</b><br><small>Sopla al micrófono para apagarla y pedir un deseo</small></button></div><p class="text-xs mt-4" style="color:#64748b">El micrófono solo mide el volumen: no graba ni envía nada.</p>');
- mf.querySelector('.xclose').onclick=()=>hide(mf);mf.addEventListener('click',e=>{if(e.target===mf)hide(mf)});
- mf.querySelectorAll('[data-fx]').forEach(o=>o.onclick=()=>{hide(mf);o.dataset.fx==='shake'?toggleShake():toggleBlow()});
- b.onclick=()=>show(mf)}
+/* v27: Agitar y Soplar se activan desde el panel "Interacciones" (js/acciones.js) */
+window.__fx={shake:toggleShake,blow:toggleBlow,state:()=>({shake:!!shakeH,blow:!!blowOn})};
 icons();
 })();

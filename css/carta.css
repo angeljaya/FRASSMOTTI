@@ -320,7 +320,7 @@ body.carta-page{background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2)
 .sello-wax{background:radial-gradient(circle at 35% 35%,var(--wl) 0%,var(--wd) 70%,#1a0005 100%)}
 .sticker-flowers [fill="#ff4d4d"]{fill:var(--card-accent)}.sticker-flowers [fill="#ff6666"]{fill:color-mix(in srgb,var(--card-accent) 65%,#fff)}
 .sticker-flowers [stroke="#d4af37"]{stroke:var(--gold-primary)}.sticker-flowers [fill="#d4af37"]{fill:var(--gold-primary)}.sticker-flowers [fill="#800000"]{fill:var(--wd)}
-.topbar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 14px;z-index:100}
+.topbar{position:fixed;top:0;left:0;right:0;display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;z-index:100}
 .pill{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 13px;border-radius:999px;font:600 13px 'Outfit',sans-serif;color:#fff;background:rgba(8,10,16,.78);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;white-space:nowrap;text-decoration:none;transition:transform .2s,background .2s}
 .pill:hover{background:#000;transform:translateY(-2px)}.pill svg{width:16px;height:16px}.pill[hidden]{display:none}.pill-accent{background:var(--gold-primary);color:#111;border-color:transparent}.pill-accent:hover{background:var(--gold-primary);filter:brightness(1.1)}
 .dock{position:fixed;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 10px;z-index:100;opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .5s,transform .5s}
@@ -382,3 +382,87 @@ body.carta-page{background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2)
 @media (prefers-reduced-motion:reduce){
   .photo-frame{transition-duration:.01s!important}
 }
+
+
+/* ===== v27 · Panel "Interacciones", enlace de marca y doble toque ===== */
+.dock{display:none!important}   /* el dock viejo queda oculto: sus botones los activa el panel */
+/* Botón de la barra superior */
+.acc-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 15px 0 11px;border-radius:999px;font:700 13px 'Outfit',sans-serif;color:#1a1205;background:linear-gradient(135deg,#f2d675,#d4af37);border:1px solid rgba(255,255,255,.4);box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer;white-space:nowrap;opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .5s,transform .5s}
+.acc-btn.show{opacity:1;transform:none;pointer-events:auto}
+.acc-btn svg{width:17px;height:17px;flex:none}.acc-btn .s{display:none}
+.acc-btn.pulse{animation:accp 1.2s ease-out 3}
+@keyframes accp{0%{box-shadow:0 0 0 0 rgba(242,214,117,.75)}100%{box-shadow:0 0 0 16px rgba(242,214,117,0)}}
+@media (max-width:360px){.acc-btn .l{display:none}.acc-btn .s{display:inline}}
+/* Panel */
+.acc-back{position:fixed;inset:0;z-index:109;background:rgba(0,0,0,.42);opacity:0;pointer-events:none;transition:opacity .25s}
+.acc-back.open{opacity:1;pointer-events:auto}
+.acc-panel{position:fixed;left:12px;right:12px;top:calc(62px + env(safe-area-inset-top,0px));max-width:400px;z-index:110;padding:14px;border-radius:22px;color:#fff;font-family:'Outfit',sans-serif;background:rgba(12,14,22,.94);border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 60px rgba(0,0,0,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transform-origin:24px -8px;transform:translateY(-10px) scale(.96);opacity:0;pointer-events:none;transition:opacity .22s,transform .28s cubic-bezier(.2,.9,.3,1.1)}
+.acc-panel.open{opacity:1;transform:none;pointer-events:auto}
+.acc-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.acc-h b{font-size:14px;font-weight:600;color:#f2d675;letter-spacing:.01em}
+.acc-x{width:28px;height:28px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:13px;cursor:pointer}
+.acc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;max-height:calc(100dvh - 150px);overflow-y:auto}
+.acc-t{display:flex;align-items:flex-start;gap:10px;text-align:left;padding:11px 10px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-family:inherit;cursor:pointer;transition:background .2s,border-color .2s,transform .15s}
+.acc-t:last-child:nth-child(odd){grid-column:1/-1}
+.acc-t:hover,.acc-t:focus-visible{background:rgba(255,255,255,.11);border-color:rgba(242,214,117,.6);outline:0}
+.acc-t:active{transform:scale(.97)}
+.acc-t.on{border-color:#f2d675;background:rgba(242,214,117,.16)}
+.acc-t.pulse{animation:acct 1.3s ease-in-out infinite}
+@keyframes acct{0%,100%{box-shadow:0 0 0 0 rgba(242,214,117,0)}50%{box-shadow:0 0 0 4px rgba(242,214,117,.35)}}
+.acc-i{flex:0 0 34px;height:34px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(135deg,#f2d675,#b98a24);color:#1a1205}
+.acc-i svg{width:18px;height:18px}
+.acc-tx b{display:block;font-size:13px;font-weight:600;line-height:1.15}
+.acc-tx small{display:block;margin-top:2px;font-size:11px;line-height:1.25;color:rgba(255,255,255,.62)}
+/* Variante dentro del celular de vista previa */
+.acc-btn.in-phone{position:absolute;left:8px;top:8px;height:28px;padding:0 11px 0 8px;font-size:10.5px;gap:5px;z-index:35}
+.acc-btn.in-phone svg{width:13px;height:13px}
+.acc-btn.in-phone .l{display:inline}.acc-btn.in-phone .s{display:none}
+.acc-back.in-phone{position:absolute;z-index:39}
+.acc-panel.in-phone{position:absolute;left:6px;right:6px;top:42px;max-width:none;padding:9px;border-radius:16px;z-index:40;transform-origin:20px -6px}
+.in-phone .acc-h{margin-bottom:7px}.in-phone .acc-h b{font-size:10.5px}.in-phone .acc-x{width:20px;height:20px;font-size:10px}
+.in-phone .acc-grid{gap:5px;max-height:none}
+.in-phone .acc-t{padding:7px;gap:6px;border-radius:12px}.in-phone .acc-i{flex-basis:24px;height:24px;border-radius:9px}.in-phone .acc-i svg{width:13px;height:13px}
+.in-phone .acc-tx b{font-size:10.5px}.in-phone .acc-tx small{font-size:8.5px}
+/* Enlace de marca: pequeño, en la esquina, no estorba */
+.brand-mini{position:fixed;right:10px;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:90;padding:4px 6px;font:500 10.5px/1 'Outfit',sans-serif;letter-spacing:.03em;color:rgba(255,255,255,.62);text-shadow:0 1px 3px rgba(0,0,0,.65);text-decoration:none;transition:color .2s}
+.brand-mini b{font-weight:600;color:rgba(242,214,117,.75)}
+.brand-mini:hover,.brand-mini:focus-visible{color:#fff;text-decoration:underline}.brand-mini:hover b{color:#f2d675}
+/* Doble toque: palabras flotantes */
+.dt-zone{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+.dt-layer{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:140}
+.dt-layer.in-box{position:absolute;z-index:30}
+.dt-word{position:absolute;left:0;top:0;display:inline-block;padding:.5em .95em;max-width:min(78vw,300px);opacity:0;white-space:normal;text-align:center;
+ font:700 clamp(13px,3.6vw,18px)/1.25 'Outfit',sans-serif;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.45);
+ border:1px solid rgba(255,255,255,.55);border-radius:20px;
+ background:linear-gradient(135deg,color-mix(in srgb,var(--card-accent,#d4af37) 92%,#fff),color-mix(in srgb,var(--card-accent,#d4af37) 70%,#000));
+ box-shadow:0 8px 26px color-mix(in srgb,var(--card-accent,#d4af37) 45%,transparent);will-change:transform,opacity}
+.dt-ring{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;border:2px solid var(--card-accent,#d4af37);pointer-events:none;opacity:0}
+.dt-hint{white-space:nowrap;position:fixed;left:50%;bottom:calc(46px + env(safe-area-inset-bottom,0px));transform:translate(-50%,8px);z-index:141;padding:7px 14px;border-radius:999px;font:600 12px 'Outfit',sans-serif;color:#fff;background:rgba(8,10,16,.78);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .45s,transform .45s}
+.dt-hint.on{opacity:1;transform:translate(-50%,0)}
+.dt-wobble{animation:dtw .7s ease-in-out}
+@keyframes dtw{0%,100%{transform:rotate(0)}15%{transform:rotate(-3deg)}30%{transform:rotate(3deg)}45%{transform:rotate(-2deg)}60%{transform:rotate(2deg)}80%{transform:rotate(-1deg)}}
+/* Vista previa del celular: marca y pista */
+.pv-brand{position:absolute;right:11px;bottom:7px;z-index:25;pointer-events:none;font:500 8px/1 'Outfit',sans-serif;letter-spacing:.03em;color:rgba(255,255,255,.62);text-shadow:0 1px 2px rgba(0,0,0,.65)}
+.pv-brand b{font-weight:600;color:rgba(242,214,117,.75)}
+.pv-hint{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:25;padding:5px 11px;border-radius:999px;font:600 10px 'Outfit',sans-serif;color:#fff;background:rgba(8,10,16,.7);border:1px solid rgba(255,255,255,.25);white-space:nowrap;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.dt-wobble,.acc-btn.pulse,.acc-t.pulse{animation:none}}
+
+/* v28 · Modo oficina: en celulares queda solo una pequeña letra "X" */
+.pill-ofi .ofi-x{display:none}
+@media (max-width:640px),(pointer:coarse){
+ .pill-ofi{width:30px;height:30px;min-width:0;padding:0;justify-content:center;gap:0;font:700 12px 'Outfit',sans-serif;opacity:.6}
+ .pill-ofi svg,.pill-ofi i,.pill-ofi .ofi-t{display:none}
+ .pill-ofi .ofi-x{display:inline}
+ .pill-ofi:active{opacity:1}
+}
+
+/* v29 · Botón Sonido / Mudo (ícono SVG propio: nunca queda vacío) */
+.pill-snd svg{width:16px;height:16px;flex:none}
+.pill-snd.off{opacity:.8}.pill-snd.off svg{color:#f2d675}
+@media (max-width:640px),(pointer:coarse){
+ .pill-snd{width:36px;height:36px;min-width:0;padding:0;justify-content:center;gap:0}
+ .pill-snd .snd-t{display:none}
+}
+.pill-snd.in-phone{position:absolute;right:8px;top:8px;z-index:35;width:auto;height:28px;padding:0 10px 0 8px;gap:5px;font:600 10.5px 'Outfit',sans-serif;border-radius:999px;color:#fff;background:rgba(8,10,16,.78);border:1px solid rgba(255,255,255,.3);cursor:pointer;display:inline-flex;align-items:center}
+.pill-snd.in-phone svg{width:13px;height:13px}
+.pill-snd.in-phone .snd-t{display:inline}
