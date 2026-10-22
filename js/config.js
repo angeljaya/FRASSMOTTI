@@ -15,6 +15,8 @@ const TV={
   precio(id){if(id==='llavero')return this.PRECIO_LLAVERO;if(!id||id==='digital')return this.promoActiva()?this.PROMO.precio:this.PRECIO_NORMAL;return null},
   REQUIRE_PAYMENT:false,        // true = la tarjeta solo se activa con link firmado desde admin.html (requiere Functions)
   SHORT_LINKS:true,             // v20: link corto con Cloudflare KV (tarjeta.html?id=XXXX). Pide ADMIN_PIN + KV 'CARDS'. false = link largo de siempre
+  PEDIDOS_PUBKEY:{"alg":"RSA-OAEP-256","e":"AQAB","ext":true,"key_ops":["encrypt"],"kty":"RSA","n":"3n3CM_-TMj28yKjkV0pAZ_ALNilCGBbXS52TZJwG6Jr1gmTJvwP-gTDs65-crbHokZZvsdRqMjvEZRCzfIvRso7iH6T0eBAKLJjibVmitiOya9uI9s7Ar69E4DyUsC6p15wYTmtPMqPTyzClEBsCIRfX1xNmWrVrx_doWOQ-u6vJCGVcLrvWcOrgMORdaxDt5dsFLuAyxxmxwm9aEwbIt50kAeIvWEeGDVQvmIs_AKQUnKX09R5-WwN6A1hbGu6LJOR4R2V2lXNz5jWFUVCtFK34GRyGdmMRHDPsFy73COaHV-Pddv6-regXJLbR8xTvQwz1TsTOvJZFy6uRjb1ErQ"},
+  BUZON: true,
   WATERMARK:true,               // v11: marca de agua viral al pie de la tarjeta (false = sin marca)
   QR_IMAGE:'assets/qr-pago.png',                 // Ej: '/assets/qr-pago.png'. Vacío = QR placeholder CSS
   MUSIC:'',                    // Ej: '/assets/musica.mp3' (mp3 libre de derechos)
