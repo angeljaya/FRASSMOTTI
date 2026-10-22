@@ -83,6 +83,8 @@ details.faq summary::-webkit-details-marker{display:none}details.faq[open] summa
 .mini{height:190px;border-radius:18px;position:relative;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 50% 30%,var(--b1),var(--b2))}
 .mini .e{position:relative;width:150px;height:100px;margin-top:34px;border-radius:8px;background:linear-gradient(160deg,var(--e1),var(--e2));box-shadow:0 24px 30px -12px rgba(0,0,0,.6);animation:mf 3.6s ease-in-out infinite}
 .mini .p{position:absolute;left:12%;right:12%;top:-30px;height:70px;background:var(--paper);border-radius:4px 4px 0 0;animation:mp 3.6s ease-in-out infinite}
+/* Papelito con imagen de la ocasión (plantilla con "cover" en config.js): se ve el título de la imagen sobre el sobre */
+.mini .p.img{left:10%;right:10%;top:-52px;height:90px;border-radius:5px 5px 0 0;background-color:var(--paper);background-position:center -10px;background-size:100% auto;background-repeat:no-repeat;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .mini .f{position:absolute;left:0;right:0;top:0;height:62%;background:linear-gradient(var(--e1),var(--e2));clip-path:polygon(0 0,100% 0,50% 100%);filter:brightness(1.2)}
 .mini .w{position:absolute;left:50%;top:42%;width:32px;height:32px;margin-left:-16px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--wl),var(--wd));box-shadow:0 4px 10px rgba(0,0,0,.5);display:grid;place-items:center;font:900 15px Cinzel,Georgia,serif;color:var(--g)}
 @keyframes mf{50%{transform:translateY(-8px) rotate(-1.5deg)}}@keyframes mp{50%{transform:translateY(-8px)}}

@@ -7,12 +7,20 @@ const AL='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 const J=(o,s=200,c='no-store')=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json','Cache-Control':c}});
 const same=(a,b)=>{const x=new TextEncoder().encode(String(a)),y=new TextEncoder().encode(String(b));let d=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)d|=(x[i]||0)^(y[i]||0);return d===0};
 const newId=()=>{let s='';while(s.length<ID_LEN){for(const x of crypto.getRandomValues(new Uint8Array(16)))if(x<248&&s.length<ID_LEN)s+=AL[x%62]}return s};   // x<248: sin sesgo al repartir entre 62 caracteres
+/* v2: bloqueo por IP tras 5 PIN incorrectos (15 min), con el mismo KV (claves "rl:IP"; los ids de tarjeta no pueden empezar así). */
+const MAX_FAILS=5,LOCK_SECS=900;
+const rlKey=r=>'rl:'+(r.headers.get('CF-Connecting-IP')||'sin-ip');
+const fails=async(env,k)=>{try{return parseInt(await env.CARDS.get(k)||'0',10)||0}catch(e){return 0}};
+const addFail=async(env,k,n)=>{try{await env.CARDS.put(k,String(n+1),{expirationTtl:LOCK_SECS})}catch(e){}};
 
 export async function onRequestPost({request,env}){
  if(!env.CARDS)return J({error:'Falta el KV: crea el namespace y enlázalo con el nombre CARDS (ver wrangler.toml)'},500);
  if(!env.ADMIN_PIN)return J({error:'Falta la variable ADMIN_PIN en Cloudflare'},500);
+ const k=rlKey(request),n=await fails(env,k);
+ if(n>=MAX_FAILS)return J({error:'Demasiados intentos. Espera 15 minutos.'},429);
  const {qs,h,pin}=await request.json().catch(()=>({}));
- if(typeof pin!=='string'||!pin||!same(pin,env.ADMIN_PIN)){await new Promise(r=>setTimeout(r,700));return J({error:'PIN incorrecto'},401)}
+ if(typeof pin!=='string'||!pin||!same(pin,env.ADMIN_PIN)){await addFail(env,k,n);await new Promise(r=>setTimeout(r,700));return J({error:'PIN incorrecto'},401)}
+ if(n>0){try{await env.CARDS.delete(k)}catch(e){}}
  if(typeof qs!=='string'||qs.length>4000||(h!==undefined&&(typeof h!=='string'||h.length>1500000||!/^[A-Za-z0-9_-]*$/.test(h))))return J({error:'Datos inválidos'},400);
  let id;for(let i=0;i<5;i++){const c=newId();if(!(await env.CARDS.get(c))){id=c;break}}
  if(!id)return J({error:'No se pudo generar un id libre'},500);

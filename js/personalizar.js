@@ -134,7 +134,7 @@ function pedidoTexto(){const n=v('nombre',24),msg=mensaje(),r=FOTO.st.img?FOTO.r
   `Mensaje secreto: "${secMsg()||'-'}"`,`Pregunta del secreto: "${pregS()||'-'}"`,`Palabra clave: "${clave()||'(sin candado)'}"`,`Pista: "${pistas()[0]||'-'}"`,`Pista 2: "${pistas()[1]||'-'}"`,`Pista 3: "${pistas()[2]||'-'}"`,
   `Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,
   `Foto: ${S.photo?'La envío por este chat (recortada)':'Sin foto'}`,...(S.photo?[`Encuadre foto: ${enc}`]:[]),'---------------------',
-  `Mi WhatsApp: ${v('tel',20)||'-'}`,`Monto: ${TV.PRECIO} Bs por Yape`,'Adjunto mi comprobante de pago.',...(window.extraLines?extraLines():[])].join('\n')}
+  `Mi WhatsApp: ${v('tel',20)||'-'}`,`Monto: ${TV.precio((document.getElementById('formato')||{}).value||'digital')||TV.PRECIO} Bs por Yape`,'Adjunto mi comprobante de pago.',...(window.extraLines?extraLines():[])].join('\n')}
 
 /* Impacto visual de éxito: "¡Envío con éxito!" en verde grande con efecto 3D + confeti + vibración */
 function exito(){shut('mPay');const w=$('okWa'),bl=!!window.__waBlocked;w.classList.toggle('hidden',!bl);if(bl)w.href=window.__waUrl;
@@ -153,7 +153,8 @@ window.fotoParaEnviar=async()=>{if(!FOTO.st.img)return null;const u=FOTO.render(
 
 /* ---------- Borrador automático (localStorage) ---------- */
 const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','secPreg','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
-function draft(){try{localStorage.setItem('tv_draft',JSON.stringify({...Object.fromEntries(FIELDS.map(f=>[f,$(f).value])),col:S.col,g:S.g||'',dis:S.dis,tam:S.tam,fu:S.fu,bw:S.bw,tog:Object.fromEntries(TOGS.map(t=>[t,on(t)]))}))}catch(e){}}
+const PRIV=['secreto','clave','pista','pista2','pista3','secPreg'];   /* v28: lo íntimo nunca se guarda en el celular */
+function draft(){try{localStorage.setItem('tv_draft',JSON.stringify({...Object.fromEntries(FIELDS.filter(f=>!PRIV.includes(f)).map(f=>[f,$(f).value])),col:S.col,g:S.g||'',dis:S.dis,tam:S.tam,fu:S.fu,bw:S.bw,tog:Object.fromEntries(TOGS.map(t=>[t,on(t)]))}))}catch(e){}}
 try{const d=JSON.parse(localStorage.getItem('tv_draft')||'{}');
  if(!Q.get('g')&&(d.g==='h'||d.g==='m'))S.g=d.g;
  if(Q.get('plantilla')){/* la plantilla de la URL manda */}else if(d.ocasion&&TV.T.some(t=>t.id===d.ocasion))T=TV.find(d.ocasion);
