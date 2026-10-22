@@ -134,6 +134,7 @@ Antes el link llevaba todo (datos y foto en Base64) y medía varios miles de car
 
 ## Corrección (v20)
 - **Vista previa de plantillas en `personalizar.html`:** las imágenes de fondo de las fechas especiales se pedían a `/css/assets/...` (404) porque la ruta, pasada como variable CSS, se resolvía contra la hoja de estilos y no contra la página. Ahora `js/diseno.js` entrega una ruta absoluta (1 línea en `tplHTML`). La tarjeta final ya funcionaba.
+- actualizacion 22 de octubre
 
 ## Corrección de despliegue
 - Un `wrangler.toml` activo con `pages_build_output_dir` hacía fallar `npx wrangler deploy` (comando de Workers) con "Missing entry-point". Se renombró a `wrangler.toml.ejemplo`. El proyecto debe ser Pages (ver INSTRUCCIONES, sección 8).
