@@ -14,7 +14,8 @@ const IC={
  share:'<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
  download:'<path d="M12 3v12M7 11l5 5 5-5M4 20h16"/>',
  vol:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a10 10 0 010 14"/>',
- mute:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/>'};
+ mute:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/>',
+ eyeoff:'<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M2 2l20 20"/>'};
 const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
@@ -62,7 +63,8 @@ function initCard(){
   {id:'tap',ic:'pointer',t:'Doble toque',d:'Toca 2 veces la tarjeta y brotan deseos',run:()=>{try{DT.used=true;DT.burst(DT.layerFor(),DT.phrases(T,{nombre,pal}),innerWidth/2,innerHeight*.55)}catch(e){}}},
   {id:'mus',ic:'music',t:'Música',d:'Pon o pausa la canción de la tarjeta',hidden:!$('mus')||$('mus').hidden,run:click('mus')},
   {id:'sh',ic:'share',t:'Compartir',d:'Envíala por WhatsApp o copia el link',run:click('sv')},
-  {id:'img',ic:'download',t:'Guardar imagen',d:'Descárgala para subirla a tus historias',run:click('img')}]};
+  {id:'img',ic:'download',t:'Guardar imagen',d:'Descárgala para subirla a tus historias',run:click('img')},
+  {id:'ofi',ic:'eyeoff',t:'Modo discreto',d:'¿Se acerca alguien? La tarjeta se disfraza de hoja de Excel. Toca «Hoja2» para volver',hidden:!fx.office,run:()=>fx.office&&fx.office()}]};
  /* Sonido / Mudo: se recuerda la elección; también silencia la canción */
  const saved=(()=>{try{return localStorage.getItem('frass_snd')}catch(e){return null}})();
  if(saved==='0'){soundEnabled=false;window.__mus&&(window.__mus.muted=true)}

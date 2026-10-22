@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Panel de pedidos | Frassmotti</title>
 <link rel="icon" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script><script src="js/tw.js"></script><link rel="stylesheet" href="css/styles.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet">
 <script src="js/config.js"></script><script src="js/secret.js"></script><script src="js/diseno.js"></script><script src="js/foto.js"></script><script src="js/exportar.js"></script><script src="js/buzon.js"></script><style>
 /* v22 · Recortador de foto (mismos estilos que css/v14.css, solo lo necesario para el panel) */
 .crop-area{position:relative;width:100%;overflow:hidden;border-radius:14px;background:#0b0b0d;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
@@ -14,11 +14,12 @@ input[type=range].zoom{width:100%}
 .seg button[aria-pressed=true]{border-color:var(--c,#111827);background:color-mix(in srgb,var(--c,#111827) 10%,#fff)}
 .pg-thumb{width:84px;height:62px;object-fit:cover;border-radius:10px;border:1px solid #e5e5e3}
 </style>
-</head>
+<link rel="stylesheet" href="css/tailwind.css"></head>
 <body><main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
 <div class="pt-4 flex items-center justify-between"><h1 class="serif text-4xl">Panel de pedidos</h1><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a></div>
 <div id="bzCard" class="card p-5 space-y-3"><div class="flex items-center justify-between gap-3"><p class="font-semibold text-gray-900">Buzón: pedidos pendientes</p><button id="bzLoad" type="button" class="btn btn-dark !py-2 text-sm">Cargar pedidos</button></div>
 <div><label class="label" for="bzPin">PIN de administrador</label><input id="bzPin" type="password" class="input" autocomplete="off"></div>
+<div class="flex gap-2"><input id="bzCode" class="input" placeholder="Código del cliente (ej. K7F2-9QXA)" autocomplete="off" maxlength="12"><button id="bzGo" type="button" class="btn btn-ghost !py-2 text-sm whitespace-nowrap">Abrir por código</button></div>
 <p id="bzMsg" class="text-sm text-gray-700 min-h-[1.25rem]" role="status"></p><ul id="bzList" class="space-y-2"></ul>
 <div id="bzDoneRow" class="hidden"><button id="bzDone" type="button" class="btn btn-ghost w-full text-sm">Ya entregué este pedido: borrarlo del buzón</button></div>
 <details class="text-sm"><summary class="cursor-pointer font-semibold text-gray-900">Llave del buzón (solo la primera vez o para recuperarla)</summary><div class="space-y-3 mt-3">
@@ -183,16 +184,18 @@ const _n=nuevas;nuevas=async(p,pl,T)=>{await _n(p,pl,T);
  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
  async function cargar(){say('Cargando…');$('bzList').innerHTML='';let q;try{q=await api({action:'list'})}catch(e){say('Sin conexión con /api/pedido.');return}
   if(!q.r.ok){say(q.d.error||'Error '+q.r.status);return}
-  const it=q.d.items||[];say(it.length?it.length+' pedido(s) pendiente(s):':'No hay pedidos pendientes.');
+  const it=q.d.items||[];say(it.length?it.length+' pedido(s) pendiente(s). Un pedido recién enviado puede tardar 1-2 minutos en aparecer; si el cliente te dio su código, ábrelo abajo con "Abrir por código".':'No hay pedidos pendientes (si acaban de enviar uno, espera 1-2 minutos y pulsa Cargar de nuevo).');
   $('bzList').innerHTML=it.map(x=>`<li class="flex items-center justify-between gap-3 border border-gray-200 rounded-xl p-3"><div class="text-sm"><b>${esc(x.code)}</b><br><span class="text-gray-600">${esc(x.oc)} · ${esc(x.fmt)}${x.monto?' · Bs '+esc(x.monto):''} · ${ago(x.t)}</span></div><button type="button" data-open="${esc(x.code)}" class="btn btn-dark !py-2 text-sm">Abrir</button></li>`).join('')}
  $('bzLoad').onclick=cargar;
- $('bzList').onclick=async e=>{const b=e.target.closest('[data-open]');if(!b)return;const code=b.dataset.open;say('Abriendo '+code+'…');
+ async function abrir(code){say('Abriendo '+code+'…');
   let priv;try{priv=await BZ.kget()}catch(x){}if(!priv){say('No hay llave privada en este dispositivo. Abre "Llave del buzón" abajo para crearla o recuperarla.');return}
-  const q=await api({action:'get',code});if(!q.r.ok){say(q.d.error||'Error '+q.r.status);return}
+  const q=await api({action:'get',code});if(!q.r.ok){say(q.r.status===404?'El pedido '+code+' no está (todavía) en el buzón. Si el cliente lo acaba de enviar, espera 1-2 minutos y vuelve a intentar; si pasó más tiempo, ese pedido no se guardó y el cliente debe repetirlo.':(q.d.error||'Error '+q.r.status));return}
   let o;try{o=await BZ.open(priv,q.d.b)}catch(x){say('No se pudo descifrar: este pedido se cifró con otra llave.');return}
   $('order').value=o.t;$('order').dispatchEvent(new Event('input'));cur=code;$('bzDoneRow').classList.remove('hidden');
   if(o.p){try{const bl=await (await fetch(o.p)).blob(),dt=new DataTransfer();dt.items.add(new File([bl],'foto-'+code+'.jpg',{type:bl.type||'image/jpeg'}));$('foto').files=dt.files;$('foto').dispatchEvent(new Event('change'))}catch(x){}}
-  say('Pedido '+code+' cargado en el Paso 2. Revísalo, verifica el pago y genera el link.');$('order').scrollIntoView({behavior:'smooth',block:'start'})};
+  say('Pedido '+code+' cargado en el Paso 2. Revísalo, verifica el pago y genera el link.');$('order').scrollIntoView({behavior:'smooth',block:'start'})}
+ $('bzList').onclick=e=>{const b=e.target.closest('[data-open]');if(b)abrir(b.dataset.open)};
+ $('bzGo').onclick=()=>{let c=$('bzCode').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!==8){say('El código tiene 8 letras/números, por ejemplo K7F2-9QXA.');return}abrir(c.slice(0,4)+'-'+c.slice(4))};
  $('bzDone').onclick=async()=>{if(!cur||!confirm('¿Borrar el pedido '+cur+' del buzón? Haz esto cuando ya hayas enviado el link.'))return;const q=await api({action:'del',code:cur});
   if(q.r.ok){say('Pedido '+cur+' borrado del buzón.');cur=null;$('bzDoneRow').classList.add('hidden');cargar()}else say(q.d.error||'Error '+q.r.status)};
  $('bzGen').onclick=async()=>{let ya=null;try{ya=await BZ.kget()}catch(e){}

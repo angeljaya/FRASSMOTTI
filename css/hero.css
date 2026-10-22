@@ -41,3 +41,26 @@
 .hc .ws{position:absolute;right:-8px;top:66%;width:50px;height:50px;border-radius:48% 52% 55% 45%;background:radial-gradient(circle at 35% 35%,#ad1422,#6e000a 70%,#420005);display:grid;place-items:center;font:900 20px Cinzel,serif;color:#e6c35c;text-decoration:none;box-shadow:0 8px 18px rgba(0,0,0,.55),inset 0 2px 4px rgba(255,255,255,.35)}
 @keyframes hcFall{from{transform:translateY(-170%) rotate(-20deg);opacity:0}}
 @keyframes hcFloat{50%{transform:translateY(-12px) rotate(-1deg)}}
+
+/* ===== Encabezado en pantallas chicas: el logo es ancho y el botón "Ver Ocasiones" se cortaba (Redmi Note 8 = 393 px) =====
+   Los botones "Hacer la mía" y "WhatsApp" siguen ocultos en celular a propósito (hidden sm:inline-flex): no caben y ya existen como botón principal del héroe y como botón verde flotante. */
+@media(max-width:639px){
+ .hero-header{gap:.5rem}
+ .logo{gap:.5rem;min-width:0}
+ .logo__seal{width:38px;height:38px}
+ .logo__word{font-size:1.02rem;letter-spacing:.12em}
+ .hero-header #btn-ocasiones{flex:none;padding-left:1rem;padding-right:1rem}
+}
+@media(max-width:389px){
+ .logo__seal{width:34px;height:34px}
+ .logo__word{font-size:.92rem;letter-spacing:.1em}
+ .hero-header #btn-ocasiones{padding-left:.8rem;padding-right:.8rem;font-size:.8rem;gap:.35rem}
+}
+@media(max-width:339px){   /* pantallas muy angostas: solo el ícono del menú (el texto sigue disponible para lectores de pantalla) */
+ .hero-header #btn-ocasiones span{font-size:0}
+ .hero-header #btn-ocasiones{gap:0}
+}
+/* Tabletas pequeñas (640-899 px): con el logo grande y 3 botones no cabe todo; se ocultan los dos botones extra hasta tener ancho suficiente */
+@media(min-width:640px) and (max-width:899px){
+ .hero-header>a.btn.hidden{display:none}
+}

@@ -104,11 +104,8 @@ function closeOffice(){if(!xlOn)return;xlOn=false;
  document.title=prev.title;if(favicon()&&prev.icon)favicon().href=prev.icon;
  soundEnabled=prev.snd;if(prev.mus&&window.__mus)window.__mus.play().catch(()=>{})}
 el('xlBack').onclick=closeOffice;
-/* Botón "Oficina" (barra superior). En computador: ícono + "Oficina". En celulares: solo una pequeña letra "X". */
-const topbar=document.querySelector('.topbar');
-if(topbar){const b=document.createElement('button');b.type='button';b.className='pill pill-ofi';b.id='btnOfi';b.setAttribute('aria-label','Modo oficina');b.title='Modo oficina';
- b.innerHTML='<i data-lucide="table"></i><span class="ofi-t">Oficina</span><span class="ofi-x" aria-hidden="true">X</span>';
- b.onclick=openOffice;topbar.append(b)}
+/* v30 · Ya no hay botón suelto en la barra superior (en celular era una "X" misteriosa junto al sonido y la gente la tocaba sin saber qué hacía).
+   Ahora el modo discreto se activa desde el panel "Interacciones" con una explicación clara (acciones.js), o con Esc dos veces en computador. */
 /* Tecla jefe: Esc dos veces seguidas alterna entre la tarjeta y el Excel */
 let lastEsc=0;addEventListener('keydown',e=>{if(e.key!=='Escape')return;const t=Date.now();if(t-lastEsc<600){lastEsc=0;xlOn?closeOffice():openOffice()}else lastEsc=t});
 if(QS.get('of')==='1')openOffice();
@@ -160,6 +157,6 @@ async function toggleBlow(){
  blowRaf=requestAnimationFrame(loop);toast('Sopla fuerte hacia el micrófono')}
 
 /* v27: Agitar y Soplar se activan desde el panel "Interacciones" (js/acciones.js) */
-window.__fx={shake:toggleShake,blow:toggleBlow,state:()=>({shake:!!shakeH,blow:!!blowOn})};
+window.__fx={shake:toggleShake,blow:toggleBlow,office:openOffice,state:()=>({shake:!!shakeH,blow:!!blowOn})};
 icons();
 })();

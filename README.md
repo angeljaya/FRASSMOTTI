@@ -1,10 +1,29 @@
-# FRASSMOTTI v10
-HTML + Tailwind (CDN) + JS puro. Tienda, checkout, tarjeta final y panel de pedidos con cobro verificado.
+# FRASSMOTTI
+HTML + Tailwind 3.4 compilado + JS puro, en Cloudflare Pages (Functions + KV). Tienda, checkout con buzón cifrado de pedidos, tarjeta final y panel de pedidos.
+_Última actualización: 22 de octubre de 2026. Las secciones v10 a v20 de abajo son el historial de cada versión; donde algo cambió, se indica._
 
-## Flujo del negocio
-1. El cliente personaliza y paga por Yape; el pedido llega a tu WhatsApp con un link de vista previa.
-2. Verificas el pago y abres `/admin.html`: pegas el pedido, ingresas tu PIN y firmas el link.
-3. Le envías el link activado. Sin firma, la tarjeta muestra "Vista previa" y bloquea secreto, compartir e imagen.
+## Estructura del proyecto
+- Raíz: `index.html`, `personalizar.html`, `admin.html`, `grupo.html`, `404.html`, `favicon.svg`, `_headers`, `wrangler.toml.ejemplo`, `README.md`, `INSTRUCCIONES_INSTALACION.md`, `tailwind.config.js`, `tailwind-entrada.css`.
+- `r/tarjeta.html`: la tarjeta que recibe el destinatario.
+- `css/`: `styles`, `hero`, `tutorial`, `carta`, `extras`, `v14` y `tailwind.css` (generado; ver "Estilos").
+- `js/`: `config`, `secret`, `buzon`, `personalizar`, `pago`, `wa`, `nuevas`, `diseno`, `foto`, `mensaje`, `fx`, `carta`, `extras`, `acciones`, `doubletap`, `exportar` (solo admin), `tutorial`. `tw.js` ya no lo carga ninguna página.
+- `functions/api/`: `admin`, `card`, `pedido`, `sign`, `verify`.
+- `assets/`: imágenes de ocasiones y productos, `fondo-naturaleza.jpg`, `qr-pago.png`.
+
+## Flujo del negocio (actual: buzón cifrado)
+1. El cliente personaliza en `personalizar.html`, paga por Yape y adjunta el comprobante.
+2. Al tocar "Ya pagué, enviar pedido", el pedido (texto y foto) se **cifra en su navegador** (AES-GCM + llave pública RSA-OAEP, `TV.PEDIDOS_PUBKEY`) y se guarda en el KV `PEDIDOS` mediante `/api/pedido`. Por WhatsApp solo viajan un **código** (ej. `K7F2-9QXA`) y el comprobante. El pedido caduca a los 30 días.
+3. En `admin.html` ves los pedidos pendientes, los descifras con tu **llave privada** (guardada solo en el IndexedDB de tu dispositivo) y el formulario se llena solo. También puedes usar "Abrir por código" con el código que te mandó el cliente.
+4. Verificas el pago, revisas los datos, generas el link (corto, ver v20) y lo envías al cliente por WhatsApp.
+5. Con `REQUIRE_PAYMENT:true`, un link sin firma muestra "Vista previa" y bloquea secreto, compartir e imagen (la firma se genera en `admin.html`).
+
+**Buzón de pedidos** (`js/buzon.js`, `functions/api/pedido.js`, interruptor `TV.BUZON` en `js/config.js`):
+- La llave privada se crea una vez en `admin.html` > "Llave del buzón". Se muestra una sola vez para que la respaldes (en tu gestor de contraseñas) y luego queda guardada como no extraíble. Si la pierdes, no puedes abrir los pedidos guardados.
+- El celular del cliente propone el código del pedido, así un reintento (mala señal, doble toque) reenvía el MISMO pedido y no lo duplica. Hay un reintento automático.
+- Límite de envíos por IP: 40 por hora (las operadoras bolivianas comparten IP). Los rechazos se ven en Cloudflare > Functions > Real-time logs.
+- Si algo falla, el cliente ve un cuadro rojo fijo con el motivo y un plan B: enviar el pedido completo directo por WhatsApp. El botón "Abrir WhatsApp con mi pedido" siempre aparece en la pantalla de éxito, y "Cambiar algo de mi tarjeta" reemplaza el pedido con el mismo código.
+- El monto que lleva el pedido sigue el formato elegido (tarjeta virtual o llavero).
+- Si `TV.BUZON` es `false` o falta la llave pública, todo funciona como en la v10.
 
 ## Desplegar en Cloudflare Pages (con Functions)
 Las Functions NO funcionan con "arrastrar y soltar". Usa una de estas:
@@ -14,15 +33,29 @@ Las Functions NO funcionan con "arrastrar y soltar". Usa una de estas:
 Luego: Pages > tu proyecto > Settings > Variables and Secrets (Production), crea:
 - `ADMIN_PIN`: tu PIN para entrar al panel.
 - `SIGNING_SECRET`: texto largo aleatorio (40+ caracteres). Si lo cambias, los links ya firmados dejan de valer.
+- `TURNSTILE_SECRET` (opcional, solo si activas Turnstile; ver Pendientes).
+Además, crea dos **KV namespaces** y enlázalos al proyecto (Settings > Bindings > KV) con estos nombres exactos: `CARDS` (links cortos y bloqueos por IP) y `PEDIDOS` (buzón).
 Vuelve a desplegar para que tomen efecto.
+
+### Estilos (Tailwind compilado)
+Las páginas ya no usan el CDN de Tailwind: cargan `css/tailwind.css`, enlazado al final del `<head>` para mantener el orden de cascada que tenía el CDN. Se genera en tu PC (no hace falta `package.json`):
+`npx tailwindcss@3.4.17 -i tailwind-entrada.css -o css/tailwind.css --minify`
+- Usa la **versión 3.4**, no la 4 (cambia valores por defecto y movería el diseño).
+- `tailwind.config.js` revisa todos los `.html` y los `.js` de `js/`, y trae los mismos valores que tenía `tw.js` (`accent` y `3xl`).
+- Cada vez que agregues clases de Tailwind nuevas en cualquier archivo, vuelve a compilar y sube `css/tailwind.css`.
 
 Sin Functions (pruebas o hosting estático): en `js/config.js` pon `REQUIRE_PAYMENT:false`.
 
 ## Configuración (js/config.js)
-`WHATSAPP`, `PRECIO`, `REQUIRE_PAYMENT`, `QR_IMAGE:'assets/qr-pago.png'`, `MUSIC:'assets/musica.mp3'` y las plantillas.
+`WHATSAPP`, precios (`PROMO` con `precio`, `inicio` y `dias`; `PRECIO_NORMAL`; `PRECIO_LLAVERO`), `REQUIRE_PAYMENT`, `SHORT_LINKS`, `BUZON`, `PEDIDOS_PUBKEY`, `TURNSTILE_SITEKEY` (opcional), `WATERMARK`, `QR_IMAGE:'assets/qr-pago.png'`, `MUSIC:'assets/musica.mp3'`, `FUNCIONES` y las plantillas. El precio de la promo y su fin se calculan con el reloj del celular del visitante; el control real es verificar el monto en el comprobante.
 
 ## Seguridad
-El mensaje secreto se cifra (AES-GCM) con la clave y viaja en el `#` del link. La firma HMAC impide fabricar links activados.
+- El mensaje secreto se cifra (AES-GCM) con la clave y viaja en el `#` del link. La firma HMAC impide fabricar links activados. La protección real depende de que la palabra secreta no sea fácil de adivinar (quien tenga el link puede probar palabras sin conexión).
+- `ADMIN_PIN`: usa una clave larga y aleatoria. `sign.js` y `card.js` lo comparan en tiempo constante y bloquean la IP tras 5 fallos (claves `rl:IP` en el KV `CARDS`). `admin.js` solo agrega una espera de 700 ms por intento (pendiente: darle el mismo bloqueo por IP).
+- Se eliminaron `guardar.js` y `obtener.js` (funciones antiguas sin PIN que nadie usaba). Si reaparecen en el repositorio, bórralas.
+- Los pedidos del buzón viajan y se guardan cifrados, pero tú los ves descifrados en el admin; el texto de la tienda debe decirlo con claridad (no prometer que nadie los ve).
+- `admin.html` ya no carga scripts de terceros para los estilos, lo que reduce el riesgo de que un servidor ajeno lea tu PIN o tu llave.
+- `_headers` solo define `nosniff`, `Referrer-Policy` y `X-Frame-Options` (y `noindex` en admin). No hay CSP ni reglas de caché todavía.
 
 ## Efectos 3D (v6)
 - Hero con escena Three.js (tarjeta con barniz, luces y confeti 3D). Si el dispositivo no tiene WebGL o prefiere menos movimiento, se muestra una tarjeta CSS.
@@ -33,12 +66,12 @@ El mensaje secreto se cifra (AES-GCM) con la clave y viaja en el `#` del link. L
 `r/tarjeta.html` usa el diseño 'Carta 3D' (sobre oscuro, sello de cera, tarjeta scrapbook con foto en blanco y negro, sonidos). Estilos en `css/carta.css`, sonidos y parallax en `js/carta.js`. Título y palabra en círculos cambian por plantilla; se pueden forzar con `?titulo=Feliz&palabra=CUMPLE`.
 
 ## WhatsApp
-Todo el sitio usa Click-to-Chat (`wa.me`) hacia el número de `WHATSAPP` en `js/config.js` (59165153083): botón flotante, enlaces de contacto y el pedido. Para cambiar el número, edita solo esa línea. Cualquier enlace nuevo: `<a data-wa="Mensaje">` y `js/wa.js` lo conecta.
+Todo el sitio usa Click-to-Chat (`wa.me`) hacia el número de `WHATSAPP` en `js/config.js` (591651.....): botón flotante, enlaces de contacto y el pedido. Para cambiar el número, edita solo esa línea. Cualquier enlace nuevo: `<a data-wa="Mensaje">` y `js/wa.js` lo conecta.
 
 ## Escenarios (v9)
 Cada plantilla en `js/config.js` tiene su paleta `K` (fondo, sobre, sello, papel, acento), título y palabra en círculos. El cliente puede sobreescribir solo el acento. Ejemplos en vivo: `r/tarjeta.html?nombre=Carla&t=amor&ej=1` (el modo ejemplo solo se desbloquea con ese contenido exacto).
 
-## Flujo simple de pedidos (v10)
+## Flujo simple de pedidos (v10, histórico: reemplazado por el buzón cifrado, ver "Flujo del negocio")
 1. El cliente personaliza, paga y te llega un mensaje CORTO por WhatsApp (sin links; si subió foto, te la manda en el chat).
 2. Abres `admin.html`, pegas el mensaje y se llena todo solo. Añades la foto si la hay y tocas "Generar link".
 3. Tocas "WhatsApp" para enviarle el link al cliente.
@@ -49,8 +82,8 @@ Todo lo nuevo vive en `js/extras.js` + `css/extras.css` (se cargan al final de `
 - **Marca de agua viral**: "Hecha con FRASSMOTTI · Crea la tuya" al pie de la tarjeta, en el texto de Compartir y en la imagen para historias. Se apaga con `WATERMARK:false` en `js/config.js`.
 - **Cápsula del tiempo**: `?abre=2026-12-24T00:00`. El sello muestra un candado y una cuenta regresiva hasta la fecha. Usa la hora del servidor (cabecera `Date`), no la del celular. Con `REQUIRE_PAYMENT:true` la fecha queda dentro de la firma y no se puede editar.
 - **Cerradura con pregunta**: antes de romper el sello hay que responder una pregunta. La respuesta NO viaja en el link: se usa como clave de cifrado (AES-GCM, ignora tildes y mayúsculas).
-- **Modo oficina**: botón "Oficina" arriba. Tapa la tarjeta con una hoja de Excel (cambia título y favicon de la pestaña y silencia el sonido). Se vuelve con la pestaña "Hoja2" o con Esc dos veces seguidas (tecla jefe). `?of=1` abre la tarjeta ya disfrazada.
-- **Agitar / Soplar**: botón "Agitar / Soplar" en la barra de la tarjeta. Agitar = lluvia de emojis según la plantilla (necesita sensor de movimiento). Soplar = velita que se apaga soplando al micrófono (solo mide volumen; no graba). Sin micrófono, se apaga tocando la llama. Los umbrales se ajustan en las constantes `BLOW` y `SHAKE` al inicio de `extras.js`.
+- **Modo discreto (antes "Oficina")**: ya no hay botón suelto en la barra; se activa desde el panel Interacciones. Tapa la tarjeta con una hoja de Excel (cambia título y favicon de la pestaña y silencia el sonido). Se vuelve con la pestaña "Hoja2" o con Esc dos veces seguidas (tecla jefe). `?of=1` abre la tarjeta ya disfrazada.
+- **Agitar / Soplar**: se activa desde el panel Interacciones. Agitar = lluvia de emojis según la plantilla (necesita sensor de movimiento). Soplar = velita que se apaga soplando al micrófono (solo mide volumen; no graba). Sin micrófono, se apaga tocando la llama. Los umbrales se ajustan en las constantes `BLOW` y `SHAKE` al inicio de `extras.js`.
 - **Pedido y panel**: `personalizar.html` tiene la sección "Extras mágicos" y el mensaje de WhatsApp trae 4 líneas nuevas (`Pregunta cerradura`, `Respuesta cerradura`, `Abre el`, `Modo oficina`). `admin.html` las lee solas al pegar el pedido.
 
 ## v12
@@ -137,3 +170,33 @@ Antes el link llevaba todo (datos y foto en Base64) y medía varios miles de car
 
 ## Corrección de despliegue
 - Un `wrangler.toml` activo con `pages_build_output_dir` hacía fallar `npx wrangler deploy` (comando de Workers) con "Missing entry-point". Se renombró a `wrangler.toml.ejemplo`. El proyecto debe ser Pages (ver INSTRUCCIONES, sección 8).
+
+## Actualización de octubre de 2026
+**Panel "Interacciones" y doble toque** (`js/acciones.js`, `js/doubletap.js`)
+- Un solo botón arriba abre el panel con: Secreto, Soplar, Agitar, Doble toque, Música, Compartir, Guardar imagen y Modo discreto. Cada opción explica qué hace; los botones originales siguen existiendo y el panel solo los activa.
+- Sonido / Mudo: se recuerda la elección (`frass_snd` en el navegador) y también silencia la canción.
+- Doble toque: al tocar dos veces la tarjeta brotan frases de felicitación por ocasión. Las frases están en `WORDS` (`js/doubletap.js`); una plantilla puede traer su propia lista en `dt` dentro de `js/config.js`.
+
+**Rendimiento de la tarjeta** (`css/carta.css`, `js/carta.js`, `r/tarjeta.html`)
+- El grano del papel ahora es un mosaico PNG diminuto; antes era un filtro SVG (`feTurbulence`) con `mix-blend-mode`, la causa principal del lag al abrir el sobre.
+- El parallax solo corre mientras la tarjeta se mueve (antes un bucle corría siempre) y en celular la inclinación es más suave y vuelve al centro al soltar el dedo.
+- Tailwind compilado (ver "Estilos"), y confeti y Typed.js cargan con `defer`.
+
+**Menú de Ocasiones: papelito con imagen** (`js/config.js`, `index.html`, `css/styles.css`)
+- Una plantilla puede tener el campo opcional `cover:'assets/archivo.webp'`. Si lo tiene, el papelito que asoma del sobre en la miniatura muestra esa imagen; sin `cover` queda el papelito de color de siempre. Solo afecta al menú de Ocasiones, no a la carta real.
+- Imagen recomendada: unos 480 px de ancho y unos 400 de alto, WebP, recortada de la parte superior del diseño (el título debe verse arriba). Regla CSS: `.mini .p.img`.
+
+**Encabezado en celulares** (`css/hero.css`)
+- Por debajo de 640 px el logo se reduce para que "Ver Ocasiones" no se corte; en pantallas muy angostas (menos de 340 px) el botón queda solo con el ícono. "Hacer la mía" y "WhatsApp" del encabezado se ocultan a propósito en celular (clase `hidden sm:inline-flex`) y también entre 640 y 899 px, porque no caben; esas acciones existen como botón principal del héroe y como botón verde flotante.
+
+**Funciones apagadas** (`TV.FUNCIONES` en `js/config.js`)
+- `redactor`, `grupo` y `voz` están en `false`. Con `grupo` apagado, `grupo.html` redirige a `index.html` (no es un error). Agrega `?dev=1` a la dirección para probar todo lo apagado.
+- Los aportes de grupo se envían por WhatsApp en texto, sin pasar por el buzón cifrado; revisa eso antes de encenderlo.
+
+## Pendientes conocidos
+1. Activar Turnstile: falta `TURNSTILE_SITEKEY` en `js/config.js` y la variable `TURNSTILE_SECRET` en Cloudflare. Ya viene programado en `js/buzon.js`.
+2. Regla de límite de peticiones para `/api/*` en Cloudflare, y bloqueo por IP en `admin.js`.
+3. Probar el menú Compartir de WhatsApp en un iPhone.
+4. Portada: Three.js, Lucide y Elfsight siguen cargando desde servidores externos y bloquean o pesan al abrir `index.html`. Pendiente alojarlos en el sitio, cargar el 3D sin bloquear y decidir qué mostrar en celulares.
+5. `js/mensaje.js` usa una expresión regular (`(?<=...)`) que no funciona en iPhones con iOS anterior a 16.4: en esos equipos el mensaje de la tarjeta puede no cargar.
+6. Revisar que el precio normal de la tarjeta virtual sea coherente con el del llavero (que ya la incluye).

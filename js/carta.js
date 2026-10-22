@@ -33,17 +33,25 @@ function playChimeSound() {
   });
 }
 const escena = document.getElementById('escena');
-let targetRotX = 0, targetRotY = 0, currentRotX = 0, currentRotY = 0;
-
+let targetRotX = 0, targetRotY = 0, currentRotX = 0, currentRotY = 0, parallaxRun = false;
+const REDUCE_MOTION = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const TOUCH_UI = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+/* v30 · antes este bucle corría SIEMPRE (60 veces por segundo, aunque nadie moviera nada) y la transición CSS de .escena se reiniciaba en cada cuadro:
+   eso mantenía ocupada la GPU del celular. Ahora el bucle solo corre mientras la tarjeta se está moviendo y se apaga solo al quedar quieta. */
+if (escena) escena.style.transition = 'none';
 function updateParallax() {
-  currentRotX += (targetRotX - currentRotX) * 0.08; currentRotY += (targetRotY - currentRotY) * 0.08;
-  escena.style.transform = `rotateX(${currentRotX}deg) rotateY(${currentRotY}deg)`;
-  requestAnimationFrame(updateParallax);
+  currentRotX += (targetRotX - currentRotX) * 0.1; currentRotY += (targetRotY - currentRotY) * 0.1;
+  if (Math.abs(targetRotX - currentRotX) < 0.05 && Math.abs(targetRotY - currentRotY) < 0.05) { currentRotX = targetRotX; currentRotY = targetRotY; parallaxRun = false; }
+  if (escena) escena.style.transform = `rotateX(${currentRotX.toFixed(2)}deg) rotateY(${currentRotY.toFixed(2)}deg)`;
+  if (parallaxRun) requestAnimationFrame(updateParallax);
 }
-requestAnimationFrame(updateParallax);
+function wakeParallax() { if (!parallaxRun && escena && !REDUCE_MOTION) { parallaxRun = true; requestAnimationFrame(updateParallax); } }
 
-window.addEventListener('mousemove', (e) => { const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((e.clientX-cx)/cx)*22; targetRotX = -((e.clientY-cy)/cy)*18; });
-window.addEventListener('touchmove', (e) => { if(e.touches.length>0){ const touch = e.touches[0]; const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((touch.clientX-cx)/cx)*25; targetRotX = -((touch.clientY-cy)/cy)*20; }});
+window.addEventListener('mousemove', (e) => { if (TOUCH_UI) return; const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((e.clientX-cx)/cx)*22; targetRotX = -((e.clientY-cy)/cy)*18; wakeParallax(); });
+/* En celular la inclinación es más suave (antes llegaba a 25°, y al deslizar para pasar de página la tarjeta se torcía) y vuelve al centro al soltar el dedo */
+window.addEventListener('touchmove', (e) => { if(e.touches.length>0){ const touch = e.touches[0]; const cx = window.innerWidth/2; const cy = window.innerHeight/2; targetRotY = ((touch.clientX-cx)/cx)*9; targetRotX = -((touch.clientY-cy)/cy)*7; wakeParallax(); }}, { passive: true });
+const _reposo = () => { targetRotX = 0; targetRotY = 0; wakeParallax(); };
+window.addEventListener('touchend', _reposo, { passive: true }); window.addEventListener('touchcancel', _reposo, { passive: true });
 
 
 /* ===== v22 · Apertura cinemática del candado =====

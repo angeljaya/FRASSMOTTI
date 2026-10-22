@@ -1,9 +1,9 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FAFAF9"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script><script src="../js/tw.js"></script><link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="../css/styles.css">
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="theme-color" content="#080a0f">
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script></head>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"></noscript><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
+<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script><link rel="stylesheet" href="../css/tailwind.css"></head>
 <body class="carta-page"><div class="bg-glow"></div>
 <header class="topbar"></header>
 <nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button></nav>
@@ -99,7 +99,8 @@ $('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av
 TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
 const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
 const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
-const boom=()=>confetti({particleCount:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
+const LOWEND=(navigator.hardwareConcurrency||4)<=4||(navigator.deviceMemory||4)<=2;   /* celulares modestos: menos piezas de confeti */
+const boom=()=>confetti({particleCount:LOWEND?60:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
 let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
 if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
@@ -117,11 +118,26 @@ const LOCK='Se activa al confirmar el pago';
 /* Descargar como imagen (formato historia 1080x1920) */
 $('img').onclick=async()=>{if(!PAID){toast(LOCK);return}try{const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,W,H);
  g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);
- const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect(90,380,900,1080,64);x.fill();
- await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,640,170,0,7);x.clip();x.fillStyle='#fff';x.fill();x.drawImage(i,370,470,340,340);x.restore();res()};i.onerror=res;i.src=$('av').src});
- x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';x.fillText('UNA TARJETITA PARA',540,900);x.fillStyle='#111827';x.font='130px "Instrument Serif",serif';x.fillText(nombre,540,1040);
- x.font='54px Outfit,sans-serif';x.fillStyle='#374151';let ln='',y=1150;for(const w of msgTxt.split(' ').slice(0,38)){if(x.measureText(ln+w).width>760){x.fillText(ln.trim(),540,y);y+=70;ln=''}ln+=w+' '}x.fillText(ln.trim(),540,y);
- x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,1700);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,1765)}
+ const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});
+ /* v30 · La tarjeta de la imagen se adapta al largo del mensaje: encabezado compacto y letra más chica si hace falta; si aun así no cabe, corta con "…". Nada se sale del cuadro ni pisa la marca. */
+ const msg=String(msgTxt).replace(/[ \t]+/g,' ').trim(),cm=msg.length>160,avR=cm?115:170,pad=cm?70:90,TW=780,MAXH=1440;
+ let nfs=cm?96:130;const NF=s=>`${s}px "Instrument Serif",serif`;x.font=NF(nfs);while(nfs>56&&x.measureText(nombre).width>TW){nfs-=6;x.font=NF(nfs)}
+ const H0=pad+avR*2+90+Math.round(nfs*1.08)+Math.round(nfs*.55)+40;   /* de la parte de arriba del cuadro hasta la 1ª línea del mensaje */
+ const wrap=fs=>{x.font=`${fs}px Outfit,sans-serif`;const L=[];for(const p of msg.split(/\n+/)){let ln='';for(const w of p.split(' ')){const t=ln?ln+' '+w:w;if(ln&&x.measureText(t).width>TW){L.push(ln);ln=w}else ln=t}if(ln)L.push(ln)}return L};
+ let fs=54,lh=Math.round(fs*1.3),L=wrap(fs);const bh=()=>H0+Math.max(L.length-1,0)*lh+80;
+ while(bh()>MAXH&&fs>32){fs-=2;lh=Math.round(fs*1.3);L=wrap(fs)}
+ if(bh()>MAXH){const mx=Math.max(1,Math.floor((MAXH-80-H0)/lh)+1);if(L.length>mx){L=L.slice(0,mx);L[mx-1]=L[mx-1].replace(/[\s.,;:!?¡¿]+$/,'')+'…'}}
+ const BH=bh(),TP=Math.round(Math.max(150,900-BH/2));
+ x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect?x.roundRect(90,TP,900,BH,64):x.rect(90,TP,900,BH);x.fill();
+ const cy=TP+pad+avR;
+ await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,cy,avR,0,7);x.clip();x.fillStyle='#fff';x.fill();
+  if(!$('av').classList.contains('color')){try{x.filter='grayscale(1) contrast(1.1)'}catch(e){}}   /* respeta blanco y negro como se ve en la tarjeta */
+  const s=Math.min(i.width,i.height)||1;x.drawImage(i,(i.width-s)/2,(i.height-s)/2,s,s,540-avR,cy-avR,avR*2,avR*2);   /* recorte cuadrado centrado: la foto ya no se deforma */
+  x.restore();res()};i.onerror=res;i.src=$('av').src});
+ x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';const ly=cy+avR+90;x.fillText('UNA TARJETITA PARA',540,ly);
+ const ny=ly+Math.round(nfs*1.08);x.fillStyle='#111827';x.font=NF(nfs);x.fillText(nombre,540,ny);
+ x.font=`${fs}px Outfit,sans-serif`;x.fillStyle='#374151';let y=TP+H0;for(const l of L){x.fillText(l,540,y);y+=lh}
+ const by=Math.max(1700,TP+BH+80);x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,by);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,by+65)}
  c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tarjetita-'+nombre+'.png';a.click()})}catch(e){toast('No se pudo generar la imagen')}};
 /* Secreto con candado */
 /* Ejemplo en vivo: se demuestra el secreto con candado (palabra de ejemplo: mariposa) */

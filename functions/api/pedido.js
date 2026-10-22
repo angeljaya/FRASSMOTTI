@@ -1,8 +1,9 @@
 // Buzón de pedidos con Cloudflare KV (namespace PEDIDOS). El servidor NUNCA puede leer el contenido: llega cifrado desde el navegador del cliente.
-//   POST /api/pedido {b:{k,i,c}, m:{oc,fmt,monto}, tok, code?, ts?} -> {code}   PÚBLICO: guarda un pedido cifrado. Con code+tok reemplaza ese pedido (botón "Cambiar algo").
+//   POST /api/pedido {b:{k,i,c}, m:{oc,fmt,monto}, tok, code?, ts?} -> {code}   PÚBLICO: guarda un pedido cifrado. Con code (lo propone el cliente) es idempotente: mismo code+tok = mismo pedido (reintentos y botón "Cambiar algo").
 //   POST /api/pedido {action:'list'|'get'|'del', pin, code?}                    SOLO ADMINISTRADOR (ADMIN_PIN): lista, descarga o borra pedidos.
 // Variables/enlaces en Cloudflare: KV PEDIDOS (obligatorio), ADMIN_PIN, KV CARDS (opcional: comparte el bloqueo de PIN), TURNSTILE_SECRET (opcional: anti-bots).
-const TTL=30*86400,MAX_BODY=900000,MAX_FAILS=5,LOCK_SECS=900,IP_MAX=10;
+const TTL=30*86400,MAX_BODY=900000,MAX_FAILS=5,LOCK_SECS=900,IP_MAX=40;   /* v2: IP_MAX era 10. Las operadoras de Bolivia comparten UNA misma IP entre muchísimos celulares, así que 10 por hora dejaba fuera a clientes reales */
+const log=(...a)=>{try{console.log('[pedido]',...a)}catch(e){}};   /* se ve en Cloudflare > tu proyecto > Functions > Real-time logs */
 const J=(o,s=200,h={})=>new Response(JSON.stringify(o),{status:s,headers:{'Content-Type':'application/json','Cache-Control':'no-store',...h}});
 const same=(a,b)=>{const x=new TextEncoder().encode(String(a)),y=new TextEncoder().encode(String(b));let d=x.length^y.length;for(let i=0;i<Math.max(x.length,y.length);i++)d|=(x[i]||0)^(y[i]||0);return d===0};
 const sha=async s=>[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s)))].map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -35,7 +36,7 @@ async function admin(env,request,b){
 export async function onRequestPost({request,env}){
  if(!env.PEDIDOS)return J({error:'Falta el KV: crea el namespace y enlázalo con el nombre PEDIDOS'},500);
  const raw=await request.text();
- if(raw.length>MAX_BODY)return J({error:'El pedido es demasiado grande (reduce la foto).'},413);
+ if(raw.length>MAX_BODY){log('rechazado 413',raw.length);return J({error:'El pedido es demasiado grande (reduce la foto).'},413)}
  let b;try{b=JSON.parse(raw)}catch(e){return J({error:'Datos inválidos'},400)}
  if(!b||typeof b!=='object')return J({error:'Datos inválidos'},400);
  if(b.action)return admin(env,request,b);
@@ -48,22 +49,21 @@ export async function onRequestPost({request,env}){
  if(env.TURNSTILE_SECRET){
   let ok=false;try{const f=new URLSearchParams({secret:env.TURNSTILE_SECRET,response:str(b.ts,2048),remoteip:ip(request)});
    const r=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{method:'POST',body:f});ok=!!(await r.json()).success}catch(x){}
-  if(!ok)return J({error:'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.'},403)}
+  if(!ok){log('rechazado 403 turnstile');return J({error:'No pudimos verificar que eres una persona. Recarga la página e inténtalo de nuevo.'},403)}}
  const ik='ip:'+ip(request)+':'+Math.floor(Date.now()/3600000);let c=0;
  try{c=parseInt(await env.PEDIDOS.get(ik)||'0',10)||0}catch(x){}
- if(c>=IP_MAX)return J({error:'Demasiados pedidos desde esta conexión. Inténtalo más tarde o escríbenos por WhatsApp.'},429);
+ if(c>=IP_MAX){log('rechazado 429 ip',ip(request),c);return J({error:'Demasiados pedidos desde esta conexión. Inténtalo más tarde o escríbenos por WhatsApp.'},429)}
  try{await env.PEDIDOS.put(ik,String(c+1),{expirationTtl:3700})}catch(x){}
 
  const th=await sha(b.tok),m=b.m||{},now=Date.now();
  const meta={t:now,oc:str(m.oc,40),fmt:str(m.fmt,30),monto:str(m.monto,8)};
  let code=typeof b.code==='string'?b.code.toUpperCase():'';
- if(code){   /* reemplazo ("Cambiar algo"): solo quien tiene el token del primer envío */
+ if(code){   /* el cliente propone su código (así un reintento por mala señal NO duplica el pedido): si está libre se crea; si existe, solo se reemplaza con el mismo token */
   if(!CODE.test(code))return J({error:'Código inválido'},400);
   const old=await env.PEDIDOS.get('p:'+code);
-  if(!old)return J({error:'No existe o ya caducó'},404);
-  let d={};try{d=JSON.parse(old)}catch(x){}
-  if(!d.th||!same(d.th,th))return J({error:'No tienes permiso para cambiar este pedido'},403);
-  meta.t=d.t||now}
+  if(old){let d={};try{d=JSON.parse(old)}catch(x){}
+   if(!d.th||!same(d.th,th)){log('rechazado 409 código en uso',code);return J({error:'Código en uso'},409)}
+   meta.t=d.t||now}}
  else{for(let i=0;i<6;i++){const k=newCode();if(!(await env.PEDIDOS.get('p:'+k))){code=k;break}}
   if(!code)return J({error:'No se pudo generar un código libre'},500)}
  await env.PEDIDOS.put('p:'+code,JSON.stringify({b:{k:e.k,i:e.i,c:e.c},th,t:meta.t}),{expirationTtl:TTL,metadata:meta});
