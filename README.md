@@ -138,3 +138,4 @@ Antes el link llevaba todo (datos y foto en Base64) y medía varios miles de car
 
 ## Corrección de despliegue
 - Un `wrangler.toml` activo con `pages_build_output_dir` hacía fallar `npx wrangler deploy` (comando de Workers) con "Missing entry-point". Se renombró a `wrangler.toml.ejemplo`. El proyecto debe ser Pages (ver INSTRUCCIONES, sección 8).
+- ACTUALIZACION DE PEDIDOS
