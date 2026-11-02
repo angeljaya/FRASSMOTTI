@@ -108,7 +108,7 @@ const FX={
     const k=Math.max(0,Math.min((now-t0)/1600,1)),e=1+2.4*Math.pow(k-1,3)+1.4*Math.pow(k-1,2);
     card.position.y=(1-e)*5.2+Math.sin(t*1.1)*.12*k;card.rotation.z=(1-e)*.5;
     card.rotation.y=tx*1.1+Math.sin(t*.6)*.18;card.rotation.x=ty*.7+Math.cos(t*.5)*.06;pl.position.x=-3+tx*6;brillo.position.set(1.8-tx*3.2,2.8-ty*2.2,4.6);
-    if(bg.visible){if(bgM.opacity<1)bgM.opacity=Math.min(1,bgM.opacity+dt*1.4);vigM.opacity=bgM.opacity;bg.position.x=-tx*.5;bg.position.y=ty*.3;lados[0].intensity=2.2+Math.sin(t*.7)*.28;lados[1].intensity=2.2+Math.sin(t*.7+2.1)*.28}
+    if(bg.visible){const tg=document.documentElement.dataset.theme==='light'?0:1,df=tg-bgM.opacity;bgM.opacity+=Math.sign(df)*Math.min(Math.abs(df),dt*1.4);vigM.opacity=bgM.opacity;bg.position.x=-tx*.5;bg.position.y=ty*.3;lados[0].intensity=2.2+Math.sin(t*.7)*.28;lados[1].intensity=2.2+Math.sin(t*.7+2.1)*.28}
     const m=1+5*(1-k);P.forEach((p,i)=>{p.y-=p.s*dt*m;if(p.y<-3.5)p.y=3.5;d.position.set(p.x,p.y,p.z);d.rotation.set(t*p.v+p.r,t*p.v*.7,p.r);d.updateMatrix();im.setMatrixAt(i,d.matrix)});im.instanceMatrix.needsUpdate=true;r.render(sc,cam)})(last);
    return true}catch(e){return false}}
 };

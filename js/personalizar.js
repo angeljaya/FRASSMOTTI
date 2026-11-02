@@ -69,6 +69,7 @@ function render(){
  document.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.t===S.tam));
  $('gen').querySelectorAll('[data-g]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.g===S.g));
  $('genErr').textContent='';
+ $('vn').disabled=!v('deParte',24);   /* sin «De parte de» no hay nombre que mostrar */
  $('frase').placeholder=HOLD[S.tam];
 }
 document.querySelector('main').addEventListener('input',()=>{render();draft()});
@@ -132,7 +133,7 @@ function pedidoTexto(){const n=v('nombre',24),msg=mensaje(),r=FOTO.st.img?FOTO.r
   `Para: ${n}`,`De parte de: ${v('deParte',24)||'-'}`,`Título: ${titulo()}`,`Palabra: ${palabra()}`,`Frase: "${msg.replace(/\s+/g,' ').slice(0,70)}"`,`Mensaje (${TM.count(msg)} palabras): "${msg.replace(/\n+/g,' ¶ ')}"`,
   `Color: ${S.col||'según plantilla'}`,`Tipografía: ${S.fu}`,`Inicial del sello: ${sello()}`,
   `Mensaje secreto: "${secMsg()||'-'}"`,`Pregunta del secreto: "${pregS()||'-'}"`,`Palabra clave: "${clave()||'(sin candado)'}"`,`Pista: "${pistas()[0]||'-'}"`,`Pista 2: "${pistas()[1]||'-'}"`,`Pista 3: "${pistas()[2]||'-'}"`,
-  `Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,
+  `Abre el: ${abre()||'-'}`,`Modo oficina: ${on('ofi')?'sí':'no'}`,`Mostrar mi nombre en el sobre: ${on('vn')&&v('deParte',24)?'sí':'no'}`,
   `Foto: ${S.photo?'La envío por este chat (recortada)':'Sin foto'}`,...(S.photo?[`Encuadre foto: ${enc}`]:[]),'---------------------',
   `Mi WhatsApp: ${v('tel',20)||'-'}`,`Monto: ${TV.precio((document.getElementById('formato')||{}).value||'digital')||TV.PRECIO} Bs por Yape`,'Adjunto mi comprobante de pago.',...(window.extraLines?extraLines():[])].join('\n')}
 
@@ -152,7 +153,7 @@ $('send').onclick=async()=>{if(window.sinComprobante&&sinComprobante())return;
 window.fotoParaEnviar=async()=>{if(!FOTO.st.img)return null;const u=FOTO.render(asp(),900),b=await (await fetch(u)).blob();return new File([b],'foto-recortada.jpg',{type:'image/jpeg'})};
 
 /* ---------- Borrador automático (localStorage) ---------- */
-const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','secPreg','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn'];
+const FIELDS=['ocasion','nombre','deParte','frase','secreto','clave','pista','pista2','pista3','secPreg','tel','abre','titulo','palabra','sello'],TOGS=['ofi','secOn','capOn','vn'];
 const PRIV=['secreto','clave','pista','pista2','pista3','secPreg'];   /* v28: lo íntimo nunca se guarda en el celular */
 function draft(){try{localStorage.setItem('tv_draft',JSON.stringify({...Object.fromEntries(FIELDS.filter(f=>!PRIV.includes(f)).map(f=>[f,$(f).value])),col:S.col,g:S.g||'',dis:S.dis,tam:S.tam,fu:S.fu,bw:S.bw,tog:Object.fromEntries(TOGS.map(t=>[t,on(t)]))}))}catch(e){}}
 try{const d=JSON.parse(localStorage.getItem('tv_draft')||'{}');
@@ -200,6 +201,8 @@ const PVX=(function(){
    {id:'blow',ic:'wind',t:'Soplar',d:'Sopla al micrófono y apaga la velita',run:()=>toast('Quien recibe sopla al micrófono y la velita se apaga 🕯️')},
    {id:'shake',ic:'phone',t:'Agitar',d:'Sacude el celular y llueven emojis',run:()=>{wob();demo();toast('Así se ve al agitar 📱')}},
    {id:'tap',ic:'pointer',t:'Doble toque',d:'Toca 2 veces la tarjeta y brotan deseos',run:demo},
+   {id:'ras',ic:'pointer',t:'Raspar la foto',d:'La foto se tapa con plata y se descubre raspando con el dedo',run:()=>toast('Quien recibe puede tapar la foto con plata y rasparla con el dedo ✨')},
+   {id:'uv',ic:'sparkles',t:'Tinta invisible',d:'El mensaje se oculta y solo se lee pasando una linterna UV',run:()=>toast('Quien recibe puede ocultar el mensaje y leerlo con una linterna UV 🔦')},
    {id:'mus',ic:'music',t:'Música',d:'Pon o pausa la canción de la tarjeta',hidden:!TV.MUSIC,run:()=>toast('La música suena al abrir la tarjeta 🎵')},
    {id:'sh',ic:'share',t:'Compartir',d:'Envíala por WhatsApp o copia el link',run:()=>toast('Compartir se activa al confirmar el pago')},
    {id:'img',ic:'download',t:'Guardar imagen',d:'Descárgala para subirla a tus historias',run:()=>toast('Guardar imagen se activa al confirmar el pago')}]}):null;

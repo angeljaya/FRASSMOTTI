@@ -38,7 +38,7 @@ input[type=range].zoom{width:100%}
 <div><label class="label" for="preg">Pregunta del secreto (la respuesta es la palabra clave)</label><input id="preg" class="input" maxlength="100"></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista 1</label><input id="pista" class="input" maxlength="60"></div></div>
 <div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="pista2">Pista 2 (opcional)</label><input id="pista2" class="input" maxlength="60"></div><div><label class="label" for="pista3">Pista 3 (opcional)</label><input id="pista3" class="input" maxlength="60"></div></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label></div>
+<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label><label class="flex items-center gap-3 text-sm"><input id="ras" type="checkbox" class="w-5 h-5"><span>Raspar para descubrir la foto</span></label><label class="flex items-center gap-3 text-sm"><input id="uv" type="checkbox" class="w-5 h-5"><span>Tinta invisible: el mensaje se lee con una linterna UV</span></label><label class="flex items-center gap-3 text-sm"><input id="vn" type="checkbox" class="w-5 h-5"><span>Mostrar el nombre de quien envía en el sobre <span class="text-gray-500">(vn=1; usa «De parte de»)</span></span></label></div>
 <div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="gen">Para</label><select id="gen" class="input"><option value="m">Mujer</option><option value="h">Hombre</option></select></div><div><label class="label" for="tam">Tamaño</label><select id="tam" class="input"><option value="1">1 · Postal</option><option value="2">2 · Deslizante</option><option value="3">3 · Tipo libro</option></select></div><div><label class="label" for="fu">Tipografía</label><select id="fu" class="input"></select></div></div>
 <div><label class="label" for="dis">Diseño (flores y marco)</label><select id="dis" class="input"></select></div>
 <div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="titulo">Título</label><input id="titulo" class="input" maxlength="14"></div><div><label class="label" for="palabra">Palabra en círculos</label><input id="palabra" class="input" maxlength="9"></div><div><label class="label" for="sello">Inicial del sello</label><input id="sello" class="input" maxlength="1"></div></div>
@@ -102,7 +102,7 @@ $('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre')
 /* v11: cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
 async function extras(p,pl){const ab=v('abre');
  if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(ab))p.set('abre',ab);
- if($('ofi').checked)p.set('of','1');return ''}
+ if($('ofi').checked)p.set('of','1');if($('ras').checked)p.set('ras','1');if($('uv').checked)p.set('uv','1');return ''}
 $('cp').onclick=()=>{navigator.clipboard.writeText($('out').value);$('cp').textContent='Copiado'};
 $('wa').onclick=()=>{let n=v('cli').replace(/\D/g,'');if(n.length<=8)n='591'+n;open('https://wa.me/'+n+'?text='+encodeURIComponent('Tu tarjeta FRASSMOTTI está lista. Ábrela y compártela:\n'+$('out').value),'_blank')};
 </script><script>
@@ -130,6 +130,7 @@ $('order').addEventListener('input',()=>{const t=v('order');
  $('pista2').value=get(t,'Pista 2');$('pista3').value=get(t,'Pista 3');
  $('titulo').value=get(t,'Título');$('palabra').value=get(t,'Palabra');$('sello').value=get(t,'Inicial del sello').slice(0,1);
  $('mensaje').value=msg;
+ $('vn').checked=/^s[ií]/i.test(get(t,'Mostrar mi nombre en el sobre'));
  if(col&&Object.keys(TV.COLORS).includes(col))$('color').value=col;
  const enc=get(t,'Encuadre foto');$('fo').value=/modo=color/.test(enc)?'c':'';});
 /* v22 · Foto con recorte (módulo js/foto.js, el mismo de personalizar.html): mover, zoom, blanco y negro / color.
@@ -161,6 +162,7 @@ if(typeof FOTO!=='undefined'){
 }
 /* parámetros del link y payload */
 const _n=nuevas;nuevas=async(p,pl,T)=>{await _n(p,pl,T);
+ if($('vn').checked&&clean(v('de'),24).trim())p.set('vn','1');
  p.set('g',v('gen'));p.set('d',v('dis'));p.set('tam',v('tam'));p.set('fu',v('fu'));
  const ti=clean(v('titulo'),14).trim(),pa=clean(v('palabra'),9).trim(),se=clean(v('sello'),1).trim(),fo=v('fo');
  if(ti)p.set('titulo',ti);if(pa)p.set('palabra',pa);if(se)p.set('sello',se);if(fo)p.set('fo',fo);

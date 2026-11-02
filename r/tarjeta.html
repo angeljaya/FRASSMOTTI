@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FAFAF9"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/styles.css">
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="theme-color" content="#080a0f">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="description" content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."><meta property="og:site_name" content="FRASSMOTTI"><meta property="og:locale" content="es_BO"><meta property="og:type" content="website"><meta property="og:title" content="💌 Tienes una tarjeta para abrir"><meta property="og:description" content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."><meta property="og:image" content="https://frassmotti.com/assets/og-tarjeta.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Un sobre con sello de cera: tienes una tarjeta para abrir"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#080a0f">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"></noscript><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
 <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script><link rel="stylesheet" href="../css/tailwind.css"></head>
 <body class="carta-page"><div class="bg-glow"></div>
@@ -62,7 +62,7 @@
           </div>
         </div>
 </div></div>
-<p class="hint-text" id="hint"><i data-lucide="hand"></i> Rompe el sello</p></div></div>
+<p class="hint-text" id="hint"><small id="envNota" hidden></small><i data-lucide="hand"></i> Rompe el sello</p></div></div>
 <div id="mS" class="modal" role="dialog" aria-modal="true"><div id="sC" class="card p-7 w-full max-w-sm text-center relative"><button class="absolute top-4 right-4 text-gray-500" id="x" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
 <div class="candado-zona mt-2"><div class="candado" id="candado" role="img" aria-label="Mensaje secreto bloqueado"><div class="candado-grillete"></div><div class="candado-cuerpo"><span class="candado-ojo"></span></div></div><div id="sO" class="candado-msg"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div>
 <div id="sL"><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sQ" class="serif text-2xl mt-3 break-words" style="color:#0f172a" hidden></p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
@@ -91,6 +91,15 @@ const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.ge
 document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href=TV.BRAND_URL||'../index.html?ref=tarjeta';
 const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
 $('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
+/* v31 · Nota de confianza bajo "Rompe el sello": centrada y sin nombre. El nombre de quien envía solo se muestra si el creador lo pide (parámetro vn=1); así se respeta el anonimato. */
+{const n=$('envNota'),h=$('hint');if(n&&h){n.textContent='';
+ if(q.get('ej')==='1')n.textContent='Esto es un ejemplo de cómo se ve una tarjeta Frassmotti. Al abrirla, toca «Interacciones» para probar las sorpresas.';
+ else{if(q.get('vn')==='1'&&de){n.append('Esta tarjeta te la envió ');const b=document.createElement('b');b.textContent=de;n.append(b,'. ')}
+  n.append('Solo muestra un mensaje: no pide datos ni instala nada.')}
+ h.style.cssText+=';flex-wrap:wrap;justify-content:center;width:min(90vw,320px);text-align:center;row-gap:8px';
+ n.style.cssText='display:block;order:2;flex:0 0 100%;margin:0;padding:8px 14px;border-radius:14px;background:rgba(8,10,16,.55);border:1px solid rgba(242,214,117,.28);font:400 12.5px/1.45 Outfit,sans-serif;letter-spacing:0;text-transform:none;color:#f4ecd0;text-shadow:none;white-space:normal;text-align:center';n.hidden=false}}
+/* v31 · En el ejemplo en vivo: botón para volver al inicio (antes solo se salía con el botón atrás del celular) */
+if(q.get('ej')==='1')document.addEventListener('DOMContentLoaded',()=>{const tb=document.querySelector('.topbar');if(!tb)return;const a=document.createElement('a');a.href='/';a.className='pill';a.setAttribute('aria-label','Volver al inicio');a.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Inicio</span>';tb.prepend(a)});
 for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
 [...pal].forEach((ch,i)=>{const d=document.createElement('div');d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.transform=`translateY(${i%2?8:0}px) rotate(${(Math.random()*20-10).toFixed(1)}deg)`;$('letrasCumple').append(d)});
 document.querySelectorAll('.circle-letter').forEach(d=>{const z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));d.style.width=d.style.height=z+'px';d.style.fontSize=Math.round(z*.57)+'px'});
@@ -98,6 +107,8 @@ const hasPhoto=PL.p&&PL.p.startsWith('data:image/');
 $('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:TV.avatar(+q.get('avatar')||1,nombre);$('av').classList.toggle('color',!hasPhoto||q.get('fo')==='c');
 TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
 const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
+/* v32 · Vibración suave (solo Android; en iPhone no existe y no pasa nada). Se omite si el celular pide reducir movimiento. */
+const vib=p=>{try{if(navigator.vibrate&&!(typeof REDUCE_MOTION!=='undefined'&&REDUCE_MOTION))navigator.vibrate(p)}catch(e){}};
 const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
 const LOWEND=(navigator.hardwareConcurrency||4)<=4||(navigator.deviceMemory||4)<=2;   /* celulares modestos: menos piezas de confeti */
 const boom=()=>confetti({particleCount:LOWEND?60:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
@@ -105,10 +116,10 @@ let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typed
 if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
 document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
 /* Sello, sobre y carta (animaciones y sonidos del diseño original) */
-function abrirCarta(){if(estado==='abierto')return;estado='abierto';playWaxCrackSound();setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
- setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.DT&&DT.hint('Toca dos veces la tarjeta ✨');window.__mus&&window.__mus.play().catch(()=>{})},1000);navigator.vibrate&&navigator.vibrate([30,40,30])}
+function abrirCarta(){if(estado==='abierto')return;estado='abierto';{const n=$('envNota');if(n)n.style.display='none'}playWaxCrackSound();vib([20,30,40]);setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
+ setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.DT&&DT.hint('Toca dos veces la tarjeta ✨');window.__mus&&window.__mus.play().catch(()=>{})},1000);vib([30,40,30])}
 function cerrarCarta(e){if(e)e.stopPropagation();if(estado==='cerrado')return;estado='cerrado';escena.classList.remove('abierto');$('dock').classList.remove('show');playPaperSlideSound()}
-$('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom()};
+$('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom();vib([20,30,20])};
 /* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
 const DEMO=q.get('ej')==='1'&&nombre==='Carla'&&!location.hash;let PAID=!TV.REQUIRE_PAYMENT||DEMO||!!window.__CARD;   /* DEMO: solo el ejemplo exacto de la tienda */
 (async()=>{if(PAID)return;try{const u=new URL(location.href),sig=u.searchParams.get('sig');if(!sig)throw 0;u.searchParams.delete('sig');
@@ -162,15 +173,15 @@ $('candado').onclick=()=>{if(!$('candado').classList.contains('candado-abierto')
    reveal(m) = mensaje/voz que no pide clave: se muestra directo, como antes. */
 const reveal=(m,conCandado)=>{const L=$('sL');$('sM').textContent=m;
  const fin=()=>{if(!$('mS').classList.contains('open'))return;boom();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
- if(conCandado){L.style.transition='opacity .35s ease';L.style.opacity='0';L.style.pointerEvents='none';setTimeout(()=>L.classList.add('hidden'),380);abrirCandado('#candado');setTimeout(fin,850)}
- else{L.classList.add('hidden');abrirInstantaneo();TVS.chime();fin()}};
+ if(conCandado){L.style.transition='opacity .35s ease';L.style.opacity='0';L.style.pointerEvents='none';setTimeout(()=>L.classList.add('hidden'),380);abrirCandado('#candado');vib(40);setTimeout(()=>vib([30,40,30,40,140]),850);setTimeout(fin,850)}
+ else{L.classList.add('hidden');abrirInstantaneo();TVS.chime();vib([30,40,30]);fin()}};
 $('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';resetCandado();$('mS').classList.add('open');
  if(PL.m||(!PL.s&&PL.a)){reveal(PL.m?clean(PL.m,240):'Escucha este mensaje de voz.');return}$('sL').classList.remove('hidden');hs=1;paintH();setTimeout(()=>$('sG').focus(),150)};
 let busy=false;
 async function guess(){if(busy)return;const g=$('sG').value;if(!g.trim())return;busy=true;$('sT').disabled=true;let m=null;try{m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g)}catch(e){m=null}busy=false;if(m!==null){reveal(m,true);return}
- tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');$('sT').disabled=false;sacudirCandado('#candado');$('sG').value='';$('sG').focus()}
+ tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');$('sT').disabled=false;sacudirCandado('#candado');vib([70,50,70]);$('sG').value='';$('sG').focus()}
 $('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
 $('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
 window.DT&&DT.attach($('escena'),{enabled:()=>estado==='abierto',phrases:()=>DT.phrases(T,{nombre,pal})});
 lucide.createIcons();</script>
-<script src="../js/extras.js"></script><script src="../js/acciones.js"></script><script src="../js/nuevas.js"></script></body></html>
+<script src="../js/extras.js"></script><script src="../js/acciones.js"></script><script src="../js/raspar.js"></script><script src="../js/uv.js"></script><script src="../js/nuevas.js"></script></body></html>

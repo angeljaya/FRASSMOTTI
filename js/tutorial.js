@@ -104,7 +104,7 @@ const PASOS=[
  {k:'Paso 1 · Empieza por la persona',t:'Piensa en su cara cuando lo abra',feel:'Ese instante ya es tuyo.',
   p:()=>'Antes de tocar nada, cierra los ojos un segundo e imagina su sonrisa. Esa imagen es tu brújula. Elige el momento que mejor la represente: un cumpleaños, un "te quiero" que llevas tiempo guardando, un gracias que nunca encontró su día. No existe una opción equivocada; lo único que importa es que salga de ti.',
   tip:()=>'No necesitas escribir bonito ni entender de tecnología. Nosotros ponemos la magia; tú pones el corazón.'},
- {k:'Paso 2 · Hazla tuya',t:'Ponle tu voz',feel:'Las palabras sencillas son las que más se recuerdan.',
+ {k:'Paso 2 · Hazla tuya',t:'Ponle tus palabras',feel:'Las palabras sencillas son las que más se recuerdan.',
   p:()=>'Escribe su nombre, una frase que suene a ti y, si quieres, sube una foto que les saque una sonrisa a los dos. ¿Te late un toque de misterio? Esconde un mensaje con candado que solo abre quien adivine la clave, o programa una cápsula del tiempo para que se abra justo en su día. Mientras escribes, ves tu tarjeta cobrar vida, así que nada te sorprende después.',
   tip:()=>'Si te bloqueas, imagina que se lo dices en voz baja, mirándole a los ojos. Escríbelo tal cual.'},
  {k:'Paso 3 · Elige cómo llega',t:'Un link emociona. Lo que se toca, se queda.',feel:()=>emo(A().id).corto,
@@ -138,7 +138,7 @@ const slide=(s,i)=>{const eta=s.eta?val(s.eta):'',note=s.note?val(s.note):'';
   <div class="tut-body"><p class="tut-k">${e(s.k)}</p><h3 class="tut-t">${e(val(s.t))}</h3><p class="tut-feel">${e(val(s.feel))}</p><p class="tut-p">${e(val(s.p))}</p>
   ${note?`<p class="tut-note">${e(note)}</p>`:''}${eta?`<p class="tut-eta">${e(eta)}</p>`:''}
   ${s.tip?`<div class="tut-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.6-9.2-9.1C1.4 8.8 3 5.5 6.2 5.5c2 0 3.2 1.1 3.8 2.2.6-1.1 1.8-2.2 3.8-2.2 3.2 0 4.8 3.3 3.4 6.4C19 16.4 12 21 12 21z" fill="currentColor"/></svg><p><b>Un consejo de corazón:</b> ${e(val(s.tip))}</p></div>`:''}
-  ${s.cta?`<div class="tut-cta"><a href="#productos" class="btn btn-accent">Crear mi tarjetita</a><a class="btn btn-ghost" data-tut-wa target="_blank" rel="noopener">Tengo una duda</a></div>`:''}</div></article>`};
+  ${s.cta?`<div class="tut-cta"><a href="#productos" class="btn btn-accent">CREAR</a><a class="btn btn-ghost" data-tut-wa target="_blank" rel="noopener">Tengo una duda</a></div>`:''}</div></article>`};
 
 function build(){
  const picker=FIS.length?`<div class="tut-pick" role="group" aria-label="Elige tu accesorio"><span class="tut-pl">Tu accesorio:</span>${FIS.map((f,i)=>`<button type="button" class="tut-chip" data-a="${i}" aria-pressed="${i===sel}">${e(f.name)}</button>`).join('')}</div>`:'';

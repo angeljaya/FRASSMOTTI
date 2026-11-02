@@ -49,7 +49,7 @@ body{font-family:'Outfit',system-ui,sans-serif;background:#FAFAF9;color:#111827;
 .shake{animation:shake .45s ease-in-out}
 @keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-8px)}80%{transform:translateX(8px)}}
 .file-btn{display:flex;align-items:center;gap:.6rem;padding:.85rem 1rem;border:1.5px dashed #d6d3d1;border-radius:16px;background:#fff;cursor:pointer;transition:border-color .2s}
-.file-btn:hover{border-color:#FF4D5A}
+.file-btn:hover{border-color:#e90f1d}
 /* ===== v4 ===== */
 .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#111827;color:#fff;padding:.75rem 1.2rem;border-radius:999px;font-size:.875rem;z-index:80;transition:all .35s cubic-bezier(.2,.8,.2,1)}
 .toast.show{opacity:1;transform:translate(-50%,0)}

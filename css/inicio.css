@@ -1,0 +1,21 @@
+/* Barra de navegación inferior (solo celulares y tabletas, menos de 1024 px) · la crea js/inicio.js
+   En computador no existe: se queda tu encabezado y tus botones flotantes de siempre. */
+.bnav{display:none}
+@media(max-width:1023px){
+ .bnav{display:block;position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(calc(100% - 24px),520px);z-index:50;border-radius:20px;background:rgba(12,15,22,.96);border:1px solid rgba(255,255,255,.14);box-shadow:0 12px 32px rgba(0,0,0,.55)}
+ .bnav ul{display:flex;list-style:none;margin:0;padding:4px;height:64px;gap:2px}
+ .bnav li{flex:1;min-width:0}
+ .bnav-i{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:none;border:0;border-radius:16px;color:#aab1c0;font:500 11px/1 Outfit,sans-serif;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color .2s,background .2s}
+ .bnav-i svg{width:22px;height:22px;flex:none}
+ .bnav-i span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+ .bnav-i:active,.bnav-i[aria-current]{color:#f2d675}
+ .bnav-i[aria-current]{background:rgba(212,175,55,.12)}
+ .bnav-i:focus-visible{outline:2px solid #f2d675;outline-offset:-2px}
+ /* la barra reemplaza a los botones sueltos del celular y al encabezado de botones */
+ .wa-fab,.help-fab{display:none}
+ .hero-header .btn{display:none}
+ /* espacio al final de la página para que la barra no tape el pie */
+ body{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+ /* mientras hay un panel abierto (Ocasiones o Cómo funciona) la barra se esconde */
+ body.panel-open .bnav{display:none}
+}

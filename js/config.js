@@ -24,8 +24,9 @@ const TV={
   STYLES:['lorelei','micah','notionists'],
   avatar(n,seed){return `https://api.dicebear.com/7.x/${this.STYLES[(n-1)%3]||'lorelei'}/svg?seed=${encodeURIComponent(seed||'Amigo')}&backgroundColor=transparent`},
   wa(m){return 'https://wa.me/'+this.WHATSAPP+'?text='+encodeURIComponent(m||'')},   // Click-to-Chat de WhatsApp
-  find(id){return this.TODAS.find(t=>t.id===id)||this.T[0]},          // cualquier plantilla (tarjeta y admin)
-  pick(id){return this.T.find(t=>t.id===id)||this.T[0]},              // solo activas (tienda y personalizar)
+  ALIAS:{gracias:'amistad'},   // ids viejos que siguen abriendo (tarjetas ya enviadas)
+  find(id){id=this.ALIAS[id]||id;return this.TODAS.find(t=>t.id===id)||this.T[0]},          // cualquier plantilla (tarjeta y admin)
+  pick(id){id=this.ALIAS[id]||id;return this.T.find(t=>t.id===id)||this.T[0]},              // solo activas (tienda y personalizar)
   on(f){return !!(this.FUNCIONES[f]||DEV)},                          // ¿función encendida?
   asset(p){return (/\/r\/[^\/]*$/.test(location.pathname)?'../':'')+p},  // ruta de imágenes desde cualquier página
   /* Aplica la paleta del escenario (y un acento opcional elegido por el cliente) */
@@ -34,15 +35,15 @@ const TV={
   letters(el,pal){el.innerHTML='';[...pal].forEach((ch,i)=>{const d=document.createElement('div'),z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));
    d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.cssText=`width:${z}px;height:${z}px;font-size:${Math.round(z*.57)}px;transform:translateY(${i%2?8:0}px) rotate(${(i*37)%20-10}deg)`;el.append(d)})},
   TODAS:[
-   {id:'cumple-divertido',cover:'assets/cumple-mini.webp',name:'Cumple Divertido',tag:'Más vendido',d:'Para celebrar con humor y mucha fiesta.',ti:'Feliz',pa:'CUMPLE',frase:'Para la más loca del grupo',
+   {id:'cumple-divertido',cover:'assets/cumple-mini.webp',name:'CUMPLEAÑOS',tag:'Más vendido',d:'Para celebrar con humor y mucha fiesta.',ti:'Feliz',pa:'CUMPLE',frase:'Para la más loca del grupo',
     K:{b1:'#2a1530',b2:'#0b0610',e1:'#3a1d44',e2:'#241028',wl:'#e0245e',wd:'#7a0f33',g:'#d4af37',paper:'#fbf3e6',ac:'#d81b60'}},
-   {id:'amor',cover:'assets/amor-mini.webp',name:'Te Quiero',tag:'Romántica',d:'Una declaración que se abre con sello de cera.',ti:'Te',pa:'QUIERO',frase:'Eres mi lugar favorito',
+   {id:'amor',cover:'assets/amor-mini.webp',name:'DEDICATORIA',tag:'Romántica',d:'Una declaración que se abre con sello de cera.',ti:'Te',pa:'QUIERO',frase:'Eres mi lugar favorito',
     K:{b1:'#3a1220',b2:'#10060a',e1:'#4a1a2a',e2:'#2c0f19',wl:'#e63950',wd:'#7d0a22',g:'#f0b4be',paper:'#fff1f2',ac:'#c9184a'}},
-   {id:'amistad',cover:'assets/amistad-mini.webp',name:'Para mi amigo/a',tag:'Amistad',d:'Para recordarle a esa persona lo importante que es.',ti:'Gracias',pa:'POR TU AMISTAD',frase:'Gracias por estar siempre',
+   {id:'amistad',cover:'assets/amistad-mini.webp',name:'AMISTAD',tag:'Amistad',d:'Para recordarle a esa persona lo importante que es.',ti:'Gracias',pa:'POR TU AMISTAD',frase:'Gracias por estar siempre',
     K:{b1:'#12332a',b2:'#050f0b',e1:'#1b4d3e',e2:'#0f2c24',wl:'#2fa36b',wd:'#0d4a2f',g:'#d4af37',paper:'#f3f7ee',ac:'#1b7a4b'}},
-   {id:'aniversario',cover:'assets/aniversario-mini.webp',name:'Aniversario',tag:'Elegante',d:'Un recuerdo para celebrar el tiempo juntos.',ti:'Juntos',pa:'SIEMPRE',frase:'Contigo todo gira mejor',
+   {id:'aniversario',cover:'assets/aniversario-mini.webp',name:'ANIVERSARIO',tag:'Elegante',d:'Un recuerdo para celebrar el tiempo juntos.',ti:'Juntos',pa:'SIEMPRE',frase:'Contigo todo gira mejor',
     K:{b1:'#16204a',b2:'#070a18',e1:'#233063',e2:'#141c3d',wl:'#5668d8',wd:'#1c2a7a',g:'#cfd6e6',paper:'#f4f5fb',ac:'#3949ab'}},
-   {id:'mama',cover:'assets/mama-mini.webp',name:'Para Mamá',tag:'Con cariño',d:'El detalle más tierno para ella.',ti:'Para',pa:'MAMÁ',frase:'Gracias por ser mi hogar',
+   {id:'mama',cover:'assets/mama-mini.webp',name:'PARA MAMÁ',tag:'Con cariño',d:'El detalle más tierno para ella.',ti:'Para',pa:'MAMÁ',frase:'Gracias por ser mi hogar',
     K:{b1:'#3a1f4d',b2:'#0e0614',e1:'#4b2a63',e2:'#2d1840',wl:'#b04ad1',wd:'#5a1478',g:'#e8c15a',paper:'#fbf2fc',ac:'#8e24aa'}}
   ]
 };
@@ -53,9 +54,7 @@ TV.FUNCIONES={redactor:false,grupo:false,voz:false};
 /* v27 · Productos que se pueden pedir. pronto:true = se muestra "Muy pronto" y no se puede elegir. */
 TV.PRODUCTOS=[
  {id:'digital',name:'Tarjeta virtual (solo link)'},
- {id:'llavero',name:'Tarjeta virtual + llavero con QR'},
- {id:'collar',name:'Collar con QR',pronto:true},
- {id:'manilla',name:'Manilla con QR',pronto:true}
+ {id:'llavero',name:'Tarjeta virtual + llavero con QR'}
 ];
 
 /* ===== TUTORIAL "Tu regalo paso a paso" (index.html, sección #tutorial). activo:false lo oculta. entrega: texto opcional, ej. '3 a 5 días hábiles' (vacío = no se muestra) ===== */
@@ -64,13 +63,13 @@ TV.TUTORIAL={activo:true,entrega:''};
 /* ===== EDICIÓN FÍSICA (sección de index.html). activo:false la oculta; precio:123 muestra "Desde 123 Bs" ===== */
 TV.FISICOS=[
  {id:'llavero',name:'Llavero acrílico',d:'Acrílico transparente con tu QR grabado. Va contigo a todas partes.',activo:true},
- {id:'collar',name:'Collar con QR',d:'Dije elegante con el código grabado, para llevarlo cerca del corazón.',activo:true},
- {id:'manilla',name:'Manilla con QR',d:'Manilla ajustable con placa grabada. Un detalle que se escanea.',activo:true}
+ {id:'collar',name:'Collar con QR',d:'Dije elegante con el código grabado, para llevarlo cerca del corazón.',activo:false},
+ {id:'manilla',name:'Manilla con QR',d:'Manilla ajustable con placa grabada. Un detalle que se escanea.',activo:false}
 ];
 
 
 /* v14: plantilla para Papá (se inserta después de Mamá) */
-TV.TODAS.splice(5,0,{id:'papa',cover:'assets/papa-mini.webp',name:'Para Papá',tag:'Con cariño',d:'Un detalle sincero para quien siempre te cuidó.',ti:'Para',pa:'PAPÁ',frase:'Gracias por enseñarme a ser fuerte',
+TV.TODAS.splice(5,0,{id:'papa',cover:'assets/papa-mini.webp',name:'PARA PAPÁ',tag:'Con cariño',d:'Un detalle sincero para quien siempre te cuidó.',ti:'Para',pa:'PAPÁ',frase:'Gracias por enseñarme a ser fuerte',
  K:{b1:'#14263a',b2:'#060d14',e1:'#1d3a56',e2:'#10263a',wl:'#2b7fb8',wd:'#0f3a5c',g:'#cdd6e0',paper:'#eef3f8',ac:'#1f5f99'}});
 
 /* ===== 3. PLANTILLAS ESPECIALES (v14: todas habilitadas; activo:false = ocultas) =====
@@ -86,7 +85,7 @@ TV.TODAS.push(
  _esp({id:'navidad',cover:'assets/navidad-mini.webp',name:'Navidad',fecha:'25 de diciembre',cat:'navidad',d:'Magia, paz y abrazos para esta fecha.',ti:'Feliz',pa:'NAVIDAD',frase:'Que la magia de hoy te acompañe siempre',
   K:{b1:'#12301f',b2:'#050d08',e1:'#1f4d38',e2:'#10291f',wl:'#d62828',wd:'#7a0f13',g:'#e6c15a',paper:'#fbf5ea',ac:'#c1121f'}})
 );
-const _cat={'cumple-divertido':'cumple',amor:'amor',gracias:'amistad',aniversario:'amor',mama:'amor',papa:'papa'};
+const _cat={'cumple-divertido':'cumple',amor:'amor',gracias:'amistad',amistad:'amistad',aniversario:'amor',mama:'amor',papa:'papa'};
 TV.TODAS.forEach(t=>{t.cat=t.cat||_cat[t.id]||'amor'});
 TV.T=TV.TODAS.filter(t=>t.activo!==false||DEV);   // lista que ve el cliente
 
@@ -120,13 +119,13 @@ TV.PALETA={
 };
 Object.entries(TV.PALETA).forEach(([k,v])=>{TV.COLORS[k]=v.ac});   // los links viejos (rosa/noche/ambar) siguen funcionando
 /* Fondo con degradado por ocasión (si el cliente no elige color) */
-TV.FONDOS={'cumple-divertido':['#fff4e0','#ffd6e8','#ffb3d1'],amor:['#fff0f3','#ffd0da','#ff9eb5'],gracias:['#f4fbef','#d2efd9','#9fdcb6'],aniversario:['#f3f5ff','#d3dbff','#a5b4f5'],
+TV.FONDOS={'cumple-divertido':['#fff4e0','#ffd6e8','#ffb3d1'],amor:['#fff0f3','#ffd0da','#ff9eb5'],gracias:['#f4fbef','#d2efd9','#9fdcb6'],amistad:['#f4fbef','#d2efd9','#9fdcb6'],aniversario:['#f3f5ff','#d3dbff','#a5b4f5'],
  mama:['#fbf1ff','#ead1f5','#cf9fe6'],papa:['#eef5fb','#c9dff2','#8fb8dc'],'mujer-boliviana':['#fff0f8','#ffc8e6','#f58cc3'],halloween:['#fff1de','#ffc58a','#ff9442'],
  difuntos:['#fbf3e4','#f4d9a4','#e9b04c'],navidad:['#fff7ee','#f9d9d4','#e48a85']};
 TV.fondo=(t,key)=>{const f=(key&&TV.PALETA[key]&&TV.PALETA[key].fondo)||TV.FONDOS[t.id]||[t.K.paper,t.K.paper,t.K.paper];
  return `radial-gradient(120% 70% at 14% 0%,rgba(255,255,255,.85),transparent 60%),radial-gradient(90% 60% at 100% 100%,${f[2]}aa,transparent 70%),linear-gradient(165deg,${f[0]} 0%,${f[1]} 58%,${f[2]} 100%)`};
 /* Decoración temática por ocasión (emojis sutiles en las esquinas de la tarjeta) */
-TV.DECO={'cumple-divertido':['🎈','🎉','✨'],amor:['💗','💞','✨'],gracias:['🌻','✨','💛'],aniversario:['💍','🥂','✨'],mama:['🌷','💐','✨'],papa:['⭐','🏆','✨'],
+TV.DECO={'cumple-divertido':['🎈','🎉','✨'],amor:['💗','💞','✨'],gracias:['🌻','✨','💛'],amistad:['🤝','🎉','✨'],aniversario:['💍','🥂','✨'],mama:['🌷','💐','✨'],papa:['⭐','🏆','✨'],
  'mujer-boliviana':['🌸','🌺','✨'],halloween:['🎃','🦇','🕸️'],difuntos:['🌼','🕯️','✨'],navidad:['❄️','🎄','⭐']};
 
 /* v15 · Plantillas de fondo integradas: cada imagen se funde con la tarjeta (opacidad + degradados + tinte del color elegido).
@@ -156,8 +155,8 @@ TV.palabras=s=>(s||'').trim().split(/\s+/).filter(Boolean).length;
 /* Diseños (flores + marco + tema). Se filtran solos según género y ocasión. oc:'*' = cualquier ocasión; no:[...] = excepto */
 TV.DISENOS=[
  {id:'cantuta',n:'Cantuta boliviana',gen:['m'],oc:['mujer-boliviana'],flor:'cantuta',marco:'floral'},
- {id:'tulipanes',n:'Tulipanes',gen:['m'],oc:['mama','cumple-divertido','gracias','mujer-boliviana'],flor:'tulipanes',marco:'cinta'},
- {id:'girasoles',n:'Girasoles',gen:['m'],oc:['gracias','cumple-divertido','mama'],flor:'girasol',marco:'dorado'},
+ {id:'tulipanes',n:'Tulipanes',gen:['m'],oc:['mama','cumple-divertido','gracias','amistad','mujer-boliviana'],flor:'tulipanes',marco:'cinta'},
+ {id:'girasoles',n:'Girasoles',gen:['m'],oc:['gracias','amistad','cumple-divertido','mama'],flor:'girasol',marco:'dorado'},
  {id:'corazones',n:'Corazones',gen:['m','h'],oc:['amor','aniversario'],flor:'corazones',marco:'dorado'},
  {id:'rosas',n:'Rosas clásicas',gen:['m'],oc:'*',no:['halloween','difuntos','navidad'],flor:'rosas',marco:'polaroid'},
  {id:'laurel',n:'Laurel dorado',gen:['h'],oc:'*',no:['halloween','difuntos','navidad'],flor:'hojas',marco:'sobrio'},

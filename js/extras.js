@@ -8,9 +8,10 @@ if(typeof PL==='undefined'||typeof TV==='undefined')return;
 /* ====== Ajustes que puedes tocar ====== */
 const BLOW={low:140,ratio:2,ms:350};      // Soplar: volumen mínimo en graves, proporción graves/agudos y duración (ms)
 const SHAKE={force:30,hits:2,cool:1500};  // Agitar: fuerza del sacudón, sacudidas seguidas y pausa entre efectos (ms)
-const EMO={'cumple-divertido':['🎉','🎂','🎈'],amor:['❤️','💖','🌹'],gracias:['🌻','🙏','✨'],aniversario:['💍','🥂','💫'],mama:['🌷','💐','💜'],papa:['⭐','🏆','💙'],'mujer-boliviana':['🌸','🌺','💜'],halloween:['🎃','🦇','👻'],difuntos:['🌼','🕯️','🧡'],navidad:['🎄','❄️','⭐']};
+const EMO={'cumple-divertido':['🎉','🎂','🎈'],amor:['❤️','💖','🌹'],gracias:['🌻','🙏','✨'],amistad:['🤝','🫶','😄'],aniversario:['💍','🥂','💫'],mama:['🌷','💐','💜'],papa:['⭐','🏆','💙'],'mujer-boliviana':['🌸','🌺','💜'],halloween:['🎃','🦇','👻'],difuntos:['🌼','🕯️','🧡'],navidad:['🎄','❄️','⭐']};
 
 const el=id=>document.getElementById(id),QS=new URLSearchParams(window.__CARD?window.__CARD.qs:location.search);
+const OFI_ON=QS.get('of')==='1';   /* v31: el creador solo HABILITA el modo discreto; quien abre la tarjeta decide si lo usa (panel Interacciones). Nunca se abre solo. */
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const icons=()=>{try{window.lucide&&lucide.createIcons()}catch(e){}};
 const buzz=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
@@ -31,25 +32,46 @@ if(TV.WATERMARK!==false){const host=document.querySelector('.carta-content');
 /* ?abre=2026-12-24T00:00 (hora local de quien la abre). Con REQUIRE_PAYMENT la fecha va dentro de la firma. */
 const abreRaw=(QS.get('abre')||'').trim();let abreTs=0;
 if(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2})?$/.test(abreRaw))abreTs=new Date(abreRaw.length===10?abreRaw+'T00:00':abreRaw).getTime()||0;
+/* v35 · Ejemplo en vivo: ?abre=demo sella la tarjeta 20 s para mostrar la cápsula (solo en el ejemplo de la tienda) */
+const IS_DEMO=typeof DEMO!=='undefined'&&DEMO;
+if(IS_DEMO&&abreRaw==='demo')abreTs=Date.now()+20000;
 /* Hora del servidor (cabecera Date) para que cambiar el reloj del celular no sirva de truco; si falla, usa el reloj local */
 let skew=0;
-async function syncClock(){try{const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}),d=Date.parse(r.headers.get('Date')||'');if(d)skew=d-Date.now()}catch(e){}}
+async function syncClock(){try{const r=await fetch(location.pathname,{method:'HEAD',cache:'no-store'}),d=Date.parse(r.headers.get('Date')||'');if(d&&!IS_DEMO)skew=d-Date.now()}catch(e){}}
 const now=()=>Date.now()+skew;
 const clockReady=Promise.race([syncClock(),sleep(2500)]);
 
 function capsule(){return new Promise(res=>{
- const m=modal('mCap','<div class="text-4xl" aria-hidden="true">⏳</div><h3 class="serif text-3xl mt-2">Cápsula del tiempo</h3><p class="text-sm mt-2" data-k="t" style="color:#475569"></p><p class="serif text-2xl mt-3" data-k="d"></p><div class="cap-grid" data-k="g"></div><button type="button" class="btn btn-dark w-full mt-5" data-k="b" disabled>Aún no se puede abrir</button>');
+ const m=modal('mCap','<div class="text-4xl" aria-hidden="true">⏳</div><h3 class="serif text-3xl mt-2">Cápsula del tiempo</h3><p class="text-sm mt-2" data-k="t" style="color:#475569"></p><p class="serif text-2xl mt-3" data-k="d"></p><div class="cap-grid" data-k="g"></div><button type="button" class="btn btn-dark w-full mt-5" data-k="b" aria-disabled="true">Aún no se puede abrir</button><p class="text-sm mt-3" data-k="m" style="color:#475569;min-height:1.4em" aria-live="polite"></p><button type="button" class="btn btn-ghost w-full mt-2" data-k="c">📅 Agendar en mi calendario</button>');
  const f=k=>m.querySelector('[data-k="'+k+'"]'),btn=f('b'),d=new Date(abreTs),conHora=d.getHours()||d.getMinutes();
  f('t').textContent='Esta tarjeta para '+nombre+' está sellada hasta:';
  f('d').textContent=d.toLocaleDateString('es',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+(conHora?' · '+d.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'');
  const boxes=['días','horas','min','seg'].map(l=>{const b=document.createElement('div');b.className='cap-box';b.innerHTML='<b>00</b><span>'+l+'</span>';f('g').append(b);return b.firstChild});
  let done=false,iv=0;
+ btn.style.opacity='.55';if(IS_DEMO)f('c').style.display='none';
+ /* v32 · Si tocan antes de tiempo: broma + temblor + vibración */
+ const falta=()=>{const ms=Math.max(0,abreTs-now()),dd=Math.floor(ms/864e5),h=Math.floor(ms/36e5)%24,mi=Math.floor(ms/6e4)%60,s=Math.floor(ms/1e3)%60;return dd?dd+' d '+h+' h':h?h+' h '+mi+' min':mi?mi+' min':s+' s'};
+ const BROMAS=['¡Buen intento, impaciente! 😏','Todavía no… la paciencia es una virtud ⏳','Shhh, el tiempo sabe lo que hace 🤫','Faltan {x}. ¡Aguanta un poquito! 😄','Esto no se abre a la fuerza, {n} 🙈','Insistir no acelera el reloj ⏰','Qué ansiedad tan bonita 💌','Casi… pero no casi 😅'];
+ let bi=-1;
+ const impaciente=()=>{let k;do{k=Math.floor(Math.random()*BROMAS.length)}while(BROMAS.length>1&&k===bi);bi=k;
+  f('m').textContent=BROMAS[k].replace('{x}',falta()).replace('{n}',nombre);buzz([50,40,50]);
+  if(!matchMedia('(prefers-reduced-motion:reduce)').matches)try{m.firstElementChild.animate([{transform:'translateX(0)'},{transform:'translateX(-9px)'},{transform:'translateX(9px)'},{transform:'translateX(-5px)'},{transform:'translateX(0)'}],{duration:380})}catch(x){}};
+ /* v32 · Recordatorio en el calendario (.ics, sin librerías) */
+ const p2=n=>String(n).padStart(2,'0'),ymd=x=>x.getFullYear()+p2(x.getMonth()+1)+p2(x.getDate()),hms=x=>p2(x.getHours())+p2(x.getMinutes())+'00';
+ const esc=s=>s.replace(/[\\;,]/g,'\\$&'),fold=l=>l.replace(/(.{73})(?=.)/g,'$1\r\n ');
+ const ics=()=>{const end=new Date(abreTs+(conHora?30*6e4:864e5));
+  const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//FRASSMOTTI//Tarjeta//ES','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:capsula-'+abreTs+'-'+Math.random().toString(36).slice(2,8)+'@frassmotti.com','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d{3}/g,''),
+   conHora?'DTSTART:'+ymd(d)+'T'+hms(d):'DTSTART;VALUE=DATE:'+ymd(d),conHora?'DTEND:'+ymd(end)+'T'+hms(end):'DTEND;VALUE=DATE:'+ymd(end),
+   'SUMMARY:Abre tu tarjeta de FRASSMOTTI','DESCRIPTION:'+esc('Tu tarjeta ya se puede abrir: '+location.href),'URL:'+location.href,
+   'BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Tu tarjeta ya se puede abrir','TRIGGER:'+(conHora?'-PT5M':'PT9H'),'END:VALARM','END:VEVENT','END:VCALENDAR'];
+  return L.map(fold).join('\r\n')+'\r\n'};
+ f('c').onclick=()=>{try{const u=URL.createObjectURL(new Blob([ics()],{type:'text/calendar;charset=utf-8'})),a=document.createElement('a');a.href=u;a.download='tarjeta-frassmotti.ics';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);f('m').textContent='Listo: abre el archivo para guardar el recordatorio 📅'}catch(x){f('m').textContent='Este navegador no pudo crear el recordatorio.'}};
  const tick=()=>{const ms=Math.max(0,abreTs-now()),v=[Math.floor(ms/864e5),Math.floor(ms/36e5)%24,Math.floor(ms/6e4)%60,Math.floor(ms/1e3)%60];
   boxes.forEach((b,i)=>b.textContent=String(v[i]).padStart(2,'0'));
-  if(ms<=0&&!done){done=true;clearInterval(iv);f('t').textContent='¡Ya llegó el momento!';btn.disabled=false;btn.textContent='Abrir cápsula';TVS.chime();boom();buzz([40,40,40])}};
+  if(ms<=0&&!done){done=true;clearInterval(iv);f('t').textContent='¡Ya llegó el momento!';btn.removeAttribute('aria-disabled');btn.style.opacity='';btn.textContent='Abrir cápsula';f('c').style.display='none';f('m').textContent='';TVS.chime();boom();buzz([40,40,40])}};
  const end=ok=>{clearInterval(iv);hide(m);setTimeout(()=>m.remove(),300);res(ok)};
  iv=setInterval(tick,1000);tick();
- btn.onclick=()=>end(true);m.querySelector('.xclose').onclick=()=>end(false);m.addEventListener('click',e=>{if(e.target===m)end(false)});
+ btn.onclick=()=>{if(btn.getAttribute('aria-disabled')==='true'){impaciente();return}end(true)};m.querySelector('.xclose').onclick=()=>end(false);m.addEventListener('click',e=>{if(e.target===m)end(false)});
  show(m)})}
 
 /* Envuelve abrirCarta(): solo si hay cápsula del tiempo activa, muestra la cuenta regresiva antes de abrir. Sin cápsula, el sobre abre libre. */
@@ -90,6 +112,12 @@ xl.innerHTML='<div class="xl-title"><span class="xl-logo">X</span><span>Presupue
  '<div class="xl-grid">'+tabla()+'</div>'+
  '<div class="xl-sheets"><span class="on">Presupuesto</span><button type="button" id="xlBack">Hoja2</button><span>+</span><span class="xl-st" id="xlSt">Listo</span></div>';
 document.body.append(xl);
+/* v31 · Salida clara: botón grande «Volver a mi tarjeta». Se atenúa a los 6 s para no delatar la pantalla, pero sigue siendo fácil de tocar */
+const exitB=document.createElement('button');exitB.type='button';exitB.id='xlExit';exitB.textContent='↩ Volver a mi tarjeta';
+exitB.style.cssText='position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:5;min-height:48px;padding:0 24px;border:0;border-radius:999px;background:#1d6f42;color:#fff;font:600 16px Outfit,Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.35);cursor:pointer;transition:opacity .6s';
+xl.append(exitB);let fadeT=0;
+const wakeExit=ms=>{exitB.style.opacity='1';clearTimeout(fadeT);fadeT=setTimeout(()=>{exitB.style.opacity='.35'},ms)};
+xl.addEventListener('pointerdown',()=>wakeExit(4000));
 let xlOn=false,prev=null,stTimer=0;
 const favicon=()=>document.querySelector('link[rel="icon"]');
 const XL_ICON='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="5" fill="#1d6f42"/><text x="16" y="23" font-size="20" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">X</text></svg>');
@@ -98,17 +126,16 @@ function openOffice(){if(xlOn)return;xlOn=true;
  soundEnabled=false;window.__mus&&window.__mus.pause();
  document.title='Presupuesto_Q4_2026.xlsx - Excel';if(favicon())favicon().href=XL_ICON;
  xl.classList.add('on');xl.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';
- el('xlSt').textContent='Toca «Hoja2» para volver a tu tarjeta 💌';clearTimeout(stTimer);stTimer=setTimeout(()=>el('xlSt').textContent='Listo',5000)}
+ wakeExit(6000);el('xlSt').textContent='Toca «Hoja2» o el botón verde para volver a tu tarjeta 💌';clearTimeout(stTimer);stTimer=setTimeout(()=>el('xlSt').textContent='Listo',5000)}
 function closeOffice(){if(!xlOn)return;xlOn=false;
  xl.classList.remove('on');xl.setAttribute('aria-hidden','true');document.body.style.overflow='';
  document.title=prev.title;if(favicon()&&prev.icon)favicon().href=prev.icon;
  soundEnabled=prev.snd;if(prev.mus&&window.__mus)window.__mus.play().catch(()=>{})}
-el('xlBack').onclick=closeOffice;
+el('xlBack').onclick=closeOffice;exitB.onclick=closeOffice;
 /* v30 · Ya no hay botón suelto en la barra superior (en celular era una "X" misteriosa junto al sonido y la gente la tocaba sin saber qué hacía).
    Ahora el modo discreto se activa desde el panel "Interacciones" con una explicación clara (acciones.js), o con Esc dos veces en computador. */
 /* Tecla jefe: Esc dos veces seguidas alterna entre la tarjeta y el Excel */
-let lastEsc=0;addEventListener('keydown',e=>{if(e.key!=='Escape')return;const t=Date.now();if(t-lastEsc<600){lastEsc=0;xlOn?closeOffice():openOffice()}else lastEsc=t});
-if(QS.get('of')==='1')openOffice();
+let lastEsc=0;addEventListener('keydown',e=>{if(e.key!=='Escape'||!OFI_ON)return;const t=Date.now();if(t-lastEsc<600){lastEsc=0;xlOn?closeOffice():openOffice()}else lastEsc=t});
 
 /* ============ 5) AGITAR O SOPLAR (#6) ============ */
 const lluvia=()=>{let shapes;try{shapes=(EMO[T.id]||['✨']).map(text=>confetti.shapeFromText({text,scalar:2}))}catch(e){}
@@ -157,6 +184,6 @@ async function toggleBlow(){
  blowRaf=requestAnimationFrame(loop);toast('Sopla fuerte hacia el micrófono')}
 
 /* v27: Agitar y Soplar se activan desde el panel "Interacciones" (js/acciones.js) */
-window.__fx={shake:toggleShake,blow:toggleBlow,office:openOffice,state:()=>({shake:!!shakeH,blow:!!blowOn})};
+window.__fx={shake:toggleShake,blow:toggleBlow,office:OFI_ON?openOffice:undefined,state:()=>({shake:!!shakeH,blow:!!blowOn})};
 icons();
 })();

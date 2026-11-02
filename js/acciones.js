@@ -15,7 +15,7 @@ const IC={
  download:'<path d="M12 3v12M7 11l5 5 5-5M4 20h16"/>',
  vol:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 010 7"/><path d="M19 5a10 10 0 010 14"/>',
  mute:'<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M22 9l-6 6M16 9l6 6"/>',
- eyeoff:'<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M2 2l20 20"/>'};
+ clock:'<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',eyeoff:'<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="M2 2l20 20"/>'};
 const svg=n=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(IC[n]||'')+'</svg>';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
@@ -56,6 +56,15 @@ function initCard(){
  const $=id=>document.getElementById(id),dock=$('dock'),top=document.querySelector('.topbar');
  if(!dock||!top||typeof estado==='undefined')return null;
  const fx=window.__fx||{shake(){},blow(){},state:()=>({})},click=id=>()=>{const b=$(id);b&&b.click()};
+/* v36 · Raspar la foto y Tinta invisible están en TODAS las tarjetas: quien la recibe las activa desde el panel (sin recargar)
+   y las quita tocándolas otra vez. Las implementan js/raspar.js y js/uv.js (window.__ras / window.__uv).
+   Ejemplo en vivo (DEMO): solo la cápsula del tiempo es de prueba, porque en una tarjeta real la fecha la elige quien la compra. */
+ const say=t=>{try{typeof toast==='function'&&toast(t)}catch(e){}};
+ const efecto=(m,on,off,fail)=>()=>{if(!m)return;if(m.active()){m.stop();say(off)}else if(m.start())say(on);else say(fail)};
+ const demoItems=()=>{if(typeof DEMO==='undefined'||!DEMO)return[];
+  const P=new URLSearchParams(location.search),go=(k,v)=>()=>{P.has(k)?P.delete(k):P.set(k,v);location.search=P.toString()};
+  return[
+   {id:'dCap',ic:'clock',t:'Cápsula del tiempo',d:'Ejemplo: la tarjeta se abre sola en 20 segundos (tú eliges la fecha)',on:P.get('abre')==='demo',run:go('abre','demo')}]};
  const items=()=>{const s=fx.state();return[
   {id:'sec',ic:'lock',t:'Secreto',d:'Adivina la clave y descubre un mensaje oculto',hidden:!$('bSec')||$('bSec').hidden,pulse:!!($('bSec')&&$('bSec').classList.contains('demo-pulse')),run:click('bSec')},
   {id:'blow',ic:'wind',t:'Soplar',d:'Sopla al micrófono y apaga la velita',on:!!s.blow,run:()=>fx.blow()},
@@ -64,7 +73,9 @@ function initCard(){
   {id:'mus',ic:'music',t:'Música',d:'Pon o pausa la canción de la tarjeta',hidden:!$('mus')||$('mus').hidden,run:click('mus')},
   {id:'sh',ic:'share',t:'Compartir',d:'Envíala por WhatsApp o copia el link',run:click('sv')},
   {id:'img',ic:'download',t:'Guardar imagen',d:'Descárgala para subirla a tus historias',run:click('img')},
-  {id:'ofi',ic:'eyeoff',t:'Modo discreto',d:'¿Se acerca alguien? La tarjeta se disfraza de hoja de Excel. Toca «Hoja2» para volver',hidden:!fx.office,run:()=>fx.office&&fx.office()}]};
+  {id:'ras',ic:'pointer',t:'Raspar la foto',d:'La foto se tapa con plata y se descubre raspando con el dedo',hidden:!window.__ras,on:!!(window.__ras&&window.__ras.active()),run:efecto(window.__ras,'Raspa la foto con el dedo ✨','Foto descubierta','No se pudo tapar la foto')},
+  {id:'uv',ic:'sparkles',t:'Tinta invisible',d:'El mensaje se oculta y solo se lee pasando una linterna UV',hidden:!window.__uv,on:!!(window.__uv&&window.__uv.active()),run:efecto(window.__uv,'Pasa la luz UV por el mensaje 🔦','Mensaje visible','Tu celular no soporta la tinta invisible')},
+  {id:'ofi',ic:'eyeoff',t:'Modo discreto',d:'¿Se acerca alguien? La tarjeta se disfraza de hoja de Excel. Toca «Hoja2» para volver',hidden:!fx.office,run:()=>fx.office&&fx.office()}].concat(demoItems())};
  /* Sonido / Mudo: se recuerda la elección; también silencia la canción */
  const saved=(()=>{try{return localStorage.getItem('frass_snd')}catch(e){return null}})();
  if(saved==='0'){soundEnabled=false;window.__mus&&(window.__mus.muted=true)}

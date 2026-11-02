@@ -11,6 +11,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const WORDS={
  'cumple-divertido':['¡Feliz cumple, {n}! 🎉','¡Que cumplas muchos más! 🎂','¡A soplar las velitas! 🕯️','¡Hoy mandas tú! 👑','¡Pide un deseo! ✨','¡Que viva {n}! 🥳','¡Pastel para todos! 🍰','¡A celebrar! 🎈'],
  amor:['Te quiero, {n} 💖','Eres mi razón de sonreír 😊','Contigo todo es mejor ✨','Mi corazón es tuyo 💘','Gracias por existir 🌹','Eres mi lugar favorito 🏡','Pienso en ti siempre 💭','Contigo, siempre 💕'],
+ amistad:['Qué suerte tenerte, {n} 🍀','Amigos de los de verdad 🤝','Contigo todo es más divertido 😄','Eres la familia que elegí 💛','Gracias por estar siempre ✨','Mi cómplice favorito 😎','Nunca cambies, {n} 🫶','¡Que viva la amistad! 🎉'],
  gracias:['¡Gracias, {n}! 🙏','Valoro todo lo que haces 🌻','Eres una bendición ✨','Tu apoyo vale oro 💛','Gracias de corazón 💐','Qué suerte tenerte 🍀'],
  aniversario:['¡Feliz aniversario! 💍','Por muchos años más 🥂','Cada día contigo es especial 💫','Gracias por tanto amor ❤️','Juntos para siempre ♾️','Te elegiría otra vez 💞'],
  mama:['Gracias por todo, mamá 🌷','Te quiero, mamá 💜','Eres mi heroína 🦸‍♀️','Tu amor lo es todo 💐','Feliz día, mami 🌸','Tu abrazo lo cura todo 🤗'],
