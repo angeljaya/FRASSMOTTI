@@ -1,211 +1,1406 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Panel de pedidos | Frassmotti</title>
-<link rel="icon" href="favicon.svg"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet">
-<script src="js/config.js"></script><script src="js/secret.js"></script><script src="js/diseno.js"></script><script src="js/foto.js"></script><script src="js/exportar.js"></script><script src="js/buzon.js"></script><style>
-/* v22 · Recortador de foto (mismos estilos que css/v14.css, solo lo necesario para el panel) */
-.crop-area{position:relative;width:100%;overflow:hidden;border-radius:14px;background:#0b0b0d;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
-.crop-area:active{cursor:grabbing}
-.crop-area img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;pointer-events:none;-webkit-user-drag:none}
-.crop-area::after{content:'';position:absolute;inset:0;pointer-events:none;border:2px solid rgba(255,255,255,.85);border-radius:14px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25);background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 33.3% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 66.6% 0/1px 100% no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 33.3%/100% 1px no-repeat,linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.28)) 0 66.6%/100% 1px no-repeat}
-.crop-area.bw img{filter:grayscale(1) contrast(1.15) brightness(1.05)}
-input[type=range].zoom{width:100%}
-.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.seg button{padding:.7rem 1rem;border:2px solid #e5e5e3;border-radius:16px;background:#fff;font-weight:600;cursor:pointer}
-.seg button[aria-pressed=true]{border-color:var(--c,#111827);background:color-mix(in srgb,var(--c,#111827) 10%,#fff)}
-.pg-thumb{width:84px;height:62px;object-fit:cover;border-radius:10px;border:1px solid #e5e5e3}
-</style>
-<link rel="stylesheet" href="css/tailwind.css"></head>
-<body><main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
-<div class="pt-4 flex items-center justify-between"><h1 class="serif text-4xl">Panel de pedidos</h1><a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a></div>
-<div id="bzCard" class="card p-5 space-y-3"><div class="flex items-center justify-between gap-3"><p class="font-semibold text-gray-900">Buzón: pedidos pendientes</p><button id="bzLoad" type="button" class="btn btn-dark !py-2 text-sm">Cargar pedidos</button></div>
-<div><label class="label" for="bzPin">PIN de administrador</label><input id="bzPin" type="password" class="input" autocomplete="off"></div>
-<div class="flex gap-2"><input id="bzCode" class="input" placeholder="Código del cliente (ej. K7F2-9QXA)" autocomplete="off" maxlength="12"><button id="bzGo" type="button" class="btn btn-ghost !py-2 text-sm whitespace-nowrap">Abrir por código</button></div>
-<p id="bzMsg" class="text-sm text-gray-700 min-h-[1.25rem]" role="status"></p><ul id="bzList" class="space-y-2"></ul>
-<div id="bzDoneRow" class="hidden"><button id="bzDone" type="button" class="btn btn-ghost w-full text-sm">Ya entregué este pedido: borrarlo del buzón</button></div>
-<details class="text-sm"><summary class="cursor-pointer font-semibold text-gray-900">Llave del buzón (solo la primera vez o para recuperarla)</summary><div class="space-y-3 mt-3">
-<p id="bzKeyState" class="text-gray-700"></p>
-<p class="text-gray-600">La llave privada se queda solo en este dispositivo. Al crearla se muestra UNA vez: guárdala en tu gestor de contraseñas, porque sin ella los pedidos pendientes no se pueden abrir (los links ya generados siguen funcionando).</p>
-<button id="bzGen" type="button" class="btn btn-ghost !py-2 text-sm">Crear llaves nuevas</button><textarea id="bzOut" rows="6" class="input hidden" readonly></textarea>
-<label class="label" for="bzIn">Recuperar: pega aquí tu llave privada guardada</label><textarea id="bzIn" rows="3" class="input" placeholder='{"alg":"RSA-OAEP-256",...}'></textarea><button id="bzImp" type="button" class="btn btn-ghost !py-2 text-sm">Usar esta llave privada</button></div></details></div>
-<div class="card p-5 space-y-3"><p class="font-semibold text-gray-900">Paso 1: pega el pedido que te llegó por WhatsApp</p>
-<textarea id="order" rows="5" class="input" placeholder="Pega aquí el mensaje completo del cliente. Se llenará todo solo."></textarea><p id="fmtPedido" class="text-sm font-semibold text-gray-900 hidden" role="status"></p></div>
-<div class="card p-5 space-y-4"><p class="font-semibold text-gray-900">Paso 2: revisa los datos</p>
-<div><label class="label" for="plantilla">Plantilla</label><select id="plantilla" class="input"></select></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="nombre">Para</label><input id="nombre" class="input" maxlength="24"></div><div><label class="label" for="de">De parte de</label><input id="de" class="input" maxlength="24"></div></div>
-<div><label class="label" for="frase">Frase</label><input id="frase" class="input" maxlength="70"></div>
-<div><label class="label" for="color">Color de acento</label><select id="color" class="input"><option value="">Según plantilla</option><option value="azul">Azul</option><option value="rojo">Rojo</option><option value="negro">Negro</option><option value="violeta">Violeta</option><option value="amarillo">Amarillo</option><option value="rosa">Rosa (antiguo)</option><option value="noche">Noche (antiguo)</option><option value="ambar">Ámbar (antiguo)</option></select></div>
-<div><label class="label" for="secreto">Mensaje secreto (opcional)</label><textarea id="secreto" rows="2" maxlength="240" class="input"></textarea></div>
-<div><label class="label" for="preg">Pregunta del secreto (la respuesta es la palabra clave)</label><input id="preg" class="input" maxlength="100"></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="clave">Palabra clave</label><input id="clave" class="input" maxlength="20"></div><div><label class="label" for="pista">Pista 1</label><input id="pista" class="input" maxlength="60"></div></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="pista2">Pista 2 (opcional)</label><input id="pista2" class="input" maxlength="60"></div><div><label class="label" for="pista3">Pista 3 (opcional)</label><input id="pista3" class="input" maxlength="60"></div></div>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="abre">Cápsula del tiempo: abre el</label><input id="abre" type="datetime-local" class="input"></div><label class="flex items-center gap-3 text-sm pt-6"><input id="ofi" type="checkbox" class="w-5 h-5"><span>Modo oficina (Excel)</span></label><label class="flex items-center gap-3 text-sm"><input id="ras" type="checkbox" class="w-5 h-5"><span>Raspar para descubrir la foto</span></label><label class="flex items-center gap-3 text-sm"><input id="uv" type="checkbox" class="w-5 h-5"><span>Tinta invisible: el mensaje se lee con una linterna UV</span></label><label class="flex items-center gap-3 text-sm"><input id="vn" type="checkbox" class="w-5 h-5"><span>Mostrar el nombre de quien envía en el sobre <span class="text-gray-500">(vn=1; usa «De parte de»)</span></span></label></div>
-<div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="gen">Para</label><select id="gen" class="input"><option value="m">Mujer</option><option value="h">Hombre</option></select></div><div><label class="label" for="tam">Tamaño</label><select id="tam" class="input"><option value="1">1 · Postal</option><option value="2">2 · Deslizante</option><option value="3">3 · Tipo libro</option></select></div><div><label class="label" for="fu">Tipografía</label><select id="fu" class="input"></select></div></div>
-<div><label class="label" for="dis">Diseño (flores y marco)</label><select id="dis" class="input"></select></div>
-<div class="grid sm:grid-cols-3 gap-4"><div><label class="label" for="titulo">Título</label><input id="titulo" class="input" maxlength="14"></div><div><label class="label" for="palabra">Palabra en círculos</label><input id="palabra" class="input" maxlength="9"></div><div><label class="label" for="sello">Inicial del sello</label><input id="sello" class="input" maxlength="1"></div></div>
-<div><label class="label" for="mensaje">Mensaje completo (tarjeta 2 y 3; en la 1 puede ir igual que la frase)</label><textarea id="mensaje" rows="4" maxlength="2600" class="input"></textarea></div>
-<div><label class="label" for="fo">Foto</label><select id="fo" class="input"><option value="">Blanco y negro</option><option value="c">A color</option></select></div>
-<div><label class="label" for="foto">Foto (opcional): la que el cliente te envió por WhatsApp</label><input id="foto" type="file" accept="image/*" class="input"><p class="text-xs text-gray-600 mt-1">Al subirla se abre el recortador: mueve, haz zoom y elige blanco y negro o color, igual que en el ejemplo en vivo. Con links cortos la foto viaja en buena calidad.</p></div>
-<div id="fotoBox" class="hidden card p-4 space-y-3"><div class="flex items-center gap-3"><img id="fotoThumb" class="pg-thumb" alt="Tu foto recortada"><div class="flex flex-wrap gap-2"><button type="button" id="fotoEdit" class="btn btn-ghost !py-2 !px-4 text-sm">Ajustar encuadre</button><button type="button" id="fotoDel" class="text-sm text-gray-600 underline px-2">Quitar foto</button></div></div>
-<div class="seg" id="fotoMode" role="group" aria-label="Estilo de la foto"><button type="button" data-m="bn" aria-pressed="true">Blanco y negro</button><button type="button" data-m="c" aria-pressed="false">A color</button></div></div>
-<div id="mvRow" class="hidden"><label class="label" for="motivo">Motivo (imagen)</label><select id="motivo" class="input"></select></div>
-<div data-feat="voz"><label class="label" for="voz">Nota de voz (audio que envió el cliente)</label><input id="voz" type="file" accept="audio/*" class="input"><p id="vozInfo" class="text-xs text-gray-600 mt-1">Máximo unos 15 segundos para que el link no sea enorme.</p></div>
-<div data-feat="grupo"><label class="label" for="aportes">Aportes del grupo (pega los mensajes de los amigos)</label><textarea id="aportes" rows="4" class="input" placeholder="Pega aquí los mensajes que contienen 'Aporte: ...'"></textarea></div>
-<div id="pinRow" class="hidden"><label class="label" for="pin">PIN de administrador</label><input id="pin" type="password" class="input"></div></div>
-<button id="go" class="btn btn-accent w-full text-lg">Generar link de la tarjeta</button><p id="msg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p>
-<div id="res" class="card p-5 hidden space-y-3"><p class="font-semibold text-gray-900">Paso 3: envía el link al cliente</p><textarea id="out" rows="3" class="input" readonly></textarea><p id="len" class="text-xs text-gray-600"></p>
-<div><label class="label" for="cli">WhatsApp del cliente</label><input id="cli" class="input" inputmode="tel" placeholder="7XXXXXXX"></div>
-<div class="grid grid-cols-3 gap-2"><button id="cp" class="btn btn-ghost text-sm">Copiar</button><a id="ver" target="_blank" class="btn btn-ghost text-sm">Ver</a><button id="wa" class="btn btn-dark text-sm">WhatsApp</button></div></div><div id="xCard" class="card p-5 space-y-4"><div class="flex items-center justify-between gap-3"><p class="font-semibold text-gray-900">Paso 4: descargar la tarjeta terminada</p><span class="text-xs font-semibold uppercase tracking-wide text-gray-600 border border-gray-300 rounded-full px-3 py-1">Solo vendedor</span></div>
-<div id="xLock" class="space-y-3"><p class="text-sm text-gray-600">Escribe tu PIN de administrador para habilitar la descarga en alta resolución. Esta sección no existe en la tienda ni en la tarjeta del cliente.</p>
-<div class="flex gap-2"><input id="xPin" type="password" class="input" placeholder="PIN de administrador" autocomplete="off"><button id="xUnlock" type="button" class="btn btn-dark text-sm">Desbloquear</button></div><p id="xLockMsg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p></div>
-<div id="xPanel" class="space-y-4" hidden style="display:none"><div class="flex items-center justify-between gap-3"><p id="xModo" class="text-xs text-gray-600"></p><button id="xCerrar" type="button" class="text-xs underline text-gray-700">Bloquear</button></div>
-<p class="text-sm text-gray-600">Usa los datos del Paso 2 (y la foto que subiste). Incluye el mensaje completo, la plantilla de fondo, las flores y el marco.</p>
-<div class="grid sm:grid-cols-2 gap-4"><div><label class="label" for="xQ">Calidad</label><select id="xQ" class="input"><option value="3">Normal (1020 px de ancho)</option><option value="4" selected>Alta (1360 px)</option><option value="6">Máxima (2040 px, para imprimir)</option></select></div>
-<label class="flex items-center gap-3 text-sm pt-6"><input id="xMarca" type="checkbox" class="w-5 h-5"><span>Incluir marca "Hecha con FRASSMOTTI"</span></label></div>
-<div class="grid grid-cols-3 gap-2"><button id="xPng" data-x type="button" class="btn btn-dark text-sm">PNG</button><button id="xJpg" data-x type="button" class="btn btn-dark text-sm">JPG</button><button id="xPdf" data-x type="button" class="btn btn-dark text-sm">PDF</button></div>
-<button id="xVer" data-x type="button" class="btn btn-ghost w-full text-sm">Ver vista previa</button><p id="xMsg" class="text-sm text-gray-600 min-h-[1.25rem]" role="status"></p>
-<img id="xPrev" alt="Vista previa de la tarjeta" class="w-full max-w-xs mx-auto rounded-xl border border-gray-200" hidden style="display:none"></div></div>
-</main>
-<div id="mCrop" class="modal"><div class="card p-5 w-full max-w-sm relative max-h-[94vh] overflow-y-auto">
- <button class="absolute top-4 right-4 text-gray-500" data-close aria-label="Cerrar">✕</button>
- <h3 class="serif text-2xl pr-8">Ajusta la foto</h3><p class="text-sm text-gray-600 mt-1 mb-3">Arrastra para mover y usa el zoom. Este marco tiene la misma proporción que la tarjeta.</p>
- <div id="cropArea" class="crop-area"><img alt="Foto a recortar"></div>
- <div class="mt-4 flex items-center gap-3"><span aria-hidden="true" class="text-gray-500">−</span><input id="cropZoom" type="range" class="zoom" min="1" max="4" step="0.01" value="1" aria-label="Zoom"><span aria-hidden="true" class="text-gray-500">+</span></div>
- <div class="grid grid-cols-2 gap-2 mt-4"><button type="button" id="cropBW" class="btn btn-ghost !py-2.5 text-sm">Blanco y negro</button><button type="button" id="cropReset" class="btn btn-ghost !py-2.5 text-sm">Centrar</button></div>
- <button type="button" id="cropOk" class="btn btn-accent w-full mt-3">Listo, usar esta foto</button></div></div>
-<script>
-const $=id=>document.getElementById(id),v=id=>$(id).value;let thumb=null;
-$('plantilla').innerHTML=TV.TODAS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
-if(TV.REQUIRE_PAYMENT||TV.SHORT_LINKS){$('pinRow').classList.remove('hidden');$('pin').value=sessionStorage.getItem('tv_pin')||''}
-/* Lee el mensaje de pedido y devuelve los campos */
-function parseOrder(text){const g=k=>{const m=text.match(new RegExp('^'+k+':\\s*"?(.*?)"?\\s*$','mi'));const r=m?m[1].trim():'';return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)?'':r};
- return{plantilla:g('Plantilla'),nombre:g('Para'),de:g('De parte de'),frase:g('Frase'),color:g('Color'),secreto:g('Mensaje secreto'),preg:g('Pregunta del secreto'),clave:g('Palabra clave'),pista:g('Pista'),tel:g('Mi WhatsApp'),abre:g('Abre el'),ofi:g('Modo oficina')}}
-$('order').addEventListener('input',()=>{const o=parseOrder(v('order'));if(o.plantilla&&TV.TODAS.some(t=>t.id===o.plantilla))$('plantilla').value=o.plantilla;
- ['nombre','de','frase','secreto','preg','clave','pista'].forEach(k=>$(k).value=o[k]);$('abre').value=/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(o.abre)?o.abre:'';$('ofi').checked=/^s[ií]$/i.test(o.ofi);$('color').value=['rosa','noche','ambar'].includes(o.color)?o.color:'';$('cli').value=o.tel.replace(/\D/g,'')});
-$('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{const c=document.createElement('canvas'),m=Math.min(i.width,i.height);c.width=c.height=112;c.getContext('2d').drawImage(i,(i.width-m)/2,(i.height-m)/2,m,m,0,0,112,112);thumb=c.toDataURL('image/jpeg',.5)};i.src=r.result};r.readAsDataURL(f)};
-$('go').onclick=async()=>{$('msg').textContent='';const nombre=clean(v('nombre'),24);if(!nombre){$('msg').textContent='Falta el nombre de quien recibe.';return}
- const T=TV.find(v('plantilla')),sec=clean(v('secreto'),240),clave=clean(v('clave'),20).trim(),pl={};
- const p=new URLSearchParams({nombre,frase:clean(v('frase'),70)||T.frase,color:v('color'),t:T.id,de:clean(v('de'),24)});
- if(thumb)pl.p=thumb;await nuevas(p,pl,T);const ex=await extras(p,pl);if(ex){$('msg').textContent=ex;return}if(sec){if(clave&&window.crypto&&crypto.subtle){pl.s=await TVS.enc(sec,clave);{const sq=clean(v('preg'),100).trim();if(sq)pl.sq=sq}const hh=['pista','pista2','pista3'].map(i=>clean(v(i),60).trim()).filter(Boolean);if(hh.length)pl.h=hh.length>1?hh:hh[0]}else pl.m=sec}
- /* Construye siempre la ruta desde el dominio raíz, sin depender de la ruta del panel */
- const largo=()=>location.origin+'/r/tarjeta.html?'+p+(Object.keys(pl).length?'#'+TVS.pack(pl):'');
- let link=largo();
- let corto=false;   /* v20: link corto. Los datos van a KV (solo con tu PIN) y el link queda como tarjeta.html?id=XXXX. Si KV falla, se usa el link largo de siempre */
- const kv=async()=>{const r=await fetch('/api/card',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qs:p.toString(),h:Object.keys(pl).length?TVS.pack(pl):'',pin:v('pin')})});return{r,d:await r.json().catch(()=>({}))}};
- if(TV.SHORT_LINKS){try{let q=await kv();
-  if(!q.r.ok&&q.r.status!==401&&pl.p&&thumbLQ&&pl.p!==thumbLQ){pl.p=thumbLQ;link=largo();q=await kv()}   /* si el servidor rechaza la foto grande, reintenta con la pequeña */
-  const r=q.r,d=q.d;
-  if(r.status===401){$('msg').textContent=d.error||'PIN incorrecto';return}
-  if(r.ok&&d.id){link=location.origin+'/r/tarjeta.html?id='+d.id;corto=true;sessionStorage.setItem('tv_pin',v('pin'))}else $('msg').textContent='No se pudo guardar en KV ('+(d.error||r.status)+'). Se usó el link largo.'}catch(e){$('msg').textContent='Sin conexión con /api/card. Se usó el link largo.'}}
- if(TV.REQUIRE_PAYMENT&&!corto){try{const r=await fetch('/api/sign',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({link,pin:v('pin')})}),d=await r.json();
-  if(!r.ok){$('msg').textContent=d.error||'Error al firmar';return}sessionStorage.setItem('tv_pin',v('pin'));link=d.link}catch(e){$('msg').textContent='No se pudo contactar /api/sign (ver README).';return}}
- $('out').value=link;$('ver').href=link;$('len').textContent='Largo del link: '+link.length+' caracteres'+(thumb?' (incluye foto)':'');$('res').classList.remove('hidden');$('res').scrollIntoView({behavior:'smooth'})};
-/* v11: cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
-async function extras(p,pl){const ab=v('abre');
- if(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(ab))p.set('abre',ab);
- if($('ofi').checked)p.set('of','1');if($('ras').checked)p.set('ras','1');if($('uv').checked)p.set('uv','1');return ''}
-$('cp').onclick=()=>{navigator.clipboard.writeText($('out').value);$('cp').textContent='Copiado'};
-$('wa').onclick=()=>{let n=v('cli').replace(/\D/g,'');if(n.length<=8)n='591'+n;open('https://wa.me/'+n+'?text='+encodeURIComponent('Tu tarjeta FRASSMOTTI está lista. Ábrela y compártela:\n'+$('out').value),'_blank')};
-</script><script>
-/* v12: motivo, nota de voz y aportes de grupo */
-document.querySelectorAll('[data-feat]').forEach(e=>{if(!TV.on(e.dataset.feat))e.classList.add('hidden')});
-const mv=()=>{const T=TV.find(v('plantilla'));$('mvRow').classList.toggle('hidden',!T.imgs);$('motivo').innerHTML=T.imgs?T.imgs.map((s,i)=>`<option value="${i}">Motivo ${i+1}</option>`).join(''):''};
-$('plantilla').addEventListener('change',mv);mv();
-$('order').addEventListener('input',()=>{mv();const m=(v('order').match(/^Motivo:\s*(\d)/mi)||[])[1];if(m&&$('motivo').options[m-1])$('motivo').value=m-1});
-$('voz').addEventListener('change',e=>{window.__voz=null;const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{window.__voz=r.result;$('vozInfo').textContent='Audio: '+Math.round(r.result.length/1024)+' KB dentro del link'+(r.result.length>90000?' (muy grande: pide un audio más corto)':'')};r.readAsDataURL(f)});
-async function nuevas(p,pl,T){if(T.imgs&&v('motivo'))p.set('v',v('motivo'));if(TV.on('voz')&&window.__voz)pl.a=window.__voz;
- if(TV.on('grupo')){const g=[...v('aportes').matchAll(/Aporte:\s*(\S+)/g)].map(m=>TVS.unpack(m[1])).filter(x=>x&&x.n).slice(0,12);if(g.length)pl.g=g}}
-</script><script>
-/* v14: género, diseño, tamaño, tipografía, título/palabra, sello, mensaje largo y 3 pistas */
-(function(){
-const FU=TV.FUENTES;$('fu').innerHTML=FU.map(f=>`<option value="${f.id}">${f.n}</option>`).join('');
-const loadDis=()=>{$('dis').innerHTML=TV.DISENOS.map(d=>`<option value="${d.id}">${d.n}</option>`).join('')};loadDis();
-const pick=(id,val,ok)=>{if(ok)$(id).value=val};
-/* ajusta las pistas y las lee del pedido */
-const get=(t,k)=>{const m=t.match(new RegExp('^'+k+':\\s*"?(.*?)"?\\s*$','mi'));const r=m?m[1].trim():'';return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)?'':r};
-$('order').addEventListener('input',()=>{const t=v('order');
- const g=get(t,'Género'),d=get(t,'Diseño'),tam=get(t,'Tamaño'),fu=get(t,'Tipografía'),msg=get(t,'Mensaje \\(\\d+ palabras\\)').replace(/\s*¶\s*/g,'\n'),col=get(t,'Color');
- $('gen').value=/^hombre$/i.test(g)?'h':'m';
- pick('dis',d,TV.DISENOS.some(x=>x.id===d));if(!TV.DISENOS.some(x=>x.id===d)){const l=TV.disenos($('gen').value,v('plantilla'));if(l[0])$('dis').value=l[0].id}
- pick('tam',tam,['1','2','3'].includes(tam));$('tam').value=['1','2','3'].includes(tam)?tam:'1';pick('fu',fu,FU.some(x=>x.id===fu));
- $('pista2').value=get(t,'Pista 2');$('pista3').value=get(t,'Pista 3');
- $('titulo').value=get(t,'Título');$('palabra').value=get(t,'Palabra');$('sello').value=get(t,'Inicial del sello').slice(0,1);
- $('mensaje').value=msg;
- $('vn').checked=/^s[ií]/i.test(get(t,'Mostrar mi nombre en el sobre'));
- if(col&&Object.keys(TV.COLORS).includes(col))$('color').value=col;
- const enc=get(t,'Encuadre foto');$('fo').value=/modo=color/.test(enc)?'c':'';});
-/* v22 · Foto con recorte (módulo js/foto.js, el mismo de personalizar.html): mover, zoom, blanco y negro / color.
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Panel de pedidos | Frassmotti</title>
+    <link rel="icon" href="favicon.svg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <script src="js/config.js"></script>
+    <script src="js/secret.js"></script>
+    <script src="js/diseno.js"></script>
+    <script src="js/foto.js"></script>
+    <script src="js/exportar.js"></script>
+    <script src="js/buzon.js"></script>
+    <style>
+      /* v22 · Recortador de foto (mismos estilos que css/v14.css, solo lo necesario para el panel) */
+      .crop-area {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 14px;
+        background: #0b0b0d;
+        touch-action: none;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+      .crop-area:active {
+        cursor: grabbing;
+      }
+      .crop-area img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        max-width: none;
+        transform-origin: 0 0;
+        pointer-events: none;
+        -webkit-user-drag: none;
+      }
+      .crop-area::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        border-radius: 14px;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28))
+            33.3% 0/1px 100% no-repeat,
+          linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28))
+            66.6% 0/1px 100% no-repeat,
+          linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28))
+            0 33.3%/100% 1px no-repeat,
+          linear-gradient(rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.28))
+            0 66.6%/100% 1px no-repeat;
+      }
+      .crop-area.bw img {
+        filter: grayscale(1) contrast(1.15) brightness(1.05);
+      }
+      input[type="range"].zoom {
+        width: 100%;
+      }
+      .seg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .seg button {
+        padding: 0.7rem 1rem;
+        border: 2px solid #e5e5e3;
+        border-radius: 16px;
+        background: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .seg button[aria-pressed="true"] {
+        border-color: var(--c, #111827);
+        background: color-mix(in srgb, var(--c, #111827) 10%, #fff);
+      }
+      .pg-thumb {
+        width: 84px;
+        height: 62px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid #e5e5e3;
+      }
+    </style>
+    <link rel="stylesheet" href="css/tailwind.css" />
+  </head>
+  <body>
+    <main class="max-w-xl mx-auto p-5 pb-16 space-y-5">
+      <div class="pt-4 flex items-center justify-between">
+        <h1 class="serif text-4xl">Panel de pedidos</h1>
+        <a href="index.html" class="btn btn-ghost !py-2 text-sm">Tienda</a>
+      </div>
+      <div id="bzCard" class="card p-5 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <p class="font-semibold text-gray-900">Buzón: pedidos pendientes</p>
+          <button id="bzLoad" type="button" class="btn btn-dark !py-2 text-sm">
+            Cargar pedidos
+          </button>
+        </div>
+        <div>
+          <label class="label" for="bzPin">PIN de administrador</label
+          ><input id="bzPin" type="password" class="input" autocomplete="off" />
+        </div>
+        <div class="flex gap-2">
+          <input
+            id="bzCode"
+            class="input"
+            placeholder="Código del cliente (ej. K7F2-9QXA)"
+            autocomplete="off"
+            maxlength="12"
+          /><button
+            id="bzGo"
+            type="button"
+            class="btn btn-ghost !py-2 text-sm whitespace-nowrap"
+          >
+            Abrir por código
+          </button>
+        </div>
+        <p
+          id="bzMsg"
+          class="text-sm text-gray-700 min-h-[1.25rem]"
+          role="status"
+        ></p>
+        <ul id="bzList" class="space-y-2"></ul>
+        <div id="bzDoneRow" class="hidden">
+          <button
+            id="bzDone"
+            type="button"
+            class="btn btn-ghost w-full text-sm"
+          >
+            Ya entregué este pedido: borrarlo del buzón
+          </button>
+        </div>
+        <details class="text-sm">
+          <summary class="cursor-pointer font-semibold text-gray-900">
+            Llave del buzón (solo la primera vez o para recuperarla)
+          </summary>
+          <div class="space-y-3 mt-3">
+            <p id="bzKeyState" class="text-gray-700"></p>
+            <p class="text-gray-600">
+              La llave privada se queda solo en este dispositivo. Al crearla se
+              muestra UNA vez: guárdala en tu gestor de contraseñas, porque sin
+              ella los pedidos pendientes no se pueden abrir (los links ya
+              generados siguen funcionando).
+            </p>
+            <button
+              id="bzGen"
+              type="button"
+              class="btn btn-ghost !py-2 text-sm"
+            >
+              Crear llaves nuevas</button
+            ><textarea
+              id="bzOut"
+              rows="6"
+              class="input hidden"
+              readonly
+            ></textarea>
+            <label class="label" for="bzIn"
+              >Recuperar: pega aquí tu llave privada guardada</label
+            ><textarea
+              id="bzIn"
+              rows="3"
+              class="input"
+              placeholder='{"alg":"RSA-OAEP-256",...}'
+            ></textarea
+            ><button
+              id="bzImp"
+              type="button"
+              class="btn btn-ghost !py-2 text-sm"
+            >
+              Usar esta llave privada
+            </button>
+          </div>
+        </details>
+      </div>
+      <div class="card p-5 space-y-3">
+        <p class="font-semibold text-gray-900">
+          Paso 1: pega el pedido que te llegó por WhatsApp
+        </p>
+        <textarea
+          id="order"
+          rows="5"
+          class="input"
+          placeholder="Pega aquí el mensaje completo del cliente. Se llenará todo solo."
+        ></textarea>
+        <p
+          id="fmtPedido"
+          class="text-sm font-semibold text-gray-900 hidden"
+          role="status"
+        ></p>
+      </div>
+      <div class="card p-5 space-y-4">
+        <p class="font-semibold text-gray-900">Paso 2: revisa los datos</p>
+        <div>
+          <label class="label" for="plantilla">Plantilla</label
+          ><select id="plantilla" class="input"></select>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label" for="nombre">Para</label
+            ><input id="nombre" class="input" maxlength="24" />
+          </div>
+          <div>
+            <label class="label" for="de">De parte de</label
+            ><input id="de" class="input" maxlength="24" />
+          </div>
+        </div>
+        <div>
+          <label class="label" for="frase">Frase</label
+          ><input id="frase" class="input" maxlength="70" />
+        </div>
+        <div>
+          <label class="label" for="color">Color de acento</label
+          ><select id="color" class="input">
+            <option value="">Según plantilla</option>
+            <option value="azul">Azul</option>
+            <option value="rojo">Rojo</option>
+            <option value="negro">Negro</option>
+            <option value="violeta">Violeta</option>
+            <option value="amarillo">Amarillo</option>
+            <option value="rosa">Rosa (antiguo)</option>
+            <option value="noche">Noche (antiguo)</option>
+            <option value="ambar">Ámbar (antiguo)</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="secreto">Mensaje secreto (opcional)</label
+          ><textarea
+            id="secreto"
+            rows="2"
+            maxlength="240"
+            class="input"
+          ></textarea>
+        </div>
+        <div>
+          <label class="label" for="preg"
+            >Pregunta del secreto (la respuesta es la palabra clave)</label
+          ><input id="preg" class="input" maxlength="100" />
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label" for="clave">Palabra clave</label
+            ><input id="clave" class="input" maxlength="20" />
+          </div>
+          <div>
+            <label class="label" for="pista">Pista 1</label
+            ><input id="pista" class="input" maxlength="60" />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label" for="pista2">Pista 2 (opcional)</label
+            ><input id="pista2" class="input" maxlength="60" />
+          </div>
+          <div>
+            <label class="label" for="pista3">Pista 3 (opcional)</label
+            ><input id="pista3" class="input" maxlength="60" />
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label" for="abre">Cápsula del tiempo: abre el</label
+            ><input id="abre" type="datetime-local" class="input" />
+          </div>
+          <label class="flex items-center gap-3 text-sm pt-6"
+            ><input id="ofi" type="checkbox" class="w-5 h-5" /><span
+              >Modo oficina (Excel)</span
+            ></label
+          ><label class="flex items-center gap-3 text-sm"
+            ><input id="ras" type="checkbox" class="w-5 h-5" /><span
+              >Raspar para descubrir la foto</span
+            ></label
+          ><label class="flex items-center gap-3 text-sm"
+            ><input id="uv" type="checkbox" class="w-5 h-5" /><span
+              >Tinta invisible: el mensaje se lee con una linterna UV</span
+            ></label
+          ><label class="flex items-center gap-3 text-sm"
+            ><input id="vn" type="checkbox" class="w-5 h-5" /><span
+              >Mostrar el nombre de quien envía en el sobre
+              <span class="text-gray-500">(vn=1; usa «De parte de»)</span></span
+            ></label
+          >
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="label" for="gen">Para</label
+            ><select id="gen" class="input">
+              <option value="m">Mujer</option>
+              <option value="h">Hombre</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="tam">Tamaño</label
+            ><select id="tam" class="input">
+              <option value="1">1 · Postal</option>
+              <option value="2">2 · Deslizante</option>
+              <option value="3">3 · Tipo libro</option>
+            </select>
+          </div>
+          <div>
+            <label class="label" for="fu">Tipografía</label
+            ><select id="fu" class="input"></select>
+          </div>
+        </div>
+        <div>
+          <label class="label" for="dis">Diseño (flores y marco)</label
+          ><select id="dis" class="input"></select>
+        </div>
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div>
+            <label class="label" for="titulo">Título</label
+            ><input id="titulo" class="input" maxlength="14" />
+          </div>
+          <div>
+            <label class="label" for="palabra">Palabra en círculos</label
+            ><input id="palabra" class="input" maxlength="9" />
+          </div>
+          <div>
+            <label class="label" for="sello">Inicial del sello</label
+            ><input id="sello" class="input" maxlength="1" />
+          </div>
+        </div>
+        <div>
+          <label class="label" for="mensaje"
+            >Mensaje completo (tarjeta 2 y 3; en la 1 puede ir igual que la
+            frase)</label
+          ><textarea
+            id="mensaje"
+            rows="4"
+            maxlength="2600"
+            class="input"
+          ></textarea>
+        </div>
+        <div>
+          <label class="label" for="fo">Foto</label
+          ><select id="fo" class="input">
+            <option value="">Blanco y negro</option>
+            <option value="c">A color</option>
+          </select>
+        </div>
+        <div>
+          <label class="label" for="foto"
+            >Foto (opcional): la que el cliente te envió por WhatsApp</label
+          ><input id="foto" type="file" accept="image/*" class="input" />
+          <p class="text-xs text-gray-600 mt-1">
+            Al subirla se abre el recortador: mueve, haz zoom y elige blanco y
+            negro o color, igual que en el ejemplo en vivo. Con links cortos la
+            foto viaja en buena calidad.
+          </p>
+        </div>
+        <div id="fotoBox" class="hidden card p-4 space-y-3">
+          <div class="flex items-center gap-3">
+            <img id="fotoThumb" class="pg-thumb" alt="Tu foto recortada" />
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                id="fotoEdit"
+                class="btn btn-ghost !py-2 !px-4 text-sm"
+              >
+                Ajustar encuadre</button
+              ><button
+                type="button"
+                id="fotoDel"
+                class="text-sm text-gray-600 underline px-2"
+              >
+                Quitar foto
+              </button>
+            </div>
+          </div>
+          <div
+            class="seg"
+            id="fotoMode"
+            role="group"
+            aria-label="Estilo de la foto"
+          >
+            <button type="button" data-m="bn" aria-pressed="true">
+              Blanco y negro</button
+            ><button type="button" data-m="c" aria-pressed="false">
+              A color
+            </button>
+          </div>
+        </div>
+        <div id="mvRow" class="hidden">
+          <label class="label" for="motivo">Motivo (imagen)</label
+          ><select id="motivo" class="input"></select>
+        </div>
+        <div data-feat="voz">
+          <label class="label" for="voz"
+            >Nota de voz (audio que envió el cliente)</label
+          ><input id="voz" type="file" accept="audio/*" class="input" />
+          <p id="vozInfo" class="text-xs text-gray-600 mt-1">
+            Máximo unos 15 segundos para que el link no sea enorme.
+          </p>
+        </div>
+        <div data-feat="grupo">
+          <label class="label" for="aportes"
+            >Aportes del grupo (pega los mensajes de los amigos)</label
+          ><textarea
+            id="aportes"
+            rows="4"
+            class="input"
+            placeholder="Pega aquí los mensajes que contienen 'Aporte: ...'"
+          ></textarea>
+        </div>
+        <div id="pinRow" class="hidden">
+          <label class="label" for="pin">PIN de administrador</label
+          ><input id="pin" type="password" class="input" />
+        </div>
+      </div>
+      <button id="go" class="btn btn-accent w-full text-lg">
+        Generar link de la tarjeta
+      </button>
+      <p id="msg" class="text-sm font-medium text-red-700 min-h-[1.25rem]"></p>
+      <div id="res" class="card p-5 hidden space-y-3">
+        <p class="font-semibold text-gray-900">
+          Paso 3: envía el link al cliente
+        </p>
+        <textarea id="out" rows="3" class="input" readonly></textarea>
+        <p id="len" class="text-xs text-gray-600"></p>
+        <div>
+          <label class="label" for="cli">WhatsApp del cliente</label
+          ><input
+            id="cli"
+            class="input"
+            inputmode="tel"
+            placeholder="7XXXXXXX"
+          />
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <button id="cp" class="btn btn-ghost text-sm">Copiar</button
+          ><a id="ver" target="_blank" class="btn btn-ghost text-sm">Ver</a
+          ><button id="wa" class="btn btn-dark text-sm">WhatsApp</button>
+        </div>
+        <div>
+          <button id="qrBtn" type="button" class="btn btn-ghost w-full text-sm">Crear código QR (para grabar)</button>
+          <div id="qrBox" hidden class="mt-3 border border-gray-200 rounded-xl p-4 space-y-3">
+            <div style="text-align:center"><canvas id="qrCv" width="220" height="220" style="width:220px;height:220px;max-width:100%;background:#fff;image-rendering:pixelated;border:1px solid #e5e7eb"></canvas></div>
+            <p id="qrWarn" class="text-xs" style="color:#92400e;font-weight:600" hidden></p>
+            <div class="grid grid-cols-2 gap-2">
+              <div><label class="label" for="qrLvl">Corrección de errores</label>
+                <select id="qrLvl" class="input"><option value="H">H · máxima (grabado láser)</option><option value="Q">Q · alta (grabado pequeño)</option><option value="M">M · media (muy pequeño)</option></select></div>
+              <div><label class="label" for="qrMm">Tamaño del QR (mm)</label>
+                <input id="qrMm" type="number" min="8" max="100" step="1" value="25" inputmode="decimal" class="input" /></div>
+            </div>
+            <p id="qrInfo" class="text-xs text-gray-600"></p>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="qrPng" type="button" class="btn btn-dark text-sm">Descargar PNG</button>
+              <button id="qrSvg" type="button" class="btn btn-ghost text-sm">Descargar SVG (vectorial)</button>
+            </div>
+            <p class="text-xs text-gray-600">Un QR grabado no se puede cambiar: no borres esta tarjeta y mantén frassmotti.com siempre renovado. Para grabados muy pequeños, el SVG se ve más nítido en tu programa de grabado.</p>
+          </div>
+        </div>
+      </div>
+      <div id="xCard" class="card p-5 space-y-4">
+        <div class="flex items-center justify-between gap-3">
+          <p class="font-semibold text-gray-900">
+            Paso 4: descargar la tarjeta terminada
+          </p>
+          <span
+            class="text-xs font-semibold uppercase tracking-wide text-gray-600 border border-gray-300 rounded-full px-3 py-1"
+            >Solo vendedor</span
+          >
+        </div>
+        <div id="xLock" class="space-y-3">
+          <p class="text-sm text-gray-600">
+            Escribe tu PIN de administrador para habilitar la descarga en alta
+            resolución. Esta sección no existe en la tienda ni en la tarjeta del
+            cliente.
+          </p>
+          <div class="flex gap-2">
+            <input
+              id="xPin"
+              type="password"
+              class="input"
+              placeholder="PIN de administrador"
+              autocomplete="off"
+            /><button id="xUnlock" type="button" class="btn btn-dark text-sm">
+              Desbloquear
+            </button>
+          </div>
+          <p
+            id="xLockMsg"
+            class="text-sm font-medium text-red-700 min-h-[1.25rem]"
+          ></p>
+        </div>
+        <div id="xPanel" class="space-y-4" hidden style="display: none">
+          <div class="flex items-center justify-between gap-3">
+            <p id="xModo" class="text-xs text-gray-600"></p>
+            <button
+              id="xCerrar"
+              type="button"
+              class="text-xs underline text-gray-700"
+            >
+              Bloquear
+            </button>
+          </div>
+          <p class="text-sm text-gray-600">
+            Usa los datos del Paso 2 (y la foto que subiste). Incluye el mensaje
+            completo, la plantilla de fondo, las flores y el marco.
+          </p>
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="label" for="xQ">Calidad</label
+              ><select id="xQ" class="input">
+                <option value="3">Normal (1020 px de ancho)</option>
+                <option value="4" selected>Alta (1360 px)</option>
+                <option value="6">Máxima (2040 px, para imprimir)</option>
+              </select>
+            </div>
+            <label class="flex items-center gap-3 text-sm pt-6"
+              ><input id="xMarca" type="checkbox" class="w-5 h-5" /><span
+                >Incluir marca "Hecha con FRASSMOTTI"</span
+              ></label
+            >
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <button id="xPng" data-x type="button" class="btn btn-dark text-sm">
+              PNG</button
+            ><button
+              id="xJpg"
+              data-x
+              type="button"
+              class="btn btn-dark text-sm"
+            >
+              JPG</button
+            ><button
+              id="xPdf"
+              data-x
+              type="button"
+              class="btn btn-dark text-sm"
+            >
+              PDF
+            </button>
+          </div>
+          <button
+            id="xVer"
+            data-x
+            type="button"
+            class="btn btn-ghost w-full text-sm"
+          >
+            Ver vista previa
+          </button>
+          <p
+            id="xMsg"
+            class="text-sm text-gray-600 min-h-[1.25rem]"
+            role="status"
+          ></p>
+          <img
+            id="xPrev"
+            alt="Vista previa de la tarjeta"
+            class="w-full max-w-xs mx-auto rounded-xl border border-gray-200"
+            hidden
+            style="display: none"
+          />
+        </div>
+      </div>
+    </main>
+    <div id="mCrop" class="modal">
+      <div
+        class="card p-5 w-full max-w-sm relative max-h-[94vh] overflow-y-auto"
+      >
+        <button
+          class="absolute top-4 right-4 text-gray-500"
+          data-close
+          aria-label="Cerrar"
+        >
+          ✕
+        </button>
+        <h3 class="serif text-2xl pr-8">Ajusta la foto</h3>
+        <p class="text-sm text-gray-600 mt-1 mb-3">
+          Arrastra para mover y usa el zoom. Este marco tiene la misma
+          proporción que la tarjeta.
+        </p>
+        <div id="cropArea" class="crop-area"><img alt="Foto a recortar" /></div>
+        <div class="mt-4 flex items-center gap-3">
+          <span aria-hidden="true" class="text-gray-500">−</span
+          ><input
+            id="cropZoom"
+            type="range"
+            class="zoom"
+            min="1"
+            max="4"
+            step="0.01"
+            value="1"
+            aria-label="Zoom"
+          /><span aria-hidden="true" class="text-gray-500">+</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-4">
+          <button
+            type="button"
+            id="cropBW"
+            class="btn btn-ghost !py-2.5 text-sm"
+          >
+            Blanco y negro</button
+          ><button
+            type="button"
+            id="cropReset"
+            class="btn btn-ghost !py-2.5 text-sm"
+          >
+            Centrar
+          </button>
+        </div>
+        <button type="button" id="cropOk" class="btn btn-accent w-full mt-3">
+          Listo, usar esta foto
+        </button>
+      </div>
+    </div>
+    <script>
+      const $ = (id) => document.getElementById(id),
+        v = (id) => $(id).value;
+      let thumb = null;
+      $("plantilla").innerHTML = TV.TODAS.map(
+        (t) => `<option value="${t.id}">${t.name}</option>`,
+      ).join("");
+      if (TV.REQUIRE_PAYMENT || TV.SHORT_LINKS) {
+        $("pinRow").classList.remove("hidden");
+        $("pin").value = sessionStorage.getItem("tv_pin") || "";
+      }
+      /* Lee el mensaje de pedido y devuelve los campos */
+      function parseOrder(text) {
+        const g = (k) => {
+          const m = text.match(
+            new RegExp("^" + k + ':\\s*"?(.*?)"?\\s*$', "mi"),
+          );
+          const r = m ? m[1].trim() : "";
+          return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)
+            ? ""
+            : r;
+        };
+        return {
+          plantilla: g("Plantilla"),
+          nombre: g("Para"),
+          de: g("De parte de"),
+          frase: g("Frase"),
+          color: g("Color"),
+          secreto: g("Mensaje secreto"),
+          preg: g("Pregunta del secreto"),
+          clave: g("Palabra clave"),
+          pista: g("Pista"),
+          tel: g("Mi WhatsApp"),
+          abre: g("Abre el"),
+          ofi: g("Modo oficina"),
+        };
+      }
+      $("order").addEventListener("input", () => {
+        const o = parseOrder(v("order"));
+        if (o.plantilla && TV.TODAS.some((t) => t.id === o.plantilla))
+          $("plantilla").value = o.plantilla;
+        ["nombre", "de", "frase", "secreto", "preg", "clave", "pista"].forEach(
+          (k) => ($(k).value = o[k]),
+        );
+        $("abre").value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(o.abre)
+          ? o.abre
+          : "";
+        $("ofi").checked = /^s[ií]$/i.test(o.ofi);
+        $("color").value = ["rosa", "noche", "ambar"].includes(o.color)
+          ? o.color
+          : "";
+        $("cli").value = o.tel.replace(/\D/g, "");
+      });
+      $("foto").onchange = (e) => {
+        const f = e.target.files[0];
+        thumb = null;
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          const i = new Image();
+          i.onload = () => {
+            const c = document.createElement("canvas"),
+              m = Math.min(i.width, i.height);
+            c.width = c.height = 112;
+            c.getContext("2d").drawImage(
+              i,
+              (i.width - m) / 2,
+              (i.height - m) / 2,
+              m,
+              m,
+              0,
+              0,
+              112,
+              112,
+            );
+            thumb = c.toDataURL("image/jpeg", 0.5);
+          };
+          i.src = r.result;
+        };
+        r.readAsDataURL(f);
+      };
+      $("go").onclick = async () => {
+        $("msg").textContent = "";
+        const nombre = clean(v("nombre"), 24);
+        if (!nombre) {
+          $("msg").textContent = "Falta el nombre de quien recibe.";
+          return;
+        }
+        const T = TV.find(v("plantilla")),
+          sec = clean(v("secreto"), 240),
+          clave = clean(v("clave"), 20).trim(),
+          pl = {};
+        const p = new URLSearchParams({
+          nombre,
+          frase: clean(v("frase"), 70) || T.frase,
+          color: v("color"),
+          t: T.id,
+          de: clean(v("de"), 24),
+        });
+        if (thumb) pl.p = thumb;
+        await nuevas(p, pl, T);
+        const ex = await extras(p, pl);
+        if (ex) {
+          $("msg").textContent = ex;
+          return;
+        }
+        if (sec) {
+          if (clave && window.crypto && crypto.subtle) {
+            pl.s = await TVS.enc(sec, clave);
+            {
+              const sq = clean(v("preg"), 100).trim();
+              if (sq) pl.sq = sq;
+            }
+            const hh = ["pista", "pista2", "pista3"]
+              .map((i) => clean(v(i), 60).trim())
+              .filter(Boolean);
+            if (hh.length) pl.h = hh.length > 1 ? hh : hh[0];
+          } else pl.m = sec;
+        }
+        /* Construye siempre la ruta desde el dominio raíz, sin depender de la ruta del panel */
+        const largo = () =>
+          location.origin +
+          "/r/tarjeta.html?" +
+          p +
+          (Object.keys(pl).length ? "#" + TVS.pack(pl) : "");
+        let link = largo();
+        let corto = false; /* v20: link corto. Los datos van a KV (solo con tu PIN) y el link queda como tarjeta.html?id=XXXX. Si KV falla, se usa el link largo de siempre */
+        const kv = async () => {
+          const r = await fetch("/api/card", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              qs: p.toString(),
+              h: Object.keys(pl).length ? TVS.pack(pl) : "",
+              pin: v("pin"),
+            }),
+          });
+          return { r, d: await r.json().catch(() => ({})) };
+        };
+        if (TV.SHORT_LINKS) {
+          try {
+            let q = await kv();
+            if (
+              !q.r.ok &&
+              q.r.status !== 401 &&
+              pl.p &&
+              thumbLQ &&
+              pl.p !== thumbLQ
+            ) {
+              pl.p = thumbLQ;
+              link = largo();
+              q = await kv();
+            } /* si el servidor rechaza la foto grande, reintenta con la pequeña */
+            const r = q.r,
+              d = q.d;
+            if (r.status === 401) {
+              $("msg").textContent = d.error || "PIN incorrecto";
+              return;
+            }
+            if (r.ok && d.id) {
+              link = location.origin + "/r/tarjeta.html?id=" + d.id;
+              corto = true;
+              sessionStorage.setItem("tv_pin", v("pin"));
+            } else
+              $("msg").textContent =
+                "No se pudo guardar en KV (" +
+                (d.error || r.status) +
+                "). Se usó el link largo.";
+          } catch (e) {
+            $("msg").textContent =
+              "Sin conexión con /api/card. Se usó el link largo.";
+          }
+        }
+        if (TV.REQUIRE_PAYMENT && !corto) {
+          try {
+            const r = await fetch("/api/sign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ link, pin: v("pin") }),
+              }),
+              d = await r.json();
+            if (!r.ok) {
+              $("msg").textContent = d.error || "Error al firmar";
+              return;
+            }
+            sessionStorage.setItem("tv_pin", v("pin"));
+            link = d.link;
+          } catch (e) {
+            $("msg").textContent =
+              "No se pudo contactar /api/sign (ver README).";
+            return;
+          }
+        }
+        $("out").value = link;
+        $("ver").href = link;
+        $("len").textContent =
+          "Largo del link: " +
+          link.length +
+          " caracteres" +
+          (thumb ? " (incluye foto)" : "");
+        $("res").classList.remove("hidden");
+        $("res").scrollIntoView({ behavior: "smooth" });
+      };
+      /* v11: cápsula del tiempo (?abre=, queda dentro de la firma) y modo oficina (?of=1) */
+      async function extras(p, pl) {
+        const ab = v("abre");
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(ab)) p.set("abre", ab);
+        if ($("ofi").checked) p.set("of", "1");
+        if ($("ras").checked) p.set("ras", "1");
+        if ($("uv").checked) p.set("uv", "1");
+        return "";
+      }
+      $("cp").onclick = () => {
+        navigator.clipboard.writeText($("out").value);
+        $("cp").textContent = "Copiado";
+      };
+      $("wa").onclick = () => {
+        let n = v("cli").replace(/\D/g, "");
+        if (n.length <= 8) n = "591" + n;
+        open(
+          "https://wa.me/" +
+            n +
+            "?text=" +
+            encodeURIComponent(
+              "Tu tarjeta FRASSMOTTI está lista. Ábrela y compártela:\n" +
+                $("out").value,
+            ),
+          "_blank",
+        );
+      };
+    </script>
+    <script>
+      /* v12: motivo, nota de voz y aportes de grupo */
+      document.querySelectorAll("[data-feat]").forEach((e) => {
+        if (!TV.on(e.dataset.feat)) e.classList.add("hidden");
+      });
+      const mv = () => {
+        const T = TV.find(v("plantilla"));
+        $("mvRow").classList.toggle("hidden", !T.imgs);
+        $("motivo").innerHTML = T.imgs
+          ? T.imgs
+              .map((s, i) => `<option value="${i}">Motivo ${i + 1}</option>`)
+              .join("")
+          : "";
+      };
+      $("plantilla").addEventListener("change", mv);
+      mv();
+      $("order").addEventListener("input", () => {
+        mv();
+        const m = (v("order").match(/^Motivo:\s*(\d)/im) || [])[1];
+        if (m && $("motivo").options[m - 1]) $("motivo").value = m - 1;
+      });
+      $("voz").addEventListener("change", (e) => {
+        window.__voz = null;
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = () => {
+          window.__voz = r.result;
+          $("vozInfo").textContent =
+            "Audio: " +
+            Math.round(r.result.length / 1024) +
+            " KB dentro del link" +
+            (r.result.length > 90000
+              ? " (muy grande: pide un audio más corto)"
+              : "");
+        };
+        r.readAsDataURL(f);
+      });
+      async function nuevas(p, pl, T) {
+        if (T.imgs && v("motivo")) p.set("v", v("motivo"));
+        if (TV.on("voz") && window.__voz) pl.a = window.__voz;
+        if (TV.on("grupo")) {
+          const g = [...v("aportes").matchAll(/Aporte:\s*(\S+)/g)]
+            .map((m) => TVS.unpack(m[1]))
+            .filter((x) => x && x.n)
+            .slice(0, 12);
+          if (g.length) pl.g = g;
+        }
+      }
+    </script>
+    <script>
+      /* v14: género, diseño, tamaño, tipografía, título/palabra, sello, mensaje largo y 3 pistas */
+      (function () {
+        const FU = TV.FUENTES;
+        $("fu").innerHTML = FU.map(
+          (f) => `<option value="${f.id}">${f.n}</option>`,
+        ).join("");
+        const loadDis = () => {
+          $("dis").innerHTML = TV.DISENOS.map(
+            (d) => `<option value="${d.id}">${d.n}</option>`,
+          ).join("");
+        };
+        loadDis();
+        const pick = (id, val, ok) => {
+          if (ok) $(id).value = val;
+        };
+        /* ajusta las pistas y las lee del pedido */
+        const get = (t, k) => {
+          const m = t.match(new RegExp("^" + k + ':\\s*"?(.*?)"?\\s*$', "mi"));
+          const r = m ? m[1].trim() : "";
+          return /^(-|\(sin candado\)|según plantilla|sin foto)$/i.test(r)
+            ? ""
+            : r;
+        };
+        $("order").addEventListener("input", () => {
+          const t = v("order");
+          const g = get(t, "Género"),
+            d = get(t, "Diseño"),
+            tam = get(t, "Tamaño"),
+            fu = get(t, "Tipografía"),
+            msg = get(t, "Mensaje \\(\\d+ palabras\\)").replace(
+              /\s*¶\s*/g,
+              "\n",
+            ),
+            col = get(t, "Color");
+          $("gen").value = /^hombre$/i.test(g) ? "h" : "m";
+          pick(
+            "dis",
+            d,
+            TV.DISENOS.some((x) => x.id === d),
+          );
+          if (!TV.DISENOS.some((x) => x.id === d)) {
+            const l = TV.disenos($("gen").value, v("plantilla"));
+            if (l[0]) $("dis").value = l[0].id;
+          }
+          pick("tam", tam, ["1", "2", "3"].includes(tam));
+          $("tam").value = ["1", "2", "3"].includes(tam) ? tam : "1";
+          pick(
+            "fu",
+            fu,
+            FU.some((x) => x.id === fu),
+          );
+          $("pista2").value = get(t, "Pista 2");
+          $("pista3").value = get(t, "Pista 3");
+          $("titulo").value = get(t, "Título");
+          $("palabra").value = get(t, "Palabra");
+          $("sello").value = get(t, "Inicial del sello").slice(0, 1);
+          $("mensaje").value = msg;
+          $("vn").checked = /^s[ií]/i.test(
+            get(t, "Mostrar mi nombre en el sobre"),
+          );
+          if (col && Object.keys(TV.COLORS).includes(col))
+            $("color").value = col;
+          const enc = get(t, "Encuadre foto");
+          $("fo").value = /modo=color/.test(enc) ? "c" : "";
+        });
+        /* v22 · Foto con recorte (módulo js/foto.js, el mismo de personalizar.html): mover, zoom, blanco y negro / color.
    La miniatura que viaja en el link ya NO es de 170 px: con links cortos (KV) va a 520 px; si el servidor la rechaza, se reintenta con la pequeña. */
-const PH={1:200,2:150,3:112},IMG_W=235,asp=()=>IMG_W/PH[+$('tam').value||1],bwNow=()=>$('fo').value!=='c';
-let thumbLQ=null;
-if(typeof FOTO!=='undefined'){
- const refreshFoto=()=>{const ok=!!(FOTO.st&&FOTO.st.img);$('fotoBox').classList.toggle('hidden',!ok);
-  if(!ok){thumb=null;thumbLQ=null;return}
-  const lq=FOTO.render(asp(),170),hq=FOTO.render(asp(),520);thumbLQ=lq;thumb=TV.SHORT_LINKS?hq:lq;
-  $('fotoThumb').src=hq;$('fotoThumb').style.filter=bwNow()?'grayscale(1) contrast(1.1)':'none';
-  $('fotoMode').querySelectorAll('[data-m]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.m==='bn')===bwNow()))};
- const editar=()=>FOTO.edit(asp(),{bw:bwNow,setBW:x=>{$('fo').value=x?'':'c'},done:refreshFoto});
- $('foto').onchange=async e=>{const f=e.target.files[0];thumb=null;thumbLQ=null;
-  if(!f){FOTO.clear();refreshFoto();return}
-  try{await FOTO.load(f);refreshFoto();editar()}catch(err){$('msg').textContent=err.message||'No se pudo leer la foto';$('foto').value=''}};
- $('fotoEdit').onclick=editar;
- $('fotoDel').onclick=()=>{FOTO.clear();$('foto').value='';refreshFoto()};
- $('fotoMode').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;$('fo').value=b.dataset.m==='bn'?'':'c';refreshFoto()};
- $('fo').addEventListener('change',refreshFoto);$('tam').addEventListener('change',refreshFoto);   /* la proporción depende del tamaño */
- $('mCrop').addEventListener('click',e=>{if(e.target.id==='mCrop'||e.target.closest('[data-close]'))refreshFoto()});
- document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-close]'))m.classList.remove('open')}));
- document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>m.classList.remove('open'))});
-}else{
- /* sin js/foto.js: se mantiene la miniatura de siempre (recorte centrado) */
- $('foto').onchange=e=>{const f=e.target.files[0];thumb=null;if(!f)return;const r=new FileReader();r.onload=()=>{const i=new Image();i.onload=()=>{
-  const W=170,H=Math.round(W*PH[+$('tam').value||1]/235),c=document.createElement('canvas');c.width=W;c.height=H;const a=W/H;let sw=i.width,sh=i.width/a;if(sh>i.height){sh=i.height;sw=i.height*a}
-  c.getContext('2d').drawImage(i,(i.width-sw)/2,(i.height-sh)/2,sw,sh,0,0,W,H);thumb=c.toDataURL('image/jpeg',.55)};i.src=r.result};r.readAsDataURL(f)};
-}
-/* parámetros del link y payload */
-const _n=nuevas;nuevas=async(p,pl,T)=>{await _n(p,pl,T);
- if($('vn').checked&&clean(v('de'),24).trim())p.set('vn','1');
- p.set('g',v('gen'));p.set('d',v('dis'));p.set('tam',v('tam'));p.set('fu',v('fu'));
- const ti=clean(v('titulo'),14).trim(),pa=clean(v('palabra'),9).trim(),se=clean(v('sello'),1).trim(),fo=v('fo');
- if(ti)p.set('titulo',ti);if(pa)p.set('palabra',pa);if(se)p.set('sello',se);if(fo)p.set('fo',fo);
- const m=clean(v('mensaje'),2600).trim();if(m&&(+v('tam')>1||m.length>70))pl.x=m;}
-})();
-</script><script>
-/* v27 · muestra el formato y el monto del pedido para comprobar el pago (tarjeta virtual 3 Bs en promo / llavero 15 Bs) */
-(function(){const el=document.getElementById('fmtPedido'),o=document.getElementById('order');
- o.addEventListener('input',()=>{const t=o.value,f=(t.match(/^Formato:\s*(.+)$/mi)||[])[1],m=(t.match(/^Monto:\s*(.+)$/mi)||[])[1];
-  if(!f&&!m){el.classList.add('hidden');return}
-  el.textContent=(f?'Formato: '+f.trim():'')+(m?(f?' · ':'')+'Monto a verificar: '+m.trim():'')+(f&&/llavero/i.test(f)?' · Recuerda: convierte el link en QR para grabarlo en el llavero.':'');
-  el.classList.remove('hidden')})})();
-</script><script>
-/* Buzón de pedidos: lista los pendientes, descifra con tu llave privada y llena el formulario (mismo efecto que pegar el mensaje en el Paso 1) */
-(function(){const $=id=>document.getElementById(id),say=m=>{$('bzMsg').textContent=m};let cur=null;
- $('bzPin').value=sessionStorage.getItem('tv_pin')||'';
- const state=async()=>{try{$('bzKeyState').textContent=(await BZ.kget())?'✔ Hay una llave privada guardada en este dispositivo.':'Todavía no hay llave privada en este dispositivo.'}catch(e){$('bzKeyState').textContent='No se pudo leer el almacenamiento del navegador.'}};state();
- const api=async body=>{const r=await fetch('/api/pedido',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,pin:$('bzPin').value})});const d=await r.json().catch(()=>({}));
-  if(r.ok){sessionStorage.setItem('tv_pin',$('bzPin').value);if($('pin'))$('pin').value=$('bzPin').value}return{r,d}};
- const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<60?'hace '+Math.max(m,1)+' min':m<1440?'hace '+Math.round(m/60)+' h':'hace '+Math.round(m/1440)+' d'};
- const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- async function cargar(){say('Cargando…');$('bzList').innerHTML='';let q;try{q=await api({action:'list'})}catch(e){say('Sin conexión con /api/pedido.');return}
-  if(!q.r.ok){say(q.d.error||'Error '+q.r.status);return}
-  const it=q.d.items||[];say(it.length?it.length+' pedido(s) pendiente(s). Un pedido recién enviado puede tardar 1-2 minutos en aparecer; si el cliente te dio su código, ábrelo abajo con "Abrir por código".':'No hay pedidos pendientes (si acaban de enviar uno, espera 1-2 minutos y pulsa Cargar de nuevo).');
-  $('bzList').innerHTML=it.map(x=>`<li class="flex items-center justify-between gap-3 border border-gray-200 rounded-xl p-3"><div class="text-sm"><b>${esc(x.code)}</b><br><span class="text-gray-600">${esc(x.oc)} · ${esc(x.fmt)}${x.monto?' · Bs '+esc(x.monto):''} · ${ago(x.t)}</span></div><button type="button" data-open="${esc(x.code)}" class="btn btn-dark !py-2 text-sm">Abrir</button></li>`).join('')}
- $('bzLoad').onclick=cargar;
- async function abrir(code){say('Abriendo '+code+'…');
-  let priv;try{priv=await BZ.kget()}catch(x){}if(!priv){say('No hay llave privada en este dispositivo. Abre "Llave del buzón" abajo para crearla o recuperarla.');return}
-  const q=await api({action:'get',code});if(!q.r.ok){say(q.r.status===404?'El pedido '+code+' no está (todavía) en el buzón. Si el cliente lo acaba de enviar, espera 1-2 minutos y vuelve a intentar; si pasó más tiempo, ese pedido no se guardó y el cliente debe repetirlo.':(q.d.error||'Error '+q.r.status));return}
-  let o;try{o=await BZ.open(priv,q.d.b)}catch(x){say('No se pudo descifrar: este pedido se cifró con otra llave.');return}
-  $('order').value=o.t;$('order').dispatchEvent(new Event('input'));cur=code;$('bzDoneRow').classList.remove('hidden');
-  if(o.p){try{const bl=await (await fetch(o.p)).blob(),dt=new DataTransfer();dt.items.add(new File([bl],'foto-'+code+'.jpg',{type:bl.type||'image/jpeg'}));$('foto').files=dt.files;$('foto').dispatchEvent(new Event('change'))}catch(x){}}
-  say('Pedido '+code+' cargado en el Paso 2. Revísalo, verifica el pago y genera el link.');$('order').scrollIntoView({behavior:'smooth',block:'start'})}
- $('bzList').onclick=e=>{const b=e.target.closest('[data-open]');if(b)abrir(b.dataset.open)};
- $('bzGo').onclick=()=>{let c=$('bzCode').value.toUpperCase().replace(/[^A-Z0-9]/g,'');if(c.length!==8){say('El código tiene 8 letras/números, por ejemplo K7F2-9QXA.');return}abrir(c.slice(0,4)+'-'+c.slice(4))};
- $('bzDone').onclick=async()=>{if(!cur||!confirm('¿Borrar el pedido '+cur+' del buzón? Haz esto cuando ya hayas enviado el link.'))return;const q=await api({action:'del',code:cur});
-  if(q.r.ok){say('Pedido '+cur+' borrado del buzón.');cur=null;$('bzDoneRow').classList.add('hidden');cargar()}else say(q.d.error||'Error '+q.r.status)};
- $('bzGen').onclick=async()=>{let ya=null;try{ya=await BZ.kget()}catch(e){}
-  if(ya&&!confirm('Ya hay una llave en este dispositivo. Si creas otra, los pedidos pendientes cifrados con la anterior NO se podrán abrir. ¿Continuar?'))return;
-  const k=await BZ.genPair();await BZ.kset(await BZ.privFrom(k.priv));
-  $('bzOut').value='1) PÚBLICA: pega esta línea en js/config.js, dentro de TV{ }:\nPEDIDOS_PUBKEY:'+JSON.stringify(k.pub)+',\n\n2) PRIVADA: guárdala en tu gestor de contraseñas (no se vuelve a mostrar):\n'+JSON.stringify(k.priv);
-  $('bzOut').classList.remove('hidden');state()};
- $('bzImp').onclick=async()=>{try{const j=JSON.parse($('bzIn').value.trim());if(!j.d)throw 0;await BZ.kset(await BZ.privFrom(j));$('bzIn').value='';say('Llave privada guardada en este dispositivo.');state()}catch(e){say('Esa llave no es válida. Pega el texto completo que empieza con {')}};
+        const PH = { 1: 200, 2: 150, 3: 112 },
+          IMG_W = 235,
+          asp = () => IMG_W / PH[+$("tam").value || 1],
+          bwNow = () => $("fo").value !== "c";
+        let thumbLQ = null;
+        if (typeof FOTO !== "undefined") {
+          const refreshFoto = () => {
+            const ok = !!(FOTO.st && FOTO.st.img);
+            $("fotoBox").classList.toggle("hidden", !ok);
+            if (!ok) {
+              thumb = null;
+              thumbLQ = null;
+              return;
+            }
+            const lq = FOTO.render(asp(), 170),
+              hq = FOTO.render(asp(), 520);
+            thumbLQ = lq;
+            thumb = TV.SHORT_LINKS ? hq : lq;
+            $("fotoThumb").src = hq;
+            $("fotoThumb").style.filter = bwNow()
+              ? "grayscale(1) contrast(1.1)"
+              : "none";
+            $("fotoMode")
+              .querySelectorAll("[data-m]")
+              .forEach((b) =>
+                b.setAttribute(
+                  "aria-pressed",
+                  (b.dataset.m === "bn") === bwNow(),
+                ),
+              );
+          };
+          const editar = () =>
+            FOTO.edit(asp(), {
+              bw: bwNow,
+              setBW: (x) => {
+                $("fo").value = x ? "" : "c";
+              },
+              done: refreshFoto,
+            });
+          $("foto").onchange = async (e) => {
+            const f = e.target.files[0];
+            thumb = null;
+            thumbLQ = null;
+            if (!f) {
+              FOTO.clear();
+              refreshFoto();
+              return;
+            }
+            try {
+              await FOTO.load(f);
+              refreshFoto();
+              editar();
+            } catch (err) {
+              $("msg").textContent = err.message || "No se pudo leer la foto";
+              $("foto").value = "";
+            }
+          };
+          $("fotoEdit").onclick = editar;
+          $("fotoDel").onclick = () => {
+            FOTO.clear();
+            $("foto").value = "";
+            refreshFoto();
+          };
+          $("fotoMode").onclick = (e) => {
+            const b = e.target.closest("[data-m]");
+            if (!b) return;
+            $("fo").value = b.dataset.m === "bn" ? "" : "c";
+            refreshFoto();
+          };
+          $("fo").addEventListener("change", refreshFoto);
+          $("tam").addEventListener(
+            "change",
+            refreshFoto,
+          ); /* la proporción depende del tamaño */
+          $("mCrop").addEventListener("click", (e) => {
+            if (e.target.id === "mCrop" || e.target.closest("[data-close]"))
+              refreshFoto();
+          });
+          document.querySelectorAll(".modal").forEach((m) =>
+            m.addEventListener("click", (e) => {
+              if (e.target === m || e.target.closest("[data-close]"))
+                m.classList.remove("open");
+            }),
+          );
+          document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape")
+              document
+                .querySelectorAll(".modal.open")
+                .forEach((m) => m.classList.remove("open"));
+          });
+        } else {
+          /* sin js/foto.js: se mantiene la miniatura de siempre (recorte centrado) */
+          $("foto").onchange = (e) => {
+            const f = e.target.files[0];
+            thumb = null;
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = () => {
+              const i = new Image();
+              i.onload = () => {
+                const W = 170,
+                  H = Math.round((W * PH[+$("tam").value || 1]) / 235),
+                  c = document.createElement("canvas");
+                c.width = W;
+                c.height = H;
+                const a = W / H;
+                let sw = i.width,
+                  sh = i.width / a;
+                if (sh > i.height) {
+                  sh = i.height;
+                  sw = i.height * a;
+                }
+                c.getContext("2d").drawImage(
+                  i,
+                  (i.width - sw) / 2,
+                  (i.height - sh) / 2,
+                  sw,
+                  sh,
+                  0,
+                  0,
+                  W,
+                  H,
+                );
+                thumb = c.toDataURL("image/jpeg", 0.55);
+              };
+              i.src = r.result;
+            };
+            r.readAsDataURL(f);
+          };
+        }
+        /* parámetros del link y payload */
+        const _n = nuevas;
+        nuevas = async (p, pl, T) => {
+          await _n(p, pl, T);
+          if ($("vn").checked && clean(v("de"), 24).trim()) p.set("vn", "1");
+          p.set("g", v("gen"));
+          p.set("d", v("dis"));
+          p.set("tam", v("tam"));
+          p.set("fu", v("fu"));
+          const ti = clean(v("titulo"), 14).trim(),
+            pa = clean(v("palabra"), 9).trim(),
+            se = clean(v("sello"), 1).trim(),
+            fo = v("fo");
+          if (ti) p.set("titulo", ti);
+          if (pa) p.set("palabra", pa);
+          if (se) p.set("sello", se);
+          if (fo) p.set("fo", fo);
+          const m = clean(v("mensaje"), 2600).trim();
+          if (m && (+v("tam") > 1 || m.length > 70)) pl.x = m;
+        };
+      })();
+    </script>
+    <script>
+      /* v27 · muestra el formato y el monto del pedido para comprobar el pago (tarjeta virtual 3 Bs en promo / llavero 15 Bs) */
+      (function () {
+        const el = document.getElementById("fmtPedido"),
+          o = document.getElementById("order");
+        o.addEventListener("input", () => {
+          const t = o.value,
+            f = (t.match(/^Formato:\s*(.+)$/im) || [])[1],
+            m = (t.match(/^Monto:\s*(.+)$/im) || [])[1];
+          if (!f && !m) {
+            el.classList.add("hidden");
+            return;
+          }
+          el.textContent =
+            (f ? "Formato: " + f.trim() : "") +
+            (m ? (f ? " · " : "") + "Monto a verificar: " + m.trim() : "") +
+            (f && /llavero/i.test(f)
+              ? " · Recuerda: convierte el link en QR para grabarlo en el llavero."
+              : "");
+          el.classList.remove("hidden");
+        });
+      })();
+    </script>
+    <script>
+      /* Buzón de pedidos: lista los pendientes, descifra con tu llave privada y llena el formulario (mismo efecto que pegar el mensaje en el Paso 1) */
+      (function () {
+        const $ = (id) => document.getElementById(id),
+          say = (m) => {
+            $("bzMsg").textContent = m;
+          };
+        let cur = null;
+        $("bzPin").value = sessionStorage.getItem("tv_pin") || "";
+        const state = async () => {
+          try {
+            $("bzKeyState").textContent = (await BZ.kget())
+              ? "✔ Hay una llave privada guardada en este dispositivo."
+              : "Todavía no hay llave privada en este dispositivo.";
+          } catch (e) {
+            $("bzKeyState").textContent =
+              "No se pudo leer el almacenamiento del navegador.";
+          }
+        };
+        state();
+        const api = async (body) => {
+          const r = await fetch("/api/pedido", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...body, pin: $("bzPin").value }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (r.ok) {
+            sessionStorage.setItem("tv_pin", $("bzPin").value);
+            if ($("pin")) $("pin").value = $("bzPin").value;
+          }
+          return { r, d };
+        };
+        const ago = (t) => {
+          const m = Math.round((Date.now() - t) / 6e4);
+          return m < 60
+            ? "hace " + Math.max(m, 1) + " min"
+            : m < 1440
+              ? "hace " + Math.round(m / 60) + " h"
+              : "hace " + Math.round(m / 1440) + " d";
+        };
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        async function cargar() {
+          say("Cargando…");
+          $("bzList").innerHTML = "";
+          let q;
+          try {
+            q = await api({ action: "list" });
+          } catch (e) {
+            say("Sin conexión con /api/pedido.");
+            return;
+          }
+          if (!q.r.ok) {
+            say(q.d.error || "Error " + q.r.status);
+            return;
+          }
+          const it = q.d.items || [];
+          say(
+            it.length
+              ? it.length +
+                  ' pedido(s) pendiente(s). Un pedido recién enviado puede tardar 1-2 minutos en aparecer; si el cliente te dio su código, ábrelo abajo con "Abrir por código".'
+              : "No hay pedidos pendientes (si acaban de enviar uno, espera 1-2 minutos y pulsa Cargar de nuevo).",
+          );
+          $("bzList").innerHTML = it
+            .map(
+              (x) =>
+                `<li class="flex items-center justify-between gap-3 border border-gray-200 rounded-xl p-3"><div class="text-sm"><b>${esc(x.code)}</b><br><span class="text-gray-600">${esc(x.oc)} · ${esc(x.fmt)}${x.monto ? " · Bs " + esc(x.monto) : ""} · ${ago(x.t)}</span></div><button type="button" data-open="${esc(x.code)}" class="btn btn-dark !py-2 text-sm">Abrir</button></li>`,
+            )
+            .join("");
+        }
+        $("bzLoad").onclick = cargar;
+        async function abrir(code) {
+          say("Abriendo " + code + "…");
+          let priv;
+          try {
+            priv = await BZ.kget();
+          } catch (x) {}
+          if (!priv) {
+            say(
+              'No hay llave privada en este dispositivo. Abre "Llave del buzón" abajo para crearla o recuperarla.',
+            );
+            return;
+          }
+          const q = await api({ action: "get", code });
+          if (!q.r.ok) {
+            say(
+              q.r.status === 404
+                ? "El pedido " +
+                    code +
+                    " no está (todavía) en el buzón. Si el cliente lo acaba de enviar, espera 1-2 minutos y vuelve a intentar; si pasó más tiempo, ese pedido no se guardó y el cliente debe repetirlo."
+                : q.d.error || "Error " + q.r.status,
+            );
+            return;
+          }
+          let o;
+          try {
+            o = await BZ.open(priv, q.d.b);
+          } catch (x) {
+            say("No se pudo descifrar: este pedido se cifró con otra llave.");
+            return;
+          }
+          $("order").value = o.t;
+          $("order").dispatchEvent(new Event("input"));
+          cur = code;
+          $("bzDoneRow").classList.remove("hidden");
+          if (o.p) {
+            try {
+              const bl = await (await fetch(o.p)).blob(),
+                dt = new DataTransfer();
+              dt.items.add(
+                new File([bl], "foto-" + code + ".jpg", {
+                  type: bl.type || "image/jpeg",
+                }),
+              );
+              $("foto").files = dt.files;
+              $("foto").dispatchEvent(new Event("change"));
+            } catch (x) {}
+          }
+          say(
+            "Pedido " +
+              code +
+              " cargado en el Paso 2. Revísalo, verifica el pago y genera el link.",
+          );
+          $("order").scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        $("bzList").onclick = (e) => {
+          const b = e.target.closest("[data-open]");
+          if (b) abrir(b.dataset.open);
+        };
+        $("bzGo").onclick = () => {
+          let c = $("bzCode")
+            .value.toUpperCase()
+            .replace(/[^A-Z0-9]/g, "");
+          if (c.length !== 8) {
+            say("El código tiene 8 letras/números, por ejemplo K7F2-9QXA.");
+            return;
+          }
+          abrir(c.slice(0, 4) + "-" + c.slice(4));
+        };
+        $("bzDone").onclick = async () => {
+          if (
+            !cur ||
+            !confirm(
+              "¿Borrar el pedido " +
+                cur +
+                " del buzón? Haz esto cuando ya hayas enviado el link.",
+            )
+          )
+            return;
+          const q = await api({ action: "del", code: cur });
+          if (q.r.ok) {
+            say("Pedido " + cur + " borrado del buzón.");
+            cur = null;
+            $("bzDoneRow").classList.add("hidden");
+            cargar();
+          } else say(q.d.error || "Error " + q.r.status);
+        };
+        $("bzGen").onclick = async () => {
+          let ya = null;
+          try {
+            ya = await BZ.kget();
+          } catch (e) {}
+          if (
+            ya &&
+            !confirm(
+              "Ya hay una llave en este dispositivo. Si creas otra, los pedidos pendientes cifrados con la anterior NO se podrán abrir. ¿Continuar?",
+            )
+          )
+            return;
+          const k = await BZ.genPair();
+          await BZ.kset(await BZ.privFrom(k.priv));
+          $("bzOut").value =
+            "1) PÚBLICA: pega esta línea en js/config.js, dentro de TV{ }:\nPEDIDOS_PUBKEY:" +
+            JSON.stringify(k.pub) +
+            ",\n\n2) PRIVADA: guárdala en tu gestor de contraseñas (no se vuelve a mostrar):\n" +
+            JSON.stringify(k.priv);
+          $("bzOut").classList.remove("hidden");
+          state();
+        };
+        $("bzImp").onclick = async () => {
+          try {
+            const j = JSON.parse($("bzIn").value.trim());
+            if (!j.d) throw 0;
+            await BZ.kset(await BZ.privFrom(j));
+            $("bzIn").value = "";
+            say("Llave privada guardada en este dispositivo.");
+            state();
+          } catch (e) {
+            say(
+              "Esa llave no es válida. Pega el texto completo que empieza con {",
+            );
+          }
+        };
+      })();
+    </script>
+  <script>
+/* qrcode-generator (QR Code Generator for JavaScript) · Copyright (c) 2009 Kazuhiko Arase · https://github.com/kazuhikoarase/qrcode-generator
+   Licencia MIT: se permite usar, copiar, modificar y distribuir este software, incluyendo este aviso de copyright y de permiso en todas las copias.
+   EL SOFTWARE SE ENTREGA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO. "QR Code" es marca registrada de DENSO WAVE INCORPORATED. */
+var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],f={},c=function(t,r){o=function(t){for(var r=new Array(t),e=0;e<t;e+=1){r[e]=new Array(t);for(var n=0;n<t;n+=1)r[e][n]=null}return r}(i=4*e+17),l(0,0),l(i-7,0),l(0,i-7),s(),h(),d(t,r),e>=7&&v(t),null==a&&(a=p(e,n,u)),w(a,r)},l=function(t,r){for(var e=-1;e<=7;e+=1)if(!(t+e<=-1||i<=t+e))for(var n=-1;n<=7;n+=1)r+n<=-1||i<=r+n||(o[t+e][r+n]=0<=e&&e<=6&&(0==n||6==n)||0<=n&&n<=6&&(0==e||6==e)||2<=e&&e<=4&&2<=n&&n<=4)},h=function(){for(var t=8;t<i-8;t+=1)null==o[t][6]&&(o[t][6]=t%2==0);for(var r=8;r<i-8;r+=1)null==o[6][r]&&(o[6][r]=r%2==0)},s=function(){for(var t=B.getPatternPosition(e),r=0;r<t.length;r+=1)for(var n=0;n<t.length;n+=1){var i=t[r],a=t[n];if(null==o[i][a])for(var u=-2;u<=2;u+=1)for(var f=-2;f<=2;f+=1)o[i+u][a+f]=-2==u||2==u||-2==f||2==f||0==u&&0==f}},v=function(t){for(var r=B.getBCHTypeNumber(e),n=0;n<18;n+=1){var a=!t&&1==(r>>n&1);o[Math.floor(n/3)][n%3+i-8-3]=a}for(n=0;n<18;n+=1){a=!t&&1==(r>>n&1);o[n%3+i-8-3][Math.floor(n/3)]=a}},d=function(t,r){for(var e=n<<3|r,a=B.getBCHTypeInfo(e),u=0;u<15;u+=1){var f=!t&&1==(a>>u&1);u<6?o[u][8]=f:u<8?o[u+1][8]=f:o[i-15+u][8]=f}for(u=0;u<15;u+=1){f=!t&&1==(a>>u&1);u<8?o[8][i-u-1]=f:u<9?o[8][15-u-1+1]=f:o[8][15-u-1]=f}o[i-8][8]=!t},w=function(t,r){for(var e=-1,n=i-1,a=7,u=0,f=B.getMaskFunction(r),c=i-1;c>0;c-=2)for(6==c&&(c-=1);;){for(var g=0;g<2;g+=1)if(null==o[n][c-g]){var l=!1;u<t.length&&(l=1==(t[u]>>>a&1)),f(n,c-g)&&(l=!l),o[n][c-g]=l,-1==(a-=1)&&(u+=1,a=7)}if((n+=e)<0||i<=n){n-=e,e=-e;break}}},p=function(t,r,e){for(var n=A.getRSBlocks(t,r),o=b(),i=0;i<e.length;i+=1){var a=e[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var u=0;for(i=0;i<n.length;i+=1)u+=n[i].dataCount;if(o.getLengthInBits()>8*u)throw"code length overflow. ("+o.getLengthInBits()+">"+8*u+")";for(o.getLengthInBits()+4<=8*u&&o.put(0,4);o.getLengthInBits()%8!=0;)o.putBit(!1);for(;!(o.getLengthInBits()>=8*u||(o.put(236,8),o.getLengthInBits()>=8*u));)o.put(17,8);return function(t,r){for(var e=0,n=0,o=0,i=new Array(r.length),a=new Array(r.length),u=0;u<r.length;u+=1){var f=r[u].dataCount,c=r[u].totalCount-f;n=Math.max(n,f),o=Math.max(o,c),i[u]=new Array(f);for(var g=0;g<i[u].length;g+=1)i[u][g]=255&t.getBuffer()[g+e];e+=f;var l=B.getErrorCorrectPolynomial(c),h=k(i[u],l.getLength()-1).mod(l);for(a[u]=new Array(l.getLength()-1),g=0;g<a[u].length;g+=1){var s=g+h.getLength()-a[u].length;a[u][g]=s>=0?h.getAt(s):0}}var v=0;for(g=0;g<r.length;g+=1)v+=r[g].totalCount;var d=new Array(v),w=0;for(g=0;g<n;g+=1)for(u=0;u<r.length;u+=1)g<i[u].length&&(d[w]=i[u][g],w+=1);for(g=0;g<o;g+=1)for(u=0;u<r.length;u+=1)g<a[u].length&&(d[w]=a[u][g],w+=1);return d}(o,n)};f.addData=function(t,r){var e=null;switch(r=r||"Byte"){case"Numeric":e=M(t);break;case"Alphanumeric":e=x(t);break;case"Byte":e=m(t);break;case"Kanji":e=L(t);break;default:throw"mode:"+r}u.push(e),a=null},f.isDark=function(t,r){if(t<0||i<=t||r<0||i<=r)throw t+","+r;return o[t][r]},f.getModuleCount=function(){return i},f.make=function(){if(e<1){for(var t=1;t<40;t++){for(var r=A.getRSBlocks(t,n),o=b(),i=0;i<u.length;i++){var a=u[i];o.put(a.getMode(),4),o.put(a.getLength(),B.getLengthInBits(a.getMode(),t)),a.write(o)}var g=0;for(i=0;i<r.length;i++)g+=r[i].dataCount;if(o.getLengthInBits()<=8*g)break}e=t}c(!1,function(){for(var t=0,r=0,e=0;e<8;e+=1){c(!0,e);var n=B.getLostPoint(f);(0==e||t>n)&&(t=n,r=e)}return r}())},f.createTableTag=function(t,r){t=t||2;var e="";e+='<table style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: "+(r=void 0===r?4*t:r)+"px;",e+='">',e+="<tbody>";for(var n=0;n<f.getModuleCount();n+=1){e+="<tr>";for(var o=0;o<f.getModuleCount();o+=1)e+='<td style="',e+=" border-width: 0px; border-style: none;",e+=" border-collapse: collapse;",e+=" padding: 0px; margin: 0px;",e+=" width: "+t+"px;",e+=" height: "+t+"px;",e+=" background-color: ",e+=f.isDark(n,o)?"#000000":"#ffffff",e+=";",e+='"/>';e+="</tr>"}return e+="</tbody>",e+="</table>"},f.createSvgTag=function(t,r,e,n){var o={};"object"==typeof arguments[0]&&(t=(o=arguments[0]).cellSize,r=o.margin,e=o.alt,n=o.title),t=t||2,r=void 0===r?4*t:r,(e="string"==typeof e?{text:e}:e||{}).text=e.text||null,e.id=e.text?e.id||"qrcode-description":null,(n="string"==typeof n?{text:n}:n||{}).text=n.text||null,n.id=n.text?n.id||"qrcode-title":null;var i,a,u,c,g=f.getModuleCount()*t+2*r,l="";for(c="l"+t+",0 0,"+t+" -"+t+",0 0,-"+t+"z ",l+='<svg version="1.1" xmlns="http://www.w3.org/2000/svg"',l+=o.scalable?"":' width="'+g+'px" height="'+g+'px"',l+=' viewBox="0 0 '+g+" "+g+'" ',l+=' preserveAspectRatio="xMinYMin meet"',l+=n.text||e.text?' role="img" aria-labelledby="'+y([n.id,e.id].join(" ").trim())+'"':"",l+=">",l+=n.text?'<title id="'+y(n.id)+'">'+y(n.text)+"</title>":"",l+=e.text?'<description id="'+y(e.id)+'">'+y(e.text)+"</description>":"",l+='<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>',l+='<path d="',a=0;a<f.getModuleCount();a+=1)for(u=a*t+r,i=0;i<f.getModuleCount();i+=1)f.isDark(a,i)&&(l+="M"+(i*t+r)+","+u+c);return l+='" stroke="transparent" fill="black"/>',l+="</svg>"},f.createDataURL=function(t,r){t=t||2,r=void 0===r?4*t:r;var e=f.getModuleCount()*t+2*r,n=r,o=e-r;return I(e,e,function(r,e){if(n<=r&&r<o&&n<=e&&e<o){var i=Math.floor((r-n)/t),a=Math.floor((e-n)/t);return f.isDark(a,i)?0:1}return 1})},f.createImgTag=function(t,r,e){t=t||2,r=void 0===r?4*t:r;var n=f.getModuleCount()*t+2*r,o="";return o+="<img",o+=' src="',o+=f.createDataURL(t,r),o+='"',o+=' width="',o+=n,o+='"',o+=' height="',o+=n,o+='"',e&&(o+=' alt="',o+=y(e),o+='"'),o+="/>"};var y=function(t){for(var r="",e=0;e<t.length;e+=1){var n=t.charAt(e);switch(n){case"<":r+="&lt;";break;case">":r+="&gt;";break;case"&":r+="&amp;";break;case'"':r+="&quot;";break;default:r+=n}}return r};return f.createASCII=function(t,r){if((t=t||1)<2)return function(t){t=void 0===t?2:t;var r,e,n,o,i,a=1*f.getModuleCount()+2*t,u=t,c=a-t,g={"██":"█","█ ":"▀"," █":"▄","  ":" "},l={"██":"▀","█ ":"▀"," █":" ","  ":" "},h="";for(r=0;r<a;r+=2){for(n=Math.floor((r-u)/1),o=Math.floor((r+1-u)/1),e=0;e<a;e+=1)i="█",u<=e&&e<c&&u<=r&&r<c&&f.isDark(n,Math.floor((e-u)/1))&&(i=" "),u<=e&&e<c&&u<=r+1&&r+1<c&&f.isDark(o,Math.floor((e-u)/1))?i+=" ":i+="█",h+=t<1&&r+1>=c?l[i]:g[i];h+="\n"}return a%2&&t>0?h.substring(0,h.length-a-1)+Array(a+1).join("▀"):h.substring(0,h.length-1)}(r);t-=1,r=void 0===r?2*t:r;var e,n,o,i,a=f.getModuleCount()*t+2*r,u=r,c=a-r,g=Array(t+1).join("██"),l=Array(t+1).join("  "),h="",s="";for(e=0;e<a;e+=1){for(o=Math.floor((e-u)/t),s="",n=0;n<a;n+=1)i=1,u<=n&&n<c&&u<=e&&e<c&&f.isDark(o,Math.floor((n-u)/t))&&(i=0),s+=i?g:l;for(o=0;o<t;o+=1)h+=s+"\n"}return h.substring(0,h.length-1)},f.renderTo2dContext=function(t,r){r=r||2;for(var e=f.getModuleCount(),n=0;n<e;n++)for(var o=0;o<e;o++)t.fillStyle=f.isDark(n,o)?"black":"white",t.fillRect(o*r,n*r,r,r)},f};t.stringToBytes=(t.stringToBytesFuncs={default:function(t){for(var r=[],e=0;e<t.length;e+=1){var n=t.charCodeAt(e);r.push(255&n)}return r}}).default,t.createStringToBytes=function(t,r){var e=function(){for(var e=S(t),n=function(){var t=e.read();if(-1==t)throw"eof";return t},o=0,i={};;){var a=e.read();if(-1==a)break;var u=n(),f=n()<<8|n();i[String.fromCharCode(a<<8|u)]=f,o+=1}if(o!=r)throw o+" != "+r;return i}(),n="?".charCodeAt(0);return function(t){for(var r=[],o=0;o<t.length;o+=1){var i=t.charCodeAt(o);if(i<128)r.push(i);else{var a=e[t.charAt(o)];"number"==typeof a?(255&a)==a?r.push(a):(r.push(a>>>8),r.push(255&a)):r.push(n)}}return r}};var r,e,n,o,i,a=1,u=2,f=4,c=8,g={L:1,M:0,Q:3,H:2},l=0,h=1,s=2,v=3,d=4,w=5,p=6,y=7,B=(r=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],e=1335,n=7973,i=function(t){for(var r=0;0!=t;)r+=1,t>>>=1;return r},(o={}).getBCHTypeInfo=function(t){for(var r=t<<10;i(r)-i(e)>=0;)r^=e<<i(r)-i(e);return 21522^(t<<10|r)},o.getBCHTypeNumber=function(t){for(var r=t<<12;i(r)-i(n)>=0;)r^=n<<i(r)-i(n);return t<<12|r},o.getPatternPosition=function(t){return r[t-1]},o.getMaskFunction=function(t){switch(t){case l:return function(t,r){return(t+r)%2==0};case h:return function(t,r){return t%2==0};case s:return function(t,r){return r%3==0};case v:return function(t,r){return(t+r)%3==0};case d:return function(t,r){return(Math.floor(t/2)+Math.floor(r/3))%2==0};case w:return function(t,r){return t*r%2+t*r%3==0};case p:return function(t,r){return(t*r%2+t*r%3)%2==0};case y:return function(t,r){return(t*r%3+(t+r)%2)%2==0};default:throw"bad maskPattern:"+t}},o.getErrorCorrectPolynomial=function(t){for(var r=k([1],0),e=0;e<t;e+=1)r=r.multiply(k([1,C.gexp(e)],0));return r},o.getLengthInBits=function(t,r){if(1<=r&&r<10)switch(t){case a:return 10;case u:return 9;case f:case c:return 8;default:throw"mode:"+t}else if(r<27)switch(t){case a:return 12;case u:return 11;case f:return 16;case c:return 10;default:throw"mode:"+t}else{if(!(r<41))throw"type:"+r;switch(t){case a:return 14;case u:return 13;case f:return 16;case c:return 12;default:throw"mode:"+t}}},o.getLostPoint=function(t){for(var r=t.getModuleCount(),e=0,n=0;n<r;n+=1)for(var o=0;o<r;o+=1){for(var i=0,a=t.isDark(n,o),u=-1;u<=1;u+=1)if(!(n+u<0||r<=n+u))for(var f=-1;f<=1;f+=1)o+f<0||r<=o+f||0==u&&0==f||a==t.isDark(n+u,o+f)&&(i+=1);i>5&&(e+=3+i-5)}for(n=0;n<r-1;n+=1)for(o=0;o<r-1;o+=1){var c=0;t.isDark(n,o)&&(c+=1),t.isDark(n+1,o)&&(c+=1),t.isDark(n,o+1)&&(c+=1),t.isDark(n+1,o+1)&&(c+=1),0!=c&&4!=c||(e+=3)}for(n=0;n<r;n+=1)for(o=0;o<r-6;o+=1)t.isDark(n,o)&&!t.isDark(n,o+1)&&t.isDark(n,o+2)&&t.isDark(n,o+3)&&t.isDark(n,o+4)&&!t.isDark(n,o+5)&&t.isDark(n,o+6)&&(e+=40);for(o=0;o<r;o+=1)for(n=0;n<r-6;n+=1)t.isDark(n,o)&&!t.isDark(n+1,o)&&t.isDark(n+2,o)&&t.isDark(n+3,o)&&t.isDark(n+4,o)&&!t.isDark(n+5,o)&&t.isDark(n+6,o)&&(e+=40);var g=0;for(o=0;o<r;o+=1)for(n=0;n<r;n+=1)t.isDark(n,o)&&(g+=1);return e+=Math.abs(100*g/r/r-50)/5*10},o),C=function(){for(var t=new Array(256),r=new Array(256),e=0;e<8;e+=1)t[e]=1<<e;for(e=8;e<256;e+=1)t[e]=t[e-4]^t[e-5]^t[e-6]^t[e-8];for(e=0;e<255;e+=1)r[t[e]]=e;var n={glog:function(t){if(t<1)throw"glog("+t+")";return r[t]},gexp:function(r){for(;r<0;)r+=255;for(;r>=256;)r-=255;return t[r]}};return n}();function k(t,r){if(void 0===t.length)throw t.length+"/"+r;var e=function(){for(var e=0;e<t.length&&0==t[e];)e+=1;for(var n=new Array(t.length-e+r),o=0;o<t.length-e;o+=1)n[o]=t[o+e];return n}(),n={getAt:function(t){return e[t]},getLength:function(){return e.length},multiply:function(t){for(var r=new Array(n.getLength()+t.getLength()-1),e=0;e<n.getLength();e+=1)for(var o=0;o<t.getLength();o+=1)r[e+o]^=C.gexp(C.glog(n.getAt(e))+C.glog(t.getAt(o)));return k(r,0)},mod:function(t){if(n.getLength()-t.getLength()<0)return n;for(var r=C.glog(n.getAt(0))-C.glog(t.getAt(0)),e=new Array(n.getLength()),o=0;o<n.getLength();o+=1)e[o]=n.getAt(o);for(o=0;o<t.getLength();o+=1)e[o]^=C.gexp(C.glog(t.getAt(o))+r);return k(e,0).mod(t)}};return n}var A=function(){var t=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],r=function(t,r){var e={};return e.totalCount=t,e.dataCount=r,e},e={};return e.getRSBlocks=function(e,n){var o=function(r,e){switch(e){case g.L:return t[4*(r-1)+0];case g.M:return t[4*(r-1)+1];case g.Q:return t[4*(r-1)+2];case g.H:return t[4*(r-1)+3];default:return}}(e,n);if(void 0===o)throw"bad rs block @ typeNumber:"+e+"/errorCorrectionLevel:"+n;for(var i=o.length/3,a=[],u=0;u<i;u+=1)for(var f=o[3*u+0],c=o[3*u+1],l=o[3*u+2],h=0;h<f;h+=1)a.push(r(c,l));return a},e}(),b=function(){var t=[],r=0,e={getBuffer:function(){return t},getAt:function(r){var e=Math.floor(r/8);return 1==(t[e]>>>7-r%8&1)},put:function(t,r){for(var n=0;n<r;n+=1)e.putBit(1==(t>>>r-n-1&1))},getLengthInBits:function(){return r},putBit:function(e){var n=Math.floor(r/8);t.length<=n&&t.push(0),e&&(t[n]|=128>>>r%8),r+=1}};return e},M=function(t){var r=a,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+2<r.length;)t.put(o(r.substring(n,n+3)),10),n+=3;n<r.length&&(r.length-n==1?t.put(o(r.substring(n,n+1)),4):r.length-n==2&&t.put(o(r.substring(n,n+2)),7))}},o=function(t){for(var r=0,e=0;e<t.length;e+=1)r=10*r+i(t.charAt(e));return r},i=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);throw"illegal char :"+t};return n},x=function(t){var r=u,e=t,n={getMode:function(){return r},getLength:function(t){return e.length},write:function(t){for(var r=e,n=0;n+1<r.length;)t.put(45*o(r.charAt(n))+o(r.charAt(n+1)),11),n+=2;n<r.length&&t.put(o(r.charAt(n)),6)}},o=function(t){if("0"<=t&&t<="9")return t.charCodeAt(0)-"0".charCodeAt(0);if("A"<=t&&t<="Z")return t.charCodeAt(0)-"A".charCodeAt(0)+10;switch(t){case" ":return 36;case"$":return 37;case"%":return 38;case"*":return 39;case"+":return 40;case"-":return 41;case".":return 42;case"/":return 43;case":":return 44;default:throw"illegal char :"+t}};return n},m=function(r){var e=f,n=t.stringToBytes(r),o={getMode:function(){return e},getLength:function(t){return n.length},write:function(t){for(var r=0;r<n.length;r+=1)t.put(n[r],8)}};return o},L=function(r){var e=c,n=t.stringToBytesFuncs.SJIS;if(!n)throw"sjis not supported.";!function(){var t=n("友");if(2!=t.length||38726!=(t[0]<<8|t[1]))throw"sjis not supported."}();var o=n(r),i={getMode:function(){return e},getLength:function(t){return~~(o.length/2)},write:function(t){for(var r=o,e=0;e+1<r.length;){var n=(255&r[e])<<8|255&r[e+1];if(33088<=n&&n<=40956)n-=33088;else{if(!(57408<=n&&n<=60351))throw"illegal char at "+(e+1)+"/"+n;n-=49472}n=192*(n>>>8&255)+(255&n),t.put(n,13),e+=2}if(e<r.length)throw"illegal char at "+(e+1)}};return i},D=function(){var t=[],r={writeByte:function(r){t.push(255&r)},writeShort:function(t){r.writeByte(t),r.writeByte(t>>>8)},writeBytes:function(t,e,n){e=e||0,n=n||t.length;for(var o=0;o<n;o+=1)r.writeByte(t[o+e])},writeString:function(t){for(var e=0;e<t.length;e+=1)r.writeByte(t.charCodeAt(e))},toByteArray:function(){return t},toString:function(){var r="";r+="[";for(var e=0;e<t.length;e+=1)e>0&&(r+=","),r+=t[e];return r+="]"}};return r},S=function(t){var r=t,e=0,n=0,o=0,i={read:function(){for(;o<8;){if(e>=r.length){if(0==o)return-1;throw"unexpected end of file./"+o}var t=r.charAt(e);if(e+=1,"="==t)return o=0,-1;t.match(/^\s$/)||(n=n<<6|a(t.charCodeAt(0)),o+=6)}var i=n>>>o-8&255;return o-=8,i}},a=function(t){if(65<=t&&t<=90)return t-65;if(97<=t&&t<=122)return t-97+26;if(48<=t&&t<=57)return t-48+52;if(43==t)return 62;if(47==t)return 63;throw"c:"+t};return i},I=function(t,r,e){for(var n=function(t,r){var e=t,n=r,o=new Array(t*r),i={setPixel:function(t,r,n){o[r*e+t]=n},write:function(t){t.writeString("GIF87a"),t.writeShort(e),t.writeShort(n),t.writeByte(128),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(0),t.writeByte(255),t.writeByte(255),t.writeByte(255),t.writeString(","),t.writeShort(0),t.writeShort(0),t.writeShort(e),t.writeShort(n),t.writeByte(0);var r=a(2);t.writeByte(2);for(var o=0;r.length-o>255;)t.writeByte(255),t.writeBytes(r,o,255),o+=255;t.writeByte(r.length-o),t.writeBytes(r,o,r.length-o),t.writeByte(0),t.writeString(";")}},a=function(t){for(var r=1<<t,e=1+(1<<t),n=t+1,i=u(),a=0;a<r;a+=1)i.add(String.fromCharCode(a));i.add(String.fromCharCode(r)),i.add(String.fromCharCode(e));var f,c,g,l=D(),h=(f=l,c=0,g=0,{write:function(t,r){if(t>>>r!=0)throw"length over";for(;c+r>=8;)f.writeByte(255&(t<<c|g)),r-=8-c,t>>>=8-c,g=0,c=0;g|=t<<c,c+=r},flush:function(){c>0&&f.writeByte(g)}});h.write(r,n);var s=0,v=String.fromCharCode(o[s]);for(s+=1;s<o.length;){var d=String.fromCharCode(o[s]);s+=1,i.contains(v+d)?v+=d:(h.write(i.indexOf(v),n),i.size()<4095&&(i.size()==1<<n&&(n+=1),i.add(v+d)),v=d)}return h.write(i.indexOf(v),n),h.write(e,n),h.flush(),l.toByteArray()},u=function(){var t={},r=0,e={add:function(n){if(e.contains(n))throw"dup key:"+n;t[n]=r,r+=1},size:function(){return r},indexOf:function(r){return t[r]},contains:function(r){return void 0!==t[r]}};return e};return i}(t,r),o=0;o<r;o+=1)for(var i=0;i<t;i+=1)n.setPixel(i,o,e(i,o));var a=D();n.write(a);for(var u=function(){var t=0,r=0,e=0,n="",o={},i=function(t){n+=String.fromCharCode(a(63&t))},a=function(t){if(t<0);else{if(t<26)return 65+t;if(t<52)return t-26+97;if(t<62)return t-52+48;if(62==t)return 43;if(63==t)return 47}throw"n:"+t};return o.writeByte=function(n){for(t=t<<8|255&n,r+=8,e+=1;r>=6;)i(t>>>r-6),r-=6},o.flush=function(){if(r>0&&(i(t<<6-r),t=0,r=0),e%3!=0)for(var o=3-e%3,a=0;a<o;a+=1)n+="="},o.toString=function(){return n},o}(),f=a.toByteArray(),c=0;c<f.length;c+=1)u.writeByte(f[c]);return u.flush(),"data:image/gif;base64,"+u};return t}();qrcode.stringToBytesFuncs["UTF-8"]=function(t){return function(t){for(var r=[],e=0;e<t.length;e++){var n=t.charCodeAt(e);n<128?r.push(n):n<2048?r.push(192|n>>6,128|63&n):n<55296||n>=57344?r.push(224|n>>12,128|n>>6&63,128|63&n):(e++,n=65536+((1023&n)<<10|1023&t.charCodeAt(e)),r.push(240|n>>18,128|n>>12&63,128|n>>6&63,128|63&n))}return r}(t)},function(t){"function"==typeof define&&define.amd?define([],t):"object"==typeof exports&&(module.exports=t())}(function(){return qrcode});
+</script>
+<script>
+/* Código QR del Paso 3: lee el link de #out, lo genera en local (sin internet ni CDN) y lo descarga en PNG o SVG */
+(function () {
+  const $ = (id) => document.getElementById(id), Q = 4; /* margen blanco de 4 puntos: obligatorio para que el celular lo lea */
+  const btn = $("qrBtn"), box = $("qrBox"), cv = $("qrCv"), lvl = $("qrLvl"), mm = $("qrMm"), info = $("qrInfo"), warn = $("qrWarn");
+  if (!btn || typeof qrcode !== "function") return;
+  let qr = null, link = "";
+  const mmVal = () => Math.min(100, Math.max(8, parseFloat(String(mm.value).replace(",", ".")) || 25));
+  const idOf = () => { try { return new URL(link).searchParams.get("id") || ""; } catch (e) { return ""; } };
+  function build() {
+    link = ($("out").value || "").trim();
+    qr = null; warn.hidden = true;
+    if (!link) { info.textContent = "Primero genera el link de la tarjeta."; cv.style.visibility = "hidden"; return false; }
+    try { qr = qrcode(0, lvl.value); qr.addData(link); qr.make(); }
+    catch (e) { cv.style.visibility = "hidden"; info.textContent = "Este link es demasiado largo para un QR. Vuelve a generar el link con tu PIN para obtener el link corto."; return false; }
+    cv.style.visibility = "visible";
+    const avisos = []; let host = "";
+    try { host = new URL(link).hostname; } catch (e) {}
+    if (/(^|\.)pages\.dev$|^localhost$|^127\.|^192\.168\./.test(host)) avisos.push("⚠ Este link usa «" + host + "». Abre el admin desde frassmotti.com y genera el link otra vez antes de grabar.");
+    if (link.indexOf("#") > -1 || link.length > 110) avisos.push("⚠ Es un link largo (sin link corto): el QR sale muy denso y casi no se puede grabar.");
+    if (avisos.length) { warn.textContent = avisos.join(" "); warn.hidden = false; }
+    const n = qr.getModuleCount(), mod = mmVal() / n;
+    const juicio = mod >= 0.5 ? "✔ buen tamaño para grabar" : mod >= 0.35 ? "⚠ justo: depende de tu láser" : "✖ muy pequeño: sube el tamaño o baja el nivel a Q/M";
+    info.textContent = "Nivel " + lvl.value + " · " + n + "×" + n + " puntos · cada punto mide " + mod.toFixed(2).replace(".", ",") + " mm → " + juicio + ".";
+    return true;
+  }
+  function paint(c, target) {
+    const n = qr.getModuleCount(), t = n + 2 * Q, s = Math.max(1, Math.floor(target / t));
+    c.width = c.height = t * s;
+    const x = c.getContext("2d"); x.imageSmoothingEnabled = false;
+    x.fillStyle = "#fff"; x.fillRect(0, 0, t * s, t * s); x.fillStyle = "#000";
+    for (let r = 0; r < n; r++) for (let k = 0; k < n; k++) if (qr.isDark(r, k)) x.fillRect((k + Q) * s, (r + Q) * s, s, s);
+  }
+  function refresh() { if (box.hidden) return; if (build()) paint(cv, 660); }
+  function save(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+  const nombre = (ext) => "frassmotti-qr-" + (idOf() || "tarjeta") + "." + ext;
+  btn.onclick = () => {
+    box.hidden = !box.hidden;
+    btn.textContent = box.hidden ? "Crear código QR (para grabar)" : "Ocultar código QR";
+    refresh();
+  };
+  lvl.onchange = refresh; mm.oninput = refresh;
+  $("qrPng").onclick = () => { if (!build()) return; const c = document.createElement("canvas"); paint(c, 1400); c.toBlob((b) => b && save(b, nombre("png")), "image/png"); };
+  $("qrSvg").onclick = () => {
+    if (!build()) return;
+    const n = qr.getModuleCount(), t = n + 2 * Q, size = (mmVal() * t / n).toFixed(2); let d = "";
+    for (let r = 0; r < n; r++) { let k = 0; while (k < n) { if (qr.isDark(r, k)) { let e = k; while (e < n && qr.isDark(r, e)) e++; d += "M" + (k + Q) + " " + (r + Q) + "h" + (e - k) + "v1h-" + (e - k) + "z"; k = e; } else k++; } }
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + t + " " + t + '" width="' + size + 'mm" height="' + size + 'mm" shape-rendering="crispEdges"><rect width="' + t + '" height="' + t + '" fill="#fff"/><path d="' + d + '" fill="#000"/></svg>';
+    save(new Blob([svg], { type: "image/svg+xml" }), nombre("svg"));
+  };
+  /* al generar otro link, el QR anterior se oculta para no grabar uno viejo por error */
+  const go = $("go"); if (go) go.addEventListener("click", () => { box.hidden = true; btn.textContent = "Crear código QR (para grabar)"; });
 })();
 </script>
-</body></html>
+</body>
+</html>
