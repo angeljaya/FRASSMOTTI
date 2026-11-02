@@ -59,3 +59,5 @@ Si ves "Falta la función /api/admin", el despliegue no incluyó `functions/`. E
 - **Si ves "No se pudo guardar en KV":** revisa que `CARDS` esté enlazado y que `ADMIN_PIN` exista. Mientras tanto el sistema te da el link largo.
 - **Config por archivo (opcional):** `wrangler.toml.ejemplo` explica cómo hacerlo, pero no es necesario.
 - **Probar en tu computadora:** `npx wrangler pages dev .`
+
+hice algunos pequeños cambios como eliminar el link viejo de WORKER de mi cloudflare y ademas actualice mi pagina
