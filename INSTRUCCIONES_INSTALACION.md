@@ -61,3 +61,4 @@ Si ves "Falta la función /api/admin", el despliegue no incluyó `functions/`. E
 - **Probar en tu computadora:** `npx wrangler pages dev .`
 
 hice algunos pequeños cambios como eliminar el link viejo de WORKER de mi cloudflare y ademas actualice mi pagina
+- esta vez le puse una IA (frassmotti IA)
