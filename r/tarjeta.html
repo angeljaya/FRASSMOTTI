@@ -1,187 +1,994 @@
-<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#FAFAF9"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css">
-<script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script><script src="../js/config.js"></script><script src="../js/secret.js"></script><script src="../js/diseno.js"></script><script src="../js/mensaje.js"></script><title>Tienes una tarjeta | Frassmotti</title><meta name="robots" content="noindex"><meta name="description" content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."><meta property="og:site_name" content="FRASSMOTTI"><meta property="og:locale" content="es_BO"><meta property="og:type" content="website"><meta property="og:title" content="💌 Tienes una tarjeta para abrir"><meta property="og:description" content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."><meta property="og:image" content="https://frassmotti.com/assets/og-tarjeta.jpg"><meta property="og:image:type" content="image/jpeg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="Un sobre con sello de cera: tienes una tarjeta para abrir"><meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#080a0f">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://cdn.jsdelivr.net"><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap" rel="stylesheet"></noscript><link rel="stylesheet" href="../css/carta.css"><link rel="stylesheet" href="../css/extras.css"><link rel="stylesheet" href="../css/v14.css">
-<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script><link rel="stylesheet" href="../css/tailwind.css"></head>
-<body class="carta-page"><div class="bg-glow"></div>
-<header class="topbar"></header>
-<nav class="dock" id="dock" aria-label="Acciones de la tarjeta"><button class="pill" id="bSec" hidden><i data-lucide="lock"></i>Secreto</button><button class="pill" id="sv"><i data-lucide="share-2"></i>Compartir</button><button class="pill" id="img"><i data-lucide="download"></i>Guardar imagen</button><button class="pill" id="mus" hidden><i data-lucide="music"></i>Música</button></nav>
-<a class="brand-mini" id="cr" target="_blank" rel="noopener">Hecho con <b>Frassmotti</b></a>
-<div id="pv" class="hidden">Vista previa: se activa al confirmar el pago</div>
-<div class="viewport-3d"><div class="escena-wrapper"><div class="escena" id="escena"><div class="sobre-3d" id="sobre">
-        <div class="env-back textura-papel"></div>
-<div class="carta-3d" id="carta"><div class="carta-bg textura-papel"><div class="bg-text-pattern" id="pat"></div></div>
-<div class="carta-content"><h1 class="scrapbook-title" id="tituloTxt"></h1><div class="letters-container" id="letrasCumple"></div>
-<div class="photo-frame">              <svg class="sticker sticker-star-1" viewBox="0 0 100 100">
-                <defs>
-                  <linearGradient id="silver" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ffffff"/>
-                    <stop offset="50%" stop-color="#b0b0b0"/>
-                    <stop offset="100%" stop-color="#505050"/>
-                  </linearGradient>
-                </defs>
-                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
-              </svg>
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#FAFAF9" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.1/dist/umd/lucide.min.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/secret.js"></script>
+    <script src="../js/diseno.js"></script>
+    <script src="../js/mensaje.js"></script>
+    <title>Tienes una tarjeta | Frassmotti</title>
+    <meta name="robots" content="noindex" />
+    <meta
+      name="description"
+      content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."
+    />
+    <meta property="og:site_name" content="FRASSMOTTI" />
+    <meta property="og:locale" content="es_BO" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="💌 Tienes una tarjeta para abrir" />
+    <meta
+      property="og:description"
+      content="Alguien te envió un mensaje especial. Solo toca el link para verlo: no pide datos ni instala nada."
+    />
+    <meta
+      property="og:image"
+      content="https://frassmotti.com/assets/og-tarjeta.jpg"
+    />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Un sobre con sello de cera: tienes una tarjeta para abrir"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#080a0f" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <noscript
+      ><link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Cinzel:wght@900&family=Kalam:wght@700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Pacifico&display=swap"
+        rel="stylesheet"
+    /></noscript>
+    <link rel="stylesheet" href="../css/carta.css" />
+    <link rel="stylesheet" href="../css/extras.css" />
+    <link rel="stylesheet" href="../css/v14.css" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
+    ></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"
+    ></script>
+    <link rel="stylesheet" href="../css/tailwind.css" />
+    <style>
+      /* =====================================================================
+   FONDO PERSONALIZADO (Imagen tarjetas.jpg)
+   Ubicación: assets/tarjetas.jpg
+   ===================================================================== */
+      body.carta-page {
+        background-color: #fdfbf7 !important; /* Color de respaldo por si la imagen tarda en cargar */
 
-<img id="av" class="photo-img" alt="Foto"><p class="photo-cap" id="cap"></p>
-              <svg class="sticker sticker-flowers" viewBox="0 0 150 150">
-                 <path d="M70 140 Q80 100 60 70 M75 140 Q90 100 110 80" fill="none" stroke="#d4af37" stroke-width="6" stroke-linecap="round"/>
-                 <path d="M70 130 Q50 100 70 100 Q80 120 70 130 Z" fill="#d4af37"/>
-                 <g transform="translate(55,65) scale(0.8) rotate(-10)">
-                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff4d4d" stroke="#b31010" stroke-width="1"/>
-                   <circle cx="0" cy="0" r="10" fill="#800000"/>
-                   <circle cx="0" cy="0" r="5" fill="#330000"/>
-                 </g>
-                 <g transform="translate(105,75) scale(0.6) rotate(15)">
-                   <path d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z" fill="#ff6666" stroke="#b31010" stroke-width="1"/>
-                   <circle cx="0" cy="0" r="10" fill="#800000"/>
-                   <circle cx="0" cy="0" r="5" fill="#330000"/>
-                 </g>
-              </svg>
-              
-              <svg class="sticker sticker-star-2" viewBox="0 0 100 100">
-                <path d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z" fill="url(#silver)" stroke="#fff" stroke-width="2"/>
-              </svg></div>
-<p class="handwritten-msg" id="fraseTxt"><span id="typed"></span></p>
-<div class="card-actions"><button class="btn-card btn-card-secondary" id="hide"><i data-lucide="mail"></i>Ocultar</button><button class="btn-card btn-card-primary" id="cel"><i data-lucide="sparkles"></i>Celebrar</button></div></div></div>
-        <div class="env-pocket">
-          <div class="flap-side izq textura-papel"></div>
-          <div class="flap-side der textura-papel"></div>
-          <div class="flap-bottom textura-papel"></div>
-        </div>
+        /* Ruta hacia tu imagen: ../ sube un nivel (sale de 'r/'), y entra a 'assets/' */
+        background-image: url("../assets/tarjetas.jpg") !important;
+        background-size: cover !important;
+        background-position: center center !important;
+        background-repeat: no-repeat !important;
+        background-attachment: fixed !important; /* Mantiene el fondo quieto al hacer scroll */
+      }
 
-        <div class="env-flap-top" id="flapTop">
-          <div class="env-flap-bg textura-papel"></div>
-          <div class="sello-container" id="selloWrap" onclick="abrirCarta()">
-            <div class="sello-wax">
-              <div class="sello-inner">
-                <span class="sello-monogram" id="monogramTxt">C</span>
+      /* Reducir la opacidad del resplandor para que no opaque tu imagen */
+      .bg-glow {
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.2) 0%,
+          transparent 70%
+        ) !important;
+        opacity: 0.5 !important;
+      }
+    </style>
+  </head>
+  <body class="carta-page">
+    <div class="bg-glow"></div>
+    <header class="topbar"></header>
+    <nav class="dock" id="dock" aria-label="Acciones de la tarjeta">
+      <button class="pill" id="bSec" hidden>
+        <i data-lucide="lock"></i>Secreto</button
+      ><button class="pill" id="sv">
+        <i data-lucide="share-2"></i>Compartir</button
+      ><button class="pill" id="img">
+        <i data-lucide="download"></i>Guardar imagen</button
+      ><button class="pill" id="mus" hidden>
+        <i data-lucide="music"></i>Música
+      </button>
+    </nav>
+    <a class="brand-mini" id="cr" target="_blank" rel="noopener"
+      >Hecho con <b>Frassmotti</b></a
+    >
+    <div id="pv" class="hidden">
+      Vista previa: se activa al confirmar el pago
+    </div>
+    <div class="viewport-3d">
+      <div class="escena-wrapper">
+        <div class="escena" id="escena">
+          <div class="sobre-3d" id="sobre">
+            <div class="env-back textura-papel"></div>
+            <div class="carta-3d" id="carta">
+              <div class="carta-bg textura-papel">
+                <div class="bg-text-pattern" id="pat"></div>
+              </div>
+              <div class="carta-content">
+                <h1 class="scrapbook-title" id="tituloTxt"></h1>
+                <div class="letters-container" id="letrasCumple"></div>
+                <div class="photo-frame">
+                  <svg class="sticker sticker-star-1" viewBox="0 0 100 100">
+                    <defs>
+                      <linearGradient
+                        id="silver"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                      >
+                        <stop offset="0%" stop-color="#ffffff" />
+                        <stop offset="50%" stop-color="#b0b0b0" />
+                        <stop offset="100%" stop-color="#505050" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z"
+                      fill="url(#silver)"
+                      stroke="#fff"
+                      stroke-width="2"
+                    />
+                  </svg>
+
+                  <img id="av" class="photo-img" alt="Foto" />
+                  <p class="photo-cap" id="cap"></p>
+                  <svg class="sticker sticker-flowers" viewBox="0 0 150 150">
+                    <path
+                      d="M70 140 Q80 100 60 70 M75 140 Q90 100 110 80"
+                      fill="none"
+                      stroke="#d4af37"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M70 130 Q50 100 70 100 Q80 120 70 130 Z"
+                      fill="#d4af37"
+                    />
+                    <g transform="translate(55,65) scale(0.8) rotate(-10)">
+                      <path
+                        d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z"
+                        fill="#ff4d4d"
+                        stroke="#b31010"
+                        stroke-width="1"
+                      />
+                      <circle cx="0" cy="0" r="10" fill="#800000" />
+                      <circle cx="0" cy="0" r="5" fill="#330000" />
+                    </g>
+                    <g transform="translate(105,75) scale(0.6) rotate(15)">
+                      <path
+                        d="M0 0 Q20 -30 40 0 Q20 30 0 0 Z M0 0 Q-20 -30 -40 0 Q-20 30 0 0 Z M0 0 Q30 20 0 40 Q-30 20 0 0 Z M0 0 Q30 -20 0 -40 Q-30 -20 0 0 Z"
+                        fill="#ff6666"
+                        stroke="#b31010"
+                        stroke-width="1"
+                      />
+                      <circle cx="0" cy="0" r="10" fill="#800000" />
+                      <circle cx="0" cy="0" r="5" fill="#330000" />
+                    </g>
+                  </svg>
+
+                  <svg class="sticker sticker-star-2" viewBox="0 0 100 100">
+                    <path
+                      d="M50 5 L61 35 L95 35 L68 55 L78 88 L50 68 L22 88 L32 55 L5 35 L39 35 Z"
+                      fill="url(#silver)"
+                      stroke="#fff"
+                      stroke-width="2"
+                    />
+                  </svg>
+                </div>
+                <p class="handwritten-msg" id="fraseTxt">
+                  <span id="typed"></span>
+                </p>
+                <div class="card-actions">
+                  <button class="btn-card btn-card-secondary" id="hide">
+                    <i data-lucide="mail"></i>Ocultar</button
+                  ><button class="btn-card btn-card-primary" id="cel">
+                    <i data-lucide="sparkles"></i>Celebrar
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="env-pocket">
+              <div class="flap-side izq textura-papel"></div>
+              <div class="flap-side der textura-papel"></div>
+              <div class="flap-bottom textura-papel"></div>
+            </div>
+
+            <div class="env-flap-top" id="flapTop">
+              <div class="env-flap-bg textura-papel"></div>
+              <div
+                class="sello-container"
+                id="selloWrap"
+                onclick="abrirCarta()"
+              >
+                <div class="sello-wax">
+                  <div class="sello-inner">
+                    <span class="sello-monogram" id="monogramTxt">C</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-</div></div>
-<p class="hint-text" id="hint"><small id="envNota" hidden></small><i data-lucide="hand"></i> Rompe el sello</p></div></div>
-<div id="mS" class="modal" role="dialog" aria-modal="true"><div id="sC" class="card p-7 w-full max-w-sm text-center relative"><button class="absolute top-4 right-4 text-gray-500" id="x" aria-label="Cerrar"><i data-lucide="x" class="w-5 h-5"></i></button>
-<div class="candado-zona mt-2"><div class="candado" id="candado" role="img" aria-label="Mensaje secreto bloqueado"><div class="candado-grillete"></div><div class="candado-cuerpo"><span class="candado-ojo"></span></div></div><div id="sO" class="candado-msg"><i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i><h3 class="serif text-3xl mt-3">Secreto revelado</h3><p id="sM" class="text-gray-700 mt-3 whitespace-pre-line break-words"></p></div></div>
-<div id="sL"><h3 class="serif text-3xl mt-3">Adivina la clave</h3><p id="sDemo" class="demo-note" hidden>Ejemplo en vivo: así lo vive quien recibe tu tarjeta</p><p id="sQ" class="serif text-2xl mt-3 break-words" style="color:#0f172a" hidden></p><p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p><button type="button" id="sP" class="text-sm underline text-gray-700 mt-2" hidden>Pedir otra pista</button><input id="sG" class="input mt-5 text-center" placeholder="Escribe la clave" autocomplete="off"><p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p><button id="sT" class="btn btn-dark w-full mt-3">Abrir candado</button></div>
-</div></div>
+        <p class="hint-text" id="hint">
+          <small id="envNota" hidden></small><i data-lucide="hand"></i> Rompe el
+          sello
+        </p>
+      </div>
+    </div>
+    <div id="mS" class="modal" role="dialog" aria-modal="true">
+      <div id="sC" class="card p-7 w-full max-w-sm text-center relative">
+        <button
+          class="absolute top-4 right-4 text-gray-500"
+          id="x"
+          aria-label="Cerrar"
+        >
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+        <div class="candado-zona mt-2">
+          <div
+            class="candado"
+            id="candado"
+            role="img"
+            aria-label="Mensaje secreto bloqueado"
+          >
+            <div class="candado-grillete"></div>
+            <div class="candado-cuerpo"><span class="candado-ojo"></span></div>
+          </div>
+          <div id="sO" class="candado-msg">
+            <i data-lucide="heart" class="w-8 h-8 mx-auto text-accent"></i>
+            <h3 class="serif text-3xl mt-3">Secreto revelado</h3>
+            <p
+              id="sM"
+              class="text-gray-700 mt-3 whitespace-pre-line break-words"
+            ></p>
+          </div>
+        </div>
+        <div id="sL">
+          <h3 class="serif text-3xl mt-3">Adivina la clave</h3>
+          <p id="sDemo" class="demo-note" hidden>
+            Ejemplo en vivo: así lo vive quien recibe tu tarjeta
+          </p>
+          <p
+            id="sQ"
+            class="serif text-2xl mt-3 break-words"
+            style="color: #0f172a"
+            hidden
+          ></p>
+          <p id="sH" class="text-gray-600 text-sm mt-2 whitespace-pre-line"></p>
+          <button
+            type="button"
+            id="sP"
+            class="text-sm underline text-gray-700 mt-2"
+            hidden
+          >
+            Pedir otra pista</button
+          ><input
+            id="sG"
+            class="input mt-5 text-center"
+            placeholder="Escribe la clave"
+            autocomplete="off"
+          />
+          <p id="sE" class="text-sm text-accent mt-2 min-h-[1.25rem]"></p>
+          <button id="sT" class="btn btn-dark w-full mt-3">
+            Abrir candado
+          </button>
+        </div>
+      </div>
+    </div>
 
-<div id="toast" class="toast" role="status"></div>
-<script src="../js/carta.js"></script><script src="../js/doubletap.js"></script>
-<script>
-/* v20 · Link corto ?id=XXXX: trae de KV (/api/card) lo que antes venía en la URL. El resto del código lo lee igual que siempre.
+    <div id="toast" class="toast" role="status"></div>
+    <script src="../js/carta.js"></script>
+    <script src="../js/doubletap.js"></script>
+    <script>
+      /* v20 · Link corto ?id=XXXX: trae de KV (/api/card) lo que antes venía en la URL. El resto del código lo lee igual que siempre.
    (Petición síncrona a propósito: así q, PL y extras.js no cambian ni un carácter.) */
-(function(){const id=new URLSearchParams(location.search).get('id');if(!id)return;
- try{const x=new XMLHttpRequest();x.open('GET','/api/card?id='+encodeURIComponent(id),false);x.send();if(x.status!==200)throw 0;const d=JSON.parse(x.responseText);window.__CARD={qs:d.qs||'',h:d.h||''}}
- catch(e){document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Outfit,system-ui,sans-serif;color:#374151"><p>Esta tarjeta no existe o ya no está disponible.<br>Pide que te envíen el link de nuevo.</p></div>';window.stop()}})();
-</script>
-<script>
-/* Lee ?nombre&frase&color&t y el #payload cifrado (foto, secreto, pista) */
-const q=new URLSearchParams(window.__CARD?window.__CARD.qs:location.search),$=id=>document.getElementById(id),PL=TVS.unpack(window.__CARD?window.__CARD.h:location.hash.slice(1));
-/* El sobre siempre abre libre: se ignora cualquier pregunta/candado de sobre que traigan tarjetas ya creadas (PL.q / PL.qk). El secreto (PL.s, PL.h) NO se toca. */
-if(PL.q||PL.qk){delete PL.q;delete PL.qk;if(window.__CARD)window.__CARD.h=TVS.pack(PL)}
-const T=TV.find(q.get('t')),nombre=clean(q.get('nombre'),24)||'Alguien especial',frase=clean(q.get('frase'),70)||T.frase,col=TV.COLORS[q.get('color')]||T.K.ac,de=clean(q.get('de'),24);
-/* v14: mensaje largo (viaja en el payload), tamaño 1/2/3, género, diseño, tipografía, color de fondo, inicial del sello */
-const msgLargo=PL.x?clean(PL.x,2600).trim():'',msgTxt=msgLargo||frase,tam=TV.tam(q.get('tam')).id,gen=q.get('g')==='h'?'h':'m';
-/* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
-const tit=clean(q.get('titulo'),14)||T.ti,pal=(clean(q.get('palabra'),9)||T.pa).toUpperCase().slice(0,9);
-const dis=TD.apply(document,{t:T,g:gen,dis:q.get('d'),col:q.get('color'),fu:q.get('fu'),v:+q.get('v')||0});
-document.title='Una tarjeta para '+nombre+' | Frassmotti';$('cr').href=TV.BRAND_URL||'../index.html?ref=tarjeta';
-const selloL=(clean(q.get('sello'),1)||nombre).charAt(0).toUpperCase();
-$('tituloTxt').textContent=tit;TD.titleFit($('tituloTxt'),tit);$('monogramTxt').textContent=selloL;$('cap').textContent=nombre+(de?' · de '+de:'');
-/* v31 · Nota de confianza bajo "Rompe el sello": centrada y sin nombre. El nombre de quien envía solo se muestra si el creador lo pide (parámetro vn=1); así se respeta el anonimato. */
-{const n=$('envNota'),h=$('hint');if(n&&h){n.textContent='';
- if(q.get('ej')==='1')n.textContent='Esto es un ejemplo de cómo se ve una tarjeta Frassmotti. Al abrirla, toca «Interacciones» para probar las sorpresas.';
- else{if(q.get('vn')==='1'&&de){n.append('Esta tarjeta te la envió ');const b=document.createElement('b');b.textContent=de;n.append(b,'. ')}
-  n.append('Solo muestra un mensaje: no pide datos ni instala nada.')}
- h.style.cssText+=';flex-wrap:wrap;justify-content:center;width:min(90vw,320px);text-align:center;row-gap:8px';
- n.style.cssText='display:block;order:2;flex:0 0 100%;margin:0;padding:8px 14px;border-radius:14px;background:rgba(8,10,16,.55);border:1px solid rgba(242,214,117,.28);font:400 12.5px/1.45 Outfit,sans-serif;letter-spacing:0;text-transform:none;color:#f4ecd0;text-shadow:none;white-space:normal;text-align:center';n.hidden=false}}
-/* v31 · En el ejemplo en vivo: botón para volver al inicio (antes solo se salía con el botón atrás del celular) */
-if(q.get('ej')==='1')document.addEventListener('DOMContentLoaded',()=>{const tb=document.querySelector('.topbar');if(!tb)return;const a=document.createElement('a');a.href='/';a.className='pill';a.setAttribute('aria-label','Volver al inicio');a.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Inicio</span>';tb.prepend(a)});
-for(let i=0;i<12;i++){const s=document.createElement('span');s.textContent=(tit+' '+pal).toUpperCase();$('pat').append(s)}
-[...pal].forEach((ch,i)=>{const d=document.createElement('div');d.className='circle-letter'+(i===0||i===Math.floor(pal.length/1.5)?' red':'');d.textContent=ch;d.style.transform=`translateY(${i%2?8:0}px) rotate(${(Math.random()*20-10).toFixed(1)}deg)`;$('letrasCumple').append(d)});
-document.querySelectorAll('.circle-letter').forEach(d=>{const z=Math.min(42,Math.floor((300-(pal.length-1)*5)/pal.length));d.style.width=d.style.height=z+'px';d.style.fontSize=Math.round(z*.57)+'px'});
-const hasPhoto=PL.p&&PL.p.startsWith('data:image/');
-$('av').onerror=function(){this.onerror=null;this.src=TV.avatar(1,nombre)};$('av').src=hasPhoto?PL.p:TV.avatar(+q.get('avatar')||1,nombre);$('av').classList.toggle('color',!hasPhoto||q.get('fo')==='c');
-TM.mount($('fraseTxt'),msgTxt,tam,{keepText:true});
-const lift=()=>$('carta').style.setProperty('--lift',Math.max(0,$('carta').offsetHeight-520)+'px');lift();addEventListener('load',lift);document.fonts&&document.fonts.ready.then(lift);
-/* v32 · Vibración suave (solo Android; en iPhone no existe y no pasa nada). Se omite si el celular pide reducir movimiento. */
-const vib=p=>{try{if(navigator.vibrate&&!(typeof REDUCE_MOTION!=='undefined'&&REDUCE_MOTION))navigator.vibrate(p)}catch(e){}};
-const toast=m=>{$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2600)};
-const LOWEND=(navigator.hardwareConcurrency||4)<=4||(navigator.deviceMemory||4)<=2;   /* celulares modestos: menos piezas de confeti */
-const boom=()=>confetti({particleCount:LOWEND?60:120,spread:90,origin:{y:.6},colors:['#d4af37','#fff1b0','#cc1111','#ffffff','#000000'],ticks:220,disableForReducedMotion:true});
-let estado='cerrado',typedOk=false;const startTyped=()=>{if(typedOk)return;typedOk=true;(tam===1?new Typed('#typed',{strings:[msgTxt],typeSpeed:msgTxt.length>140?14:42,showCursor:false,contentType:'text'}):0)};
-if(TV.MUSIC){const a=new Audio(TV.MUSIC);a.loop=true;$('mus').hidden=false;$('mus').onclick=()=>{a.paused?a.play():a.pause()};window.__mus=a}
-document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m||e.target.closest('[data-x]'))m.classList.remove('open')}));
-/* Sello, sobre y carta (animaciones y sonidos del diseño original) */
-function abrirCarta(){if(estado==='abierto')return;estado='abierto';{const n=$('envNota');if(n)n.style.display='none'}playWaxCrackSound();vib([20,30,40]);setTimeout(()=>{escena.classList.add('abierto');playPaperSlideSound()},150);
- setTimeout(()=>{playChimeSound();boom();startTyped();$('dock').classList.add('show');window.DT&&DT.hint('Toca dos veces la tarjeta ✨');window.__mus&&window.__mus.play().catch(()=>{})},1000);vib([30,40,30])}
-function cerrarCarta(e){if(e)e.stopPropagation();if(estado==='cerrado')return;estado='cerrado';escena.classList.remove('abierto');$('dock').classList.remove('show');playPaperSlideSound()}
-$('hide').onclick=cerrarCarta;$('cel').onclick=e=>{e.stopPropagation();boom();vib([20,30,20])};
-/* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
-const DEMO=q.get('ej')==='1'&&nombre==='Carla'&&!location.hash;let PAID=!TV.REQUIRE_PAYMENT||DEMO||!!window.__CARD;   /* DEMO: solo el ejemplo exacto de la tienda */
-(async()=>{if(PAID)return;try{const u=new URL(location.href),sig=u.searchParams.get('sig');if(!sig)throw 0;u.searchParams.delete('sig');
- const r=await fetch('/api/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({data:u.searchParams.toString()+'#'+u.hash.slice(1),sig})});PAID=(await r.json()).ok===true}catch(e){PAID=false}
- $('pv').classList.toggle('hidden',PAID)})();
-const LOCK='Se activa al confirmar el pago';
-/* Descargar como imagen (formato historia 1080x1920) */
-$('img').onclick=async()=>{if(!PAID){toast(LOCK);return}try{const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),g=x.createLinearGradient(0,0,W,H);
- g.addColorStop(0,col);g.addColorStop(1,'#FAFAF9');x.fillStyle=g;x.fillRect(0,0,W,H);
- const tp=TV.tpl(T,+q.get('v')||0);if(tp)await new Promise(res=>{const i=new Image();i.onload=()=>{const s=Math.max(W/i.width,H/i.height),w=i.width*s,h=i.height*s;x.save();x.globalAlpha=Math.min(.6,tp.op*1.6);x.drawImage(i,(W-w)/2,(H-h)*tp.y/100,w,h);x.restore();const f=x.createLinearGradient(0,0,0,H);f.addColorStop(0,'rgba(250,250,249,0)');f.addColorStop(.5,'rgba(250,250,249,.55)');f.addColorStop(1,'rgba(250,250,249,.1)');x.fillStyle=f;x.fillRect(0,0,W,H);res()};i.onerror=res;i.src=tp.src});
- /* v30 · La tarjeta de la imagen se adapta al largo del mensaje: encabezado compacto y letra más chica si hace falta; si aun así no cabe, corta con "…". Nada se sale del cuadro ni pisa la marca. */
- const msg=String(msgTxt).replace(/[ \t]+/g,' ').trim(),cm=msg.length>160,avR=cm?115:170,pad=cm?70:90,TW=780,MAXH=1440;
- let nfs=cm?96:130;const NF=s=>`${s}px "Instrument Serif",serif`;x.font=NF(nfs);while(nfs>56&&x.measureText(nombre).width>TW){nfs-=6;x.font=NF(nfs)}
- const H0=pad+avR*2+90+Math.round(nfs*1.08)+Math.round(nfs*.55)+40;   /* de la parte de arriba del cuadro hasta la 1ª línea del mensaje */
- const wrap=fs=>{x.font=`${fs}px Outfit,sans-serif`;const L=[];for(const p of msg.split(/\n+/)){let ln='';for(const w of p.split(' ')){const t=ln?ln+' '+w:w;if(ln&&x.measureText(t).width>TW){L.push(ln);ln=w}else ln=t}if(ln)L.push(ln)}return L};
- let fs=54,lh=Math.round(fs*1.3),L=wrap(fs);const bh=()=>H0+Math.max(L.length-1,0)*lh+80;
- while(bh()>MAXH&&fs>32){fs-=2;lh=Math.round(fs*1.3);L=wrap(fs)}
- if(bh()>MAXH){const mx=Math.max(1,Math.floor((MAXH-80-H0)/lh)+1);if(L.length>mx){L=L.slice(0,mx);L[mx-1]=L[mx-1].replace(/[\s.,;:!?¡¿]+$/,'')+'…'}}
- const BH=bh(),TP=Math.round(Math.max(150,900-BH/2));
- x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.roundRect?x.roundRect(90,TP,900,BH,64):x.rect(90,TP,900,BH);x.fill();
- const cy=TP+pad+avR;
- await new Promise(res=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>{x.save();x.beginPath();x.arc(540,cy,avR,0,7);x.clip();x.fillStyle='#fff';x.fill();
-  if(!$('av').classList.contains('color')){try{x.filter='grayscale(1) contrast(1.1)'}catch(e){}}   /* respeta blanco y negro como se ve en la tarjeta */
-  const s=Math.min(i.width,i.height)||1;x.drawImage(i,(i.width-s)/2,(i.height-s)/2,s,s,540-avR,cy-avR,avR*2,avR*2);   /* recorte cuadrado centrado: la foto ya no se deforma */
-  x.restore();res()};i.onerror=res;i.src=$('av').src});
- x.textAlign='center';x.fillStyle='#6b7280';x.font='500 34px Outfit,sans-serif';const ly=cy+avR+90;x.fillText('UNA TARJETITA PARA',540,ly);
- const ny=ly+Math.round(nfs*1.08);x.fillStyle='#111827';x.font=NF(nfs);x.fillText(nombre,540,ny);
- x.font=`${fs}px Outfit,sans-serif`;x.fillStyle='#374151';let y=TP+H0;for(const l of L){x.fillText(l,540,y);y+=lh}
- const by=Math.max(1700,TP+BH+80);x.fillStyle=col;x.font='600 40px Outfit,sans-serif';x.fillText('FRASSMOTTI',540,by);if(TV.WATERMARK!==false){x.fillStyle='#6b7280';x.font='500 32px Outfit,sans-serif';x.fillText('Hecho con FRASSMOTTI · Crea la tuya en '+location.host,540,by+65)}
- c.toBlob(b=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='tarjetita-'+nombre+'.png';a.click()})}catch(e){toast('No se pudo generar la imagen')}};
-/* Secreto con candado */
-/* Ejemplo en vivo: se demuestra el secreto con candado (palabra de ejemplo: mariposa) */
-const DEMO_KEY='mariposa',DEMO_MSG='Este es un secreto que solo ve quien adivina la palabra. Aquí puede ir un chisme, una confesión o ese mensaje que no cabe en la tarjeta. 💛';
-const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().toLowerCase();
-if(DEMO){PL.s='demo';PL.sq='¿Qué animalito de colores vuela de flor en flor?';PL.h=['Empieza con la letra «M»','Tiene 8 letras','Antes de volar fue una oruga'];$('sDemo').hidden=false;$('bSec').classList.add('demo-pulse')}
-if(PL.s||PL.m||PL.a)$('bSec').hidden=false;let tries=0;
-/* v17: hasta 3 pistas (PL.h = texto o lista). Se muestra la 1ª; el destinatario pide las otras o aparecen al fallar */
-const HINTS=[].concat(PL.h||[]).map(x=>clean(x,60).trim()).filter(Boolean).slice(0,TV.PISTAS_MAX||3);let hs=1;
-/* Pregunta del secreto (la escribe quien creó la tarjeta; su respuesta es la palabra secreta) */
-const SQ=clean(PL.sq,100).trim();
-const paintH=()=>{$('sQ').textContent=SQ;$('sQ').hidden=!SQ;$('sH').textContent=HINTS.length?HINTS.slice(0,hs).map((h,i)=>(HINTS.length>1?'Pista '+(i+1)+': ':'Pista: ')+h).join('\n'):'';$('sH').hidden=!HINTS.length;$('sP').hidden=hs>=HINTS.length};
-$('sP').onclick=()=>{hs++;paintH()};
-/* v22 · candado metálico: vuelve al estado cerrado (sin animar) cada vez que se abre el modal */
-const _fx=()=>{const c=$('candado');return[c,$('sO'),c.querySelector('.candado-grillete')]};
-function resetCandado(){const[c,o,g]=_fx();[c,o,g].forEach(e=>e.style.transition='none');g.style.animation='none';
- c.classList.remove('candado-abierto','candado-error');c.setAttribute('aria-label','Mensaje secreto bloqueado');void c.offsetWidth;[c,o,g].forEach(e=>e.style.transition='');g.style.animation='';
- const L=$('sL');L.classList.remove('hidden');L.style.transition='';L.style.opacity='';L.style.pointerEvents='';$('sM').textContent='';$('sT').disabled=false;busy=false}
-function abrirInstantaneo(){const[c,o,g]=_fx();[c,o,g].forEach(e=>e.style.transition='none');c.classList.add('candado-abierto');void c.offsetWidth;[c,o,g].forEach(e=>e.style.transition='')}
-$('candado').onclick=()=>{if(!$('candado').classList.contains('candado-abierto'))$('sG').focus()};
-/* reveal(m,true) = clave acertada: anima el candado (abrirCandado de carta.js suena playChimeSound() a los 850 ms, cuando entra .candado-msg).
+      (function () {
+        const id = new URLSearchParams(location.search).get("id");
+        if (!id) return;
+        try {
+          const x = new XMLHttpRequest();
+          x.open("GET", "/api/card?id=" + encodeURIComponent(id), false);
+          x.send();
+          if (x.status !== 200) throw 0;
+          const d = JSON.parse(x.responseText);
+          window.__CARD = { qs: d.qs || "", h: d.h || "" };
+        } catch (e) {
+          document.body.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Outfit,system-ui,sans-serif;color:#374151"><p>Esta tarjeta no existe o ya no está disponible.<br>Pide que te envíen el link de nuevo.</p></div>';
+          window.stop();
+        }
+      })();
+    </script>
+    <script>
+      /* Lee ?nombre&frase&color&t y el #payload cifrado (foto, secreto, pista) */
+      const q = new URLSearchParams(
+          window.__CARD ? window.__CARD.qs : location.search,
+        ),
+        $ = (id) => document.getElementById(id),
+        PL = TVS.unpack(
+          window.__CARD ? window.__CARD.h : location.hash.slice(1),
+        );
+      
+      // Cargar la música de fondo si viene en los datos del link
+      const urlMusica = PL.mus;
+      if (urlMusica) {
+        const elMusica = document.getElementById("musica-fondo");
+        if (elMusica) elMusica.src = urlMusica;
+      }
+
+      /* El sobre siempre abre libre: se ignora cualquier pregunta/candado de sobre que traigan tarjetas ya creadas (PL.q / PL.qk). El secreto (PL.s, PL.h) NO se toca. */
+      if (PL.q || PL.qk) {
+        delete PL.q;
+        delete PL.qk;
+        if (window.__CARD) window.__CARD.h = TVS.pack(PL);
+      }
+      const T = TV.find(q.get("t")),
+        nombre = clean(q.get("nombre"), 24) || "Alguien especial",
+        frase = clean(q.get("frase"), 70) || T.frase,
+        col = TV.COLORS[q.get("color")] || T.K.ac,
+        de = clean(q.get("de"), 24);
+      /* v14: mensaje largo (viaja en el payload), tamaño 1/2/3, género, diseño, tipografía, color de fondo, inicial del sello */
+      const msgLargo = PL.x ? clean(PL.x, 2600).trim() : "",
+        msgTxt = msgLargo || frase,
+        tam = TV.tam(q.get("tam")).id,
+        gen = q.get("g") === "h" ? "h" : "m";
+      /* Título script + palabra en círculos: los de la plantilla, o los que escribió el cliente (?titulo=&palabra=) */
+      const tit = clean(q.get("titulo"), 14) || T.ti,
+        pal = (clean(q.get("palabra"), 9) || T.pa).toUpperCase().slice(0, 9);
+      const dis = TD.apply(document, {
+        t: T,
+        g: gen,
+        dis: q.get("d"),
+        col: q.get("color"),
+        fu: q.get("fu"),
+        v: +q.get("v") || 0,
+      });
+      document.title = "Una tarjeta para " + nombre + " | Frassmotti";
+      $("cr").href = TV.BRAND_URL || "../index.html?ref=tarjeta";
+      const selloL = (clean(q.get("sello"), 1) || nombre)
+        .charAt(0)
+        .toUpperCase();
+      $("tituloTxt").textContent = tit;
+      TD.titleFit($("tituloTxt"), tit);
+      $("monogramTxt").textContent = selloL;
+      $("cap").textContent = nombre + (de ? " · de " + de : "");
+      /* v31 · Nota de confianza bajo "Rompe el sello": centrada y sin nombre. El nombre de quien envía solo se muestra si el creador lo pide (parámetro vn=1); así se respeta el anonimato. */
+      {
+        const n = $("envNota"),
+          h = $("hint");
+        if (n && h) {
+          n.textContent = "";
+          if (q.get("ej") === "1")
+            n.textContent =
+              "Esto es un ejemplo de cómo se ve una tarjeta Frassmotti. Al abrirla, toca «Interacciones» para probar las sorpresas.";
+          else {
+            if (q.get("vn") === "1" && de) {
+              n.append("Esta tarjeta te la envió ");
+              const b = document.createElement("b");
+              b.textContent = de;
+              n.append(b, ". ");
+            }
+            n.append("Solo muestra un mensaje: no pide datos ni instala nada.");
+          }
+          h.style.cssText +=
+            ";flex-wrap:wrap;justify-content:center;width:min(90vw,320px);text-align:center;row-gap:8px";
+          n.style.cssText =
+            "display:block;order:2;flex:0 0 100%;margin:0;padding:8px 14px;border-radius:14px;background:rgba(8,10,16,.55);border:1px solid rgba(242,214,117,.28);font:400 12.5px/1.45 Outfit,sans-serif;letter-spacing:0;text-transform:none;color:#f4ecd0;text-shadow:none;white-space:normal;text-align:center";
+          n.hidden = false;
+        }
+      }
+      /* v31 · En el ejemplo en vivo: botón para volver al inicio (antes solo se salía con el botón atrás del celular) */
+      if (q.get("ej") === "1")
+        document.addEventListener("DOMContentLoaded", () => {
+          const tb = document.querySelector(".topbar");
+          if (!tb) return;
+          const a = document.createElement("a");
+          a.href = "/";
+          a.className = "pill";
+          a.setAttribute("aria-label", "Volver al inicio");
+          a.innerHTML =
+            '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Inicio</span>';
+          tb.prepend(a);
+        });
+      for (let i = 0; i < 12; i++) {
+        const s = document.createElement("span");
+        s.textContent = (tit + " " + pal).toUpperCase();
+        $("pat").append(s);
+      }
+      [...pal].forEach((ch, i) => {
+        const d = document.createElement("div");
+        d.className =
+          "circle-letter" +
+          (i === 0 || i === Math.floor(pal.length / 1.5) ? " red" : "");
+        d.textContent = ch;
+        d.style.transform = `translateY(${i % 2 ? 8 : 0}px) rotate(${(Math.random() * 20 - 10).toFixed(1)}deg)`;
+        $("letrasCumple").append(d);
+      });
+      document.querySelectorAll(".circle-letter").forEach((d) => {
+        const z = Math.min(
+          42,
+          Math.floor((300 - (pal.length - 1) * 5) / pal.length),
+        );
+        d.style.width = d.style.height = z + "px";
+        d.style.fontSize = Math.round(z * 0.57) + "px";
+      });
+      const hasPhoto = PL.p && PL.p.startsWith("data:image/");
+      $("av").onerror = function () {
+        this.onerror = null;
+        this.src = TV.avatar(1, nombre);
+      };
+      $("av").src = hasPhoto ? PL.p : TV.avatar(+q.get("avatar") || 1, nombre);
+      $("av").classList.toggle("color", !hasPhoto || q.get("fo") === "c");
+      TM.mount($("fraseTxt"), msgTxt, tam, { keepText: true });
+      const lift = () =>
+        $("carta").style.setProperty(
+          "--lift",
+          Math.max(0, $("carta").offsetHeight - 520) + "px",
+        );
+      lift();
+      addEventListener("load", lift);
+      document.fonts && document.fonts.ready.then(lift);
+      /* v32 · Vibración suave (solo Android; en iPhone no existe y no pasa nada). Se omite si el celular pide reducir movimiento. */
+      const vib = (p) => {
+        try {
+          if (
+            navigator.vibrate &&
+            !(typeof REDUCE_MOTION !== "undefined" && REDUCE_MOTION)
+          )
+            navigator.vibrate(p);
+        } catch (e) {}
+      };
+      const toast = (m) => {
+        $("toast").textContent = m;
+        $("toast").classList.add("show");
+        setTimeout(() => $("toast").classList.remove("show"), 2600);
+      };
+      const LOWEND =
+        (navigator.hardwareConcurrency || 4) <= 4 ||
+        (navigator.deviceMemory || 4) <=
+          2; /* celulares modestos: menos piezas de confeti */
+      const boom = () =>
+        confetti({
+          particleCount: LOWEND ? 60 : 120,
+          spread: 90,
+          origin: { y: 0.6 },
+          colors: ["#d4af37", "#fff1b0", "#cc1111", "#ffffff", "#000000"],
+          ticks: 220,
+          disableForReducedMotion: true,
+        });
+      let estado = "cerrado",
+        typedOk = false;
+      const startTyped = () => {
+        if (typedOk) return;
+        typedOk = true;
+        tam === 1
+          ? new Typed("#typed", {
+              strings: [msgTxt],
+              typeSpeed: msgTxt.length > 140 ? 14 : 42,
+              showCursor: false,
+              contentType: "text",
+            })
+          : 0;
+      };
+      if (TV.MUSIC) {
+        const a = new Audio(TV.MUSIC);
+        a.loop = true;
+        $("mus").hidden = false;
+        $("mus").onclick = () => {
+          a.paused ? a.play() : a.pause();
+        };
+        window.__mus = a;
+      }
+      document.querySelectorAll(".modal").forEach((m) =>
+        m.addEventListener("click", (e) => {
+          if (e.target === m || e.target.closest("[data-x]"))
+            m.classList.remove("open");
+        }),
+      );
+      /* Sello, sobre y carta (animaciones y sonidos del diseño original) */
+      function abrirCarta() {
+        if (estado === "abierto") return;
+        estado = "abierto";
+        // Reproducir la música de fondo de Supabase al romper el sello
+        const audioFondo = document.getElementById("musica-fondo");
+        if (audioFondo && audioFondo.src) {
+          audioFondo
+            .play()
+            .catch((e) => console.log("El navegador bloqueó el audio:", e));
+        }
+
+        {
+          const n = $("envNota");
+          if (n) n.style.display = "none";
+        }
+        playWaxCrackSound();
+        vib([20, 30, 40]);
+        setTimeout(() => {
+          escena.classList.add("abierto");
+          playPaperSlideSound();
+        }, 150);
+        setTimeout(() => {
+          playChimeSound();
+          boom();
+          startTyped();
+          $("dock").classList.add("show");
+          window.DT && DT.hint("Toca dos veces la tarjeta ✨");
+          window.__mus && window.__mus.play().catch(() => {});
+        }, 1000);
+        vib([30, 40, 30]);
+      }
+      function cerrarCarta(e) {
+        if (e) e.stopPropagation();
+        if (estado === "cerrado") return;
+        estado = "cerrado";
+        escena.classList.remove("abierto");
+        $("dock").classList.remove("show");
+        playPaperSlideSound();
+      }
+      $("hide").onclick = cerrarCarta;
+      $("cel").onclick = (e) => {
+        e.stopPropagation();
+        boom();
+        vib([20, 30, 20]);
+      };
+      /* Verificación de pago: el link debe venir firmado por el administrador (/api/verify) */
+      const DEMO = q.get("ej") === "1" && nombre === "Carla" && !location.hash;
+      let PAID =
+        !TV.REQUIRE_PAYMENT ||
+        DEMO ||
+        !!window.__CARD; /* DEMO: solo el ejemplo exacto de la tienda */
+      (async () => {
+        if (PAID) return;
+        try {
+          const u = new URL(location.href),
+            sig = u.searchParams.get("sig");
+          if (!sig) throw 0;
+          u.searchParams.delete("sig");
+          const r = await fetch("/api/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              data: u.searchParams.toString() + "#" + u.hash.slice(1),
+              sig,
+            }),
+          });
+          PAID = (await r.json()).ok === true;
+        } catch (e) {
+          PAID = false;
+        }
+        $("pv").classList.toggle("hidden", PAID);
+      })();
+      const LOCK = "Se activa al confirmar el pago";
+      /* Descargar como imagen (formato historia 1080x1920) */
+      $("img").onclick = async () => {
+        if (!PAID) {
+          toast(LOCK);
+          return;
+        }
+        try {
+          const W = 1080,
+            H = 1920,
+            c = document.createElement("canvas");
+          c.width = W;
+          c.height = H;
+          const x = c.getContext("2d"),
+            g = x.createLinearGradient(0, 0, W, H);
+          g.addColorStop(0, col);
+          g.addColorStop(1, "#FAFAF9");
+          x.fillStyle = g;
+          x.fillRect(0, 0, W, H);
+          const tp = TV.tpl(T, +q.get("v") || 0);
+          if (tp)
+            await new Promise((res) => {
+              const i = new Image();
+              i.onload = () => {
+                const s = Math.max(W / i.width, H / i.height),
+                  w = i.width * s,
+                  h = i.height * s;
+                x.save();
+                x.globalAlpha = Math.min(0.6, tp.op * 1.6);
+                x.drawImage(i, (W - w) / 2, ((H - h) * tp.y) / 100, w, h);
+                x.restore();
+                const f = x.createLinearGradient(0, 0, 0, H);
+                f.addColorStop(0, "rgba(250,250,249,0)");
+                f.addColorStop(0.5, "rgba(250,250,249,.55)");
+                f.addColorStop(1, "rgba(250,250,249,.1)");
+                x.fillStyle = f;
+                x.fillRect(0, 0, W, H);
+                res();
+              };
+              i.onerror = res;
+              i.src = tp.src;
+            });
+          /* v30 · La tarjeta de la imagen se adapta al largo del mensaje: encabezado compacto y letra más chica si hace falta; si aun así no cabe, corta con "…". Nada se sale del cuadro ni pisa la marca. */
+          const msg = String(msgTxt)
+              .replace(/[ \t]+/g, " ")
+              .trim(),
+            cm = msg.length > 160,
+            avR = cm ? 115 : 170,
+            pad = cm ? 70 : 90,
+            TW = 780,
+            MAXH = 1440;
+          let nfs = cm ? 96 : 130;
+          const NF = (s) => `${s}px "Instrument Serif",serif`;
+          x.font = NF(nfs);
+          while (nfs > 56 && x.measureText(nombre).width > TW) {
+            nfs -= 6;
+            x.font = NF(nfs);
+          }
+          const H0 =
+            pad +
+            avR * 2 +
+            90 +
+            Math.round(nfs * 1.08) +
+            Math.round(nfs * 0.55) +
+            40; /* de la parte de arriba del cuadro hasta la 1ª línea del mensaje */
+          const wrap = (fs) => {
+            x.font = `${fs}px Outfit,sans-serif`;
+            const L = [];
+            for (const p of msg.split(/\n+/)) {
+              let ln = "";
+              for (const w of p.split(" ")) {
+                const t = ln ? ln + " " + w : w;
+                if (ln && x.measureText(t).width > TW) {
+                  L.push(ln);
+                  ln = w;
+                } else ln = t;
+              }
+              if (ln) L.push(ln);
+            }
+            return L;
+          };
+          let fs = 54,
+            lh = Math.round(fs * 1.3),
+            L = wrap(fs);
+          const bh = () => H0 + Math.max(L.length - 1, 0) * lh + 80;
+          while (bh() > MAXH && fs > 32) {
+            fs -= 2;
+            lh = Math.round(fs * 1.3);
+            L = wrap(fs);
+          }
+          if (bh() > MAXH) {
+            const mx = Math.max(1, Math.floor((MAXH - 80 - H0) / lh) + 1);
+            if (L.length > mx) {
+              L = L.slice(0, mx);
+              L[mx - 1] = L[mx - 1].replace(/[\s.,;:!?¡¿]+$/, "") + "…";
+            }
+          }
+          const BH = bh(),
+            TP = Math.round(Math.max(150, 900 - BH / 2));
+          x.fillStyle = "rgba(255,255,255,.85)";
+          x.beginPath();
+          x.roundRect
+            ? x.roundRect(90, TP, 900, BH, 64)
+            : x.rect(90, TP, 900, BH);
+          x.fill();
+          const cy = TP + pad + avR;
+          await new Promise((res) => {
+            const i = new Image();
+            i.crossOrigin = "anonymous";
+            i.onload = () => {
+              x.save();
+              x.beginPath();
+              x.arc(540, cy, avR, 0, 7);
+              x.clip();
+              x.fillStyle = "#fff";
+              x.fill();
+              if (!$("av").classList.contains("color")) {
+                try {
+                  x.filter = "grayscale(1) contrast(1.1)";
+                } catch (e) {}
+              } /* respeta blanco y negro como se ve en la tarjeta */
+              const s = Math.min(i.width, i.height) || 1;
+              x.drawImage(
+                i,
+                (i.width - s) / 2,
+                (i.height - s) / 2,
+                s,
+                s,
+                540 - avR,
+                cy - avR,
+                avR * 2,
+                avR * 2,
+              ); /* recorte cuadrado centrado: la foto ya no se deforma */
+              x.restore();
+              res();
+            };
+            i.onerror = res;
+            i.src = $("av").src;
+          });
+          x.textAlign = "center";
+          x.fillStyle = "#6b7280";
+          x.font = "500 34px Outfit,sans-serif";
+          const ly = cy + avR + 90;
+          x.fillText("UNA TARJETITA PARA", 540, ly);
+          const ny = ly + Math.round(nfs * 1.08);
+          x.fillStyle = "#111827";
+          x.font = NF(nfs);
+          x.fillText(nombre, 540, ny);
+          x.font = `${fs}px Outfit,sans-serif`;
+          x.fillStyle = "#374151";
+          let y = TP + H0;
+          for (const l of L) {
+            x.fillText(l, 540, y);
+            y += lh;
+          }
+          const by = Math.max(1700, TP + BH + 80);
+          x.fillStyle = col;
+          x.font = "600 40px Outfit,sans-serif";
+          x.fillText("FRASSMOTTI", 540, by);
+          if (TV.WATERMARK !== false) {
+            x.fillStyle = "#6b7280";
+            x.font = "500 32px Outfit,sans-serif";
+            x.fillText(
+              "Hecho con FRASSMOTTI · Crea la tuya en " + location.host,
+              540,
+              by + 65,
+            );
+          }
+          c.toBlob((b) => {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(b);
+            a.download = "tarjetita-" + nombre + ".png";
+            a.click();
+          });
+        } catch (e) {
+          toast("No se pudo generar la imagen");
+        }
+      };
+      /* Secreto con candado */
+      /* Ejemplo en vivo: se demuestra el secreto con candado (palabra de ejemplo: mariposa) */
+      const DEMO_KEY = "mariposa",
+        DEMO_MSG =
+          "Este es un secreto que solo ve quien adivina la palabra. Aquí puede ir un chisme, una confesión o ese mensaje que no cabe en la tarjeta. 💛";
+      const norm = (s) =>
+        String(s)
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .toLowerCase();
+      if (DEMO) {
+        PL.s = "demo";
+        PL.sq = "¿Qué animalito de colores vuela de flor en flor?";
+        PL.h = [
+          "Empieza con la letra «M»",
+          "Tiene 8 letras",
+          "Antes de volar fue una oruga",
+        ];
+        $("sDemo").hidden = false;
+        $("bSec").classList.add("demo-pulse");
+      }
+      if (PL.s || PL.m || PL.a) $("bSec").hidden = false;
+      let tries = 0;
+      /* v17: hasta 3 pistas (PL.h = texto o lista). Se muestra la 1ª; el destinatario pide las otras o aparecen al fallar */
+      const HINTS = []
+        .concat(PL.h || [])
+        .map((x) => clean(x, 60).trim())
+        .filter(Boolean)
+        .slice(0, TV.PISTAS_MAX || 3);
+      let hs = 1;
+      /* Pregunta del secreto (la escribe quien creó la tarjeta; su respuesta es la palabra secreta) */
+      const SQ = clean(PL.sq, 100).trim();
+      const paintH = () => {
+        $("sQ").textContent = SQ;
+        $("sQ").hidden = !SQ;
+        $("sH").textContent = HINTS.length
+          ? HINTS.slice(0, hs)
+              .map(
+                (h, i) =>
+                  (HINTS.length > 1 ? "Pista " + (i + 1) + ": " : "Pista: ") +
+                  h,
+              )
+              .join("\n")
+          : "";
+        $("sH").hidden = !HINTS.length;
+        $("sP").hidden = hs >= HINTS.length;
+      };
+      $("sP").onclick = () => {
+        hs++;
+        paintH();
+      };
+      /* v22 · candado metálico: vuelve al estado cerrado (sin animar) cada vez que se abre el modal */
+      const _fx = () => {
+        const c = $("candado");
+        return [c, $("sO"), c.querySelector(".candado-grillete")];
+      };
+      function resetCandado() {
+        const [c, o, g] = _fx();
+        [c, o, g].forEach((e) => (e.style.transition = "none"));
+        g.style.animation = "none";
+        c.classList.remove("candado-abierto", "candado-error");
+        c.setAttribute("aria-label", "Mensaje secreto bloqueado");
+        void c.offsetWidth;
+        [c, o, g].forEach((e) => (e.style.transition = ""));
+        g.style.animation = "";
+        const L = $("sL");
+        L.classList.remove("hidden");
+        L.style.transition = "";
+        L.style.opacity = "";
+        L.style.pointerEvents = "";
+        $("sM").textContent = "";
+        $("sT").disabled = false;
+        busy = false;
+      }
+      function abrirInstantaneo() {
+        const [c, o, g] = _fx();
+        [c, o, g].forEach((e) => (e.style.transition = "none"));
+        c.classList.add("candado-abierto");
+        void c.offsetWidth;
+        [c, o, g].forEach((e) => (e.style.transition = ""));
+      }
+      $("candado").onclick = () => {
+        if (!$("candado").classList.contains("candado-abierto"))
+          $("sG").focus();
+      };
+      /* reveal(m,true) = clave acertada: anima el candado (abrirCandado de carta.js suena playChimeSound() a los 850 ms, cuando entra .candado-msg).
    reveal(m) = mensaje/voz que no pide clave: se muestra directo, como antes. */
-const reveal=(m,conCandado)=>{const L=$('sL');$('sM').textContent=m;
- const fin=()=>{if(!$('mS').classList.contains('open'))return;boom();if(PL.a&&String(PL.a).startsWith('data:audio/')){try{new Audio(PL.a).play()}catch(e){}}};
- if(conCandado){L.style.transition='opacity .35s ease';L.style.opacity='0';L.style.pointerEvents='none';setTimeout(()=>L.classList.add('hidden'),380);abrirCandado('#candado');vib(40);setTimeout(()=>vib([30,40,30,40,140]),850);setTimeout(fin,850)}
- else{L.classList.add('hidden');abrirInstantaneo();TVS.chime();vib([30,40,30]);fin()}};
-$('bSec').onclick=()=>{$('bSec').classList.remove('demo-pulse');if(!PAID){toast(LOCK);return}$('sG').value='';$('sE').textContent='';resetCandado();$('mS').classList.add('open');
- if(PL.m||(!PL.s&&PL.a)){reveal(PL.m?clean(PL.m,240):'Escucha este mensaje de voz.');return}$('sL').classList.remove('hidden');hs=1;paintH();setTimeout(()=>$('sG').focus(),150)};
-let busy=false;
-async function guess(){if(busy)return;const g=$('sG').value;if(!g.trim())return;busy=true;$('sT').disabled=true;let m=null;try{m=DEMO?(norm(g)===DEMO_KEY?DEMO_MSG:null):await TVS.dec(PL.s,g)}catch(e){m=null}busy=false;if(m!==null){reveal(m,true);return}
- tries++;const more=hs<HINTS.length;if(more){hs++;paintH()}$('sE').textContent=(tries>=2?'Sigue intentando, lee bien la pregunta y las pistas.':'Esa no es la clave. Intenta otra vez.')+(more?' Te damos otra pista.':'')+(DEMO&&tries>=3?' En este ejemplo la palabra es «mariposa».':'');$('sT').disabled=false;sacudirCandado('#candado');vib([70,50,70]);$('sG').value='';$('sG').focus()}
-$('sT').onclick=guess;$('sG').onkeydown=e=>{if(e.key==='Enter')guess()};$('x').onclick=()=>$('mS').classList.remove('open');$('mS').onclick=e=>{if(e.target.id==='mS')$('mS').classList.remove('open')};
-$('sv').onclick=async()=>{if(!PAID){toast(LOCK);return}try{if(navigator.share)await navigator.share({title:'tarjeta FRASSMOTTI',text:'Mira mi tarjetita para '+nombre+(TV.WATERMARK!==false?' · Hecho con FRASSMOTTI · Crea la tuya en '+location.host:''),url:location.href});else{await navigator.clipboard.writeText(location.href);toast('Link copiado')}}catch(e){}};
-window.DT&&DT.attach($('escena'),{enabled:()=>estado==='abierto',phrases:()=>DT.phrases(T,{nombre,pal})});
-lucide.createIcons();</script>
-<script src="../js/extras.js"></script><script src="../js/acciones.js"></script><script src="../js/raspar.js"></script><script src="../js/uv.js"></script><script src="../js/nuevas.js"></script></body></html>
+      const reveal = (m, conCandado) => {
+        // Reproducir la música de fondo si se va directo al secreto
+        const audioFondo = document.getElementById("musica-fondo");
+        if (audioFondo && audioFondo.src && audioFondo.paused) {
+          audioFondo
+            .play()
+            .catch((e) => console.log("El navegador bloqueó el audio:", e));
+        }
+
+        const L = $("sL");
+        $("sM").textContent = m;
+        const fin = () => {
+          if (!$("mS").classList.contains("open")) return;
+          boom();
+          if (PL.a && String(PL.a).startsWith("data:audio/")) {
+            try {
+              new Audio(PL.a).play();
+            } catch (e) {}
+          }
+        };
+        if (conCandado) {
+          L.style.transition = "opacity .35s ease";
+          L.style.opacity = "0";
+          L.style.pointerEvents = "none";
+          setTimeout(() => L.classList.add("hidden"), 380);
+          abrirCandado("#candado");
+          vib(40);
+          setTimeout(() => vib([30, 40, 30, 40, 140]), 850);
+          setTimeout(fin, 850);
+        } else {
+          L.classList.add("hidden");
+          abrirInstantaneo();
+          TVS.chime();
+          vib([30, 40, 30]);
+          fin();
+        }
+      };
+      $("bSec").onclick = () => {
+        $("bSec").classList.remove("demo-pulse");
+        if (!PAID) {
+          toast(LOCK);
+          return;
+        }
+        $("sG").value = "";
+        $("sE").textContent = "";
+        resetCandado();
+        $("mS").classList.add("open");
+        if (PL.m || (!PL.s && PL.a)) {
+          reveal(PL.m ? clean(PL.m, 240) : "Escucha este mensaje de voz.");
+          return;
+        }
+        $("sL").classList.remove("hidden");
+        hs = 1;
+        paintH();
+        setTimeout(() => $("sG").focus(), 150);
+      };
+      let busy = false;
+      async function guess() {
+        if (busy) return;
+        const g = $("sG").value;
+        if (!g.trim()) return;
+        busy = true;
+        $("sT").disabled = true;
+        let m = null;
+        try {
+          m = DEMO
+            ? norm(g) === DEMO_KEY
+              ? DEMO_MSG
+              : null
+            : await TVS.dec(PL.s, g);
+        } catch (e) {
+          m = null;
+        }
+        busy = false;
+        if (m !== null) {
+          reveal(m, true);
+          return;
+        }
+        tries++;
+        const more = hs < HINTS.length;
+        if (more) {
+          hs++;
+          paintH();
+        }
+        $("sE").textContent =
+          (tries >= 2
+            ? "Sigue intentando, lee bien la pregunta y las pistas."
+            : "Esa no es la clave. Intenta otra vez.") +
+          (more ? " Te damos otra pista." : "") +
+          (DEMO && tries >= 3
+            ? " En este ejemplo la palabra es «mariposa»."
+            : "");
+        $("sT").disabled = false;
+        sacudirCandado("#candado");
+        vib([70, 50, 70]);
+        $("sG").value = "";
+        $("sG").focus();
+      }
+      $("sT").onclick = guess;
+      $("sG").onkeydown = (e) => {
+        if (e.key === "Enter") guess();
+      };
+      $("x").onclick = () => $("mS").classList.remove("open");
+      $("mS").onclick = (e) => {
+        if (e.target.id === "mS") $("mS").classList.remove("open");
+      };
+      $("sv").onclick = async () => {
+        if (!PAID) {
+          toast(LOCK);
+          return;
+        }
+        try {
+          if (navigator.share)
+            await navigator.share({
+              title: "tarjeta FRASSMOTTI",
+              text:
+                "Mira mi tarjetita para " +
+                nombre +
+                (TV.WATERMARK !== false
+                  ? " · Hecho con FRASSMOTTI · Crea la tuya en " + location.host
+                  : ""),
+              url: location.href,
+            });
+          else {
+            await navigator.clipboard.writeText(location.href);
+            toast("Link copiado");
+          }
+        } catch (e) {}
+      };
+      window.DT &&
+        DT.attach($("escena"), {
+          enabled: () => estado === "abierto",
+          phrases: () => DT.phrases(T, { nombre, pal }),
+        });
+      lucide.createIcons();
+    </script>
+    <script src="../js/extras.js"></script>
+    <script src="../js/acciones.js"></script>
+    <script src="../js/raspar.js"></script>
+    <script src="../js/uv.js"></script>
+    <script src="../js/nuevas.js"></script>
+    <!-- Reproductor de música de fondo oculto -->
+    <audio id="musica-fondo" loop style="display: none"></audio>
+  </body>
+</html>
