@@ -63,3 +63,5 @@ Si ves "Falta la función /api/admin", el despliegue no incluyó `functions/`. E
 hice algunos pequeños cambios como eliminar el link viejo de WORKER de mi cloudflare y ademas actualice mi pagina
 - esta vez le puse una IA (frassmotti IA) y estoy probando gemini PERO CUESTA
 - MEJOR ME CAMBIE A OPEN AI y se mas rapida
+- YA FUNCIONA (19:32) ESTOY HACIENDO PRUEBAS, SOLO SUBI DOS ARCHVISO PARA EL FRONTED Y SE VEA BONITO LA PAGINA
+  
