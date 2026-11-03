@@ -186,7 +186,31 @@
           </div>
         </details>
       </div>
-      <div class="card p-5 space-y-3">
+      <div class="card p-5 space-y-3" id="iaCard">
+  <p class="font-semibold text-gray-900">Motor IA (prueba): voz o texto → borrador del Paso 2</p>
+  <p class="text-xs text-gray-600">Cuenta lo que quiere el cliente con tus palabras o las suyas. La IA propone un borrador y tú lo revisas en el Paso 2. No genera el link ni cobra nada.</p>
+  <div class="grid grid-cols-2 gap-2">
+    <div><label class="label" for="iaPin">PIN de administrador</label><input id="iaPin" type="password" class="input" autocomplete="off" /></div>
+    <div><label class="label" for="iaTam">Tamaño de la tarjeta</label>
+      <select id="iaTam" class="input"><option value="1">1 · Postal (unas 45 palabras)</option><option value="2" selected>2 · Deslizante (100 a 120)</option><option value="3">3 · Tipo libro (unas 260)</option></select></div>
+  </div>
+  <textarea id="iaTxt" rows="3" class="input" maxlength="1500" placeholder='Escribe o graba, por ejemplo: "Hazme algo para mi mamá por su cumple, que sepa cuánto la quiero"'></textarea>
+  <div class="grid grid-cols-2 gap-2">
+    <button id="iaRec" type="button" class="btn btn-ghost text-sm">🎙 Grabar (hasta 30 s)</button>
+    <button id="iaGo" type="button" class="btn btn-dark text-sm">Procesar con IA</button>
+  </div>
+  <p id="iaSt" class="text-sm text-gray-700 min-h-[1.25rem]" role="status"></p>
+  <div id="iaOut" hidden class="border border-gray-200 rounded-xl p-4 space-y-3">
+    <p id="iaEst" class="text-sm font-semibold text-gray-900"></p>
+    <p id="iaAviso" class="text-sm text-gray-700" hidden></p>
+    <p class="text-xs text-gray-600">Lo que entendió:</p>
+    <p id="iaTr" class="text-sm text-gray-700"></p>
+    <div id="iaRes" class="text-sm text-gray-900 space-y-3"></div>
+    <details class="text-xs"><summary class="cursor-pointer font-semibold text-gray-900">Ver JSON</summary><pre id="iaJson" style="white-space:pre-wrap;word-break:break-word;margin-top:.5rem"></pre></details>
+    <button id="iaApply" type="button" class="btn btn-accent w-full">Aplicar al Paso 2</button>
+  </div>
+</div>
+<div class="card p-5 space-y-3">
         <p class="font-semibold text-gray-900">
           Paso 1: pega el pedido que te llegó por WhatsApp
         </p>
@@ -1409,6 +1433,160 @@ var qrcode=function(){var t=function(t,r){var e=t,n=g[r],o=null,i=0,a=null,u=[],
   } catch (e) { info.textContent = "No se pudo crear el SVG: " + e.message; } };
   /* al generar otro link, el QR anterior se oculta para no grabar uno viejo por error */
   const go = $("go"); if (go) go.addEventListener("click", () => { box.hidden = true; btn.textContent = "Crear código QR (para grabar)"; });
+})();
+</script>
+<script>
+/* Motor IA (prueba): graba o recibe texto, llama a /api/ia-procesar y, si tú quieres, llena el Paso 2 con el borrador */
+(function () {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  if (!$("iaCard") || typeof TV === "undefined") return;
+  const MAXS = 30, RATE = 16000;
+  const bGo = $("iaGo"), bRec = $("iaRec"), st = $("iaSt"), out = $("iaOut");
+  let rec = null, stream = null, chunks = [], timer = 0, t0 = 0, audio = "", last = null, busy = false;
+  $("iaPin").value = sessionStorage.getItem("tv_pin") || "";
+  const say = (m) => { st.textContent = m; };
+
+  /* ---- el navegador deja el audio como WAV 16 kHz mono: sirve en Chrome, Safari y Firefox ---- */
+  function wav(f32, rate) {
+    const n = f32.length, b = new ArrayBuffer(44 + n * 2), d = new DataView(b);
+    const w = (o, s) => { for (let i = 0; i < s.length; i++) d.setUint8(o + i, s.charCodeAt(i)); };
+    w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+    d.setUint32(24, rate, true); d.setUint32(28, rate * 2, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true); w(36, "data"); d.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) { const s = Math.max(-1, Math.min(1, f32[i])); d.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true); }
+    return new Uint8Array(b);
+  }
+  const b64 = (u8) => { let s = ""; for (let i = 0; i < u8.length; i += 8192) s += String.fromCharCode.apply(null, u8.subarray(i, i + 8192)); return btoa(s); };
+  async function aWav(blob) {
+    const AC = window.AudioContext || window.webkitAudioContext, ctx = new AC();
+    const buf = await ctx.decodeAudioData(await blob.arrayBuffer()); try { ctx.close(); } catch (e) {}
+    const oc = new OfflineAudioContext(1, Math.max(1, Math.ceil(buf.duration * RATE)), RATE), src = oc.createBufferSource();
+    src.buffer = buf; src.connect(oc.destination); src.start();
+    const f = (await oc.startRendering()).getChannelData(0);
+    let s = 0; for (let i = 0; i < f.length; i += 16) s += f[i] * f[i];
+    return { b64: b64(wav(f, RATE)), seg: buf.duration, rms: Math.sqrt(s / Math.max(1, f.length / 16)) };
+  }
+
+  /* ---- grabación ---- */
+  const parar = () => { clearInterval(timer); if (rec && rec.state !== "inactive") rec.stop(); };
+  async function grabar() {
+    if (rec && rec.state === "recording") { parar(); return; }
+    if (!navigator.mediaDevices || !window.MediaRecorder) { say("Este navegador no puede grabar. Escribe el pedido."); return; }
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { say("No hay permiso de micrófono. Revisa el candado de la barra de direcciones o escribe el pedido."); return; }
+    chunks = []; audio = ""; rec = new MediaRecorder(stream);
+    rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop()); bRec.textContent = "🎙 Grabar (hasta 30 s)";
+      try {
+        say("Preparando el audio…");
+        const r = await aWav(new Blob(chunks, { type: rec.mimeType || "audio/webm" }));
+        if (r.rms < 0.004) { say("No se escuchó nada. Acerca el micrófono y vuelve a grabar."); return; }
+        audio = r.b64; procesar();
+      } catch (e) { say("No se pudo leer la grabación. Inténtalo otra vez o escribe el pedido."); }
+    };
+    rec.start(); t0 = Date.now(); bRec.textContent = "⏹ Detener";
+    timer = setInterval(() => { const s = Math.floor((Date.now() - t0) / 1000); say("Grabando… " + s + " s (máx. " + MAXS + ")"); if (s >= MAXS) parar(); }, 250);
+  }
+  bRec.onclick = grabar;
+  $("iaTxt").addEventListener("input", () => { audio = ""; });
+
+  /* ---- catálogo en vivo desde js/config.js ---- */
+  const catalogo = () => ({
+    ocasiones: TV.TODAS.map((t) => ({ id: t.id, name: t.name, d: t.d || "", solo: TV.SOLO && TV.SOLO[t.id] && TV.SOLO[t.id].length === 1 ? TV.SOLO[t.id][0] : null })),
+    colores: Object.keys(TV.PALETA || {}),
+    fuentes: (TV.FUENTES || []).map((f) => ({ id: f.id, n: f.n, ej: f.ej })),
+  });
+
+  async function procesar() {
+    if (busy) return;
+    const texto = $("iaTxt").value.trim(), pin = $("iaPin").value;
+    if (!audio && texto.length < 8) { say("Escribe al menos una frase o graba un audio."); return; }
+    if (!pin) { say("Escribe tu PIN de administrador."); return; }
+    busy = true; bGo.disabled = bRec.disabled = true; out.hidden = true; last = null;
+    say(audio ? "Escuchando y entendiendo tu pedido…" : "Entendiendo tu pedido…");
+    const t = Date.now();
+    try {
+      const r = await fetch("/api/ia-procesar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ pin, texto: audio ? "" : texto, audio, tam: +$("iaTam").value, catalogo: catalogo() }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.ok) { say(d.error || "Error " + r.status); return; }
+      sessionStorage.setItem("tv_pin", pin);
+      last = d.resultado; mostrar(d, ((Date.now() - t) / 1000).toFixed(1));
+    } catch (e) { say("Sin conexión con /api/ia-procesar."); }
+    finally { busy = false; bGo.disabled = bRec.disabled = false; }
+  }
+  bGo.onclick = procesar;
+
+  /* ---- resultado (todo con textContent: nada de lo que escribe la IA se interpreta como HTML) ---- */
+  const ETQ = { ok: "✔ Borrador listo", baja_confianza: "⚠ No se entendió bien", sensible: "⚠ Tema delicado: revísalo con calma", rechazado: "✖ No se puede redactar" };
+  const nomOc = (id) => { const t = TV.TODAS.find((x) => x.id === id); return t ? t.name + " (" + id + ")" : "—"; };
+  function fila(k, v, pre) { const p = document.createElement("p"), b = document.createElement("b"), s = document.createElement(pre ? "span" : "span"); b.textContent = k + ": "; s.textContent = v || "—"; if (pre) s.style.whiteSpace = "pre-wrap"; p.append(b, s); return p; }
+  function mostrar(d, seg) {
+    const r = d.resultado; out.hidden = false;
+    $("iaEst").textContent = (ETQ[r.estado] || r.estado) + " · " + seg + " s";
+    const av = $("iaAviso"); av.hidden = !r.aviso_cliente; av.textContent = r.aviso_cliente || "";
+    $("iaTr").textContent = d.transcripcion || "";
+    const box = $("iaRes"); box.textContent = "";
+    box.append(fila("Ocasión", nomOc(r.ocasion)), fila("Para", r.nombre), fila("De parte de", r.deParte), fila("Género", r.genero === "h" ? "Hombre" : r.genero === "m" ? "Mujer" : "No se dijo (se usará Mujer)"), fila("Frase", r.frase), fila("Color / tipografía", r.color + " / " + r.fuente), fila("Carta (" + d.palabras + " palabras)", r.mensaje, true));
+    $("iaJson").textContent = JSON.stringify(r, null, 2);
+    $("iaApply").disabled = !(r.mensaje && r.ocasion);
+    say(r.mensaje ? "Revisa el borrador y pulsa «Aplicar al Paso 2»." : "");
+  }
+
+  /* ---- aplicar: rellena directamente los controles reales del Paso 2 ---- */
+  function aplicarValor(id, valor, tipo) {
+    const el = $(id);
+    if (!el || valor === null || valor === undefined) return false;
+    el.value = String(valor);
+    el.dispatchEvent(new Event(tipo || (el.tagName === "SELECT" ? "change" : "input"), { bubbles: true }));
+    /* Algunos módulos antiguos escuchan change y otros input. */
+    if (tipo === "both") {
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    return true;
+  }
+
+  $("iaApply").onclick = () => {
+    if (!last || !last.mensaje || !last.ocasion) return;
+
+    /* La ocasión devuelta por el servidor es un ID de TV.TODAS y también
+       corresponde al ID de plantilla que utiliza el formulario. */
+    const ocasionValida = TV.TODAS.some((x) => x.id === last.ocasion);
+    if (!ocasionValida) {
+      say("La ocasión recibida ya no existe en js/config.js. Actualiza el catálogo e inténtalo otra vez.");
+      return;
+    }
+    const colorValido = Object.prototype.hasOwnProperty.call(TV.PALETA || {}, last.color);
+    const fuenteValida = (TV.FUENTES || []).some((x) => x.id === last.fuente);
+
+    aplicarValor("plantilla", last.ocasion, "change");
+    aplicarValor("nombre", last.nombre || "", "both");
+    aplicarValor("de", last.deParte || "", "both");
+    aplicarValor("frase", last.frase || "", "both");
+    aplicarValor("mensaje", last.mensaje || "", "both");
+    aplicarValor("tam", last.tam || $("iaTam").value, "change");
+    if (colorValido) aplicarValor("color", last.color, "change");
+    if (fuenteValida) aplicarValor("fu", last.fuente, "change");
+    if (last.genero === "m" || last.genero === "h") aplicarValor("gen", last.genero, "change");
+
+    /* Mantiene un registro legible en el Paso 1 sin depender de él para
+       rellenar los campos: así no se disparan parsers que puedan pisarlos. */
+    const o = $("order");
+    o.value = [
+      "PEDIDO (borrador de IA)",
+      "Plantilla: " + last.ocasion,
+      "Para: " + (last.nombre || "-"),
+      "De parte de: " + (last.deParte || "-"),
+      "Frase: " + (last.frase || "-"),
+      "Color: " + (last.color || "-"),
+      "Tipografía: " + (last.fuente || "-"),
+      "Tamaño: " + (last.tam || "-"),
+      "Mensaje: " + String(last.mensaje || "").replace(/\s*\n+\s*/g, " ¶ ")
+    ].join("\n");
+
+    say("Listo: ya está aplicado al Paso 2. Revisa el nombre, la ocasión, el mensaje y la vista previa antes de generar el link.");
+    $("nombre").scrollIntoView({ behavior: "smooth", block: "center" });
+  };
 })();
 </script>
 </body>
